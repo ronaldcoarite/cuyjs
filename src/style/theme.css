@@ -1,0 +1,41 @@
+@font-face
+{
+    /*font-family: fuente;*/
+    src: url("Digital_tech.otf");
+}
+TextView
+{
+    font-family:fuente;
+    letter-spacing: 3px;
+    color: white;
+    text-shadow: 2px aqua;
+}
+EditText
+{
+    
+}
+Button
+{
+    
+}
+CheckBox
+{
+    
+}
+ItemVehiculo
+{
+    background-color: #00ffff;
+}
+ItemVehiculo:hover
+{
+    background-color: #ccffcc;
+}
+input[type=text]
+{
+    color: #979797;
+    height: 28px;
+    padding: 5px;
+    text-decoration: none;
+    border-radius: 2px;
+    border: 0;
+}

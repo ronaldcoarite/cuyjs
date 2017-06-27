@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:noNamespaceSchemaLocation='../../plataform/layout-xml.xsd'
+    layout_width="match_parent"
+    layout_height="match_parent"
+    orientation="vertical">
+    <LinearLayout
+        layout_width="match_parent"
+        layout_height="wrap_content"
+        background="#12346A"
+        orientation="horizontal">
+    </LinearLayout>
+    <ScrollView
+        layout_width="match_parent"
+        layout_height="match_parent"
+        layout_weight="1"
+        background="#123456">
+        <LinearLayout
+            id="aaaa"
+            layout_width="match_parent"
+            layout_height="wrap_content"
+            background="#AE2345"
+            orientation="vertical"
+            padding="30px">
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

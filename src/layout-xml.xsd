@@ -1,0 +1,275 @@
+<xs:schema
+    attributeFormDefault="unqualified"
+    elementFormDefault="qualified"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:group name="any-view">
+        <xs:choice>
+            <xs:element ref="View" />
+            <xs:element ref="ImageView" />
+            <xs:element ref="ImageButton" />
+            <xs:element ref="TextView" />
+            <xs:element ref="Button" />
+            <xs:element ref="EditText" />
+            <xs:element ref="ViewGroup" />
+            <xs:element ref="FrameLayout" />
+            <xs:element ref="RelativeLayout" />
+            <xs:element ref="LinearLayout" />
+            <xs:element ref="GridLayout" />
+            <xs:element ref="ScrollView" />
+            <xs:element ref="ProgressBar" />
+        </xs:choice>
+    </xs:group>
+    <!-- atributos-->
+    <xs:attribute name="scaleType">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="fitXY"/>
+                <xs:enumeration value="fitStart"/>
+                <xs:enumeration value="fitCenter"/>
+                <xs:enumeration value="center"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="inputType">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="text"/>
+                <xs:enumeration value="password"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:simpleType name="bool">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="layout_dimension">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="wrap_content"/>
+            <xs:enumeration value="match_parent"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="text_style">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="bold"/>
+            <xs:enumeration value="italic"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:attribute name="layout_gravity">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="left"/>
+                <xs:enumeration value="right"/>
+                <xs:enumeration value="top"/>
+                <xs:enumeration value="bottom"/>
+                <xs:enumeration value="center"/>
+                <xs:enumeration value="center_horizontal"/>
+                <xs:enumeration value="center_vertical"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="orientation">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="vertical"/>
+                <xs:enumeration value="horizontal"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="ellipsize">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="none"/>
+                <xs:enumeration value="ellipsis"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="visibility">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="gone"/>
+                <xs:enumeration value="visible"/>
+                <xs:enumeration value="invisible"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <!-- View -->
+    <xs:element name="View" type="View">
+        <xs:annotation>
+            <xs:documentation>Elemento general de vista</xs:documentation>
+        </xs:annotation>
+        <!--
+        <xs:key name="id2">
+            <xs:selector xpath="View"/>
+            <xs:field xpath="@id"/>
+        </xs:key>-->
+    </xs:element>
+    <xs:complexType name="View">
+        <!-- Atributos del view-->
+        <xs:attribute type="xs:string" name="id" use="optional"/>
+        <xs:attribute type="layout_dimension" name="layout_width" default="wrap_content"/>
+        <xs:attribute type="layout_dimension" name="layout_height" default="wrap_content"/>
+        <xs:attribute type="xs:string" name="background" use="optional"/>
+        <xs:attribute type="xs:string" name="onClick" use="optional"/>
+        
+        <xs:attribute ref="layout_gravity" use="optional"/>
+        <xs:attribute ref="visibility" use="optional"/>
+        
+        <xs:attribute type="xs:string" name="layout_margin" use="optional"/>
+        <xs:attribute type="xs:string" name="layout_marginTop" use="optional"/>
+        <xs:attribute type="xs:string" name="layout_marginLeft" use="optional"/>
+        <xs:attribute type="xs:string" name="layout_marginRight" use="optional"/>
+        <xs:attribute type="xs:string" name="layout_marginBottom" use="optional"/>
+        
+        <xs:attribute type="xs:string" name="padding" use="optional"/>
+        <xs:attribute type="xs:string" name="paddingTop" use="optional"/>
+        <xs:attribute type="xs:string" name="paddingLeft" use="optional"/>
+        <xs:attribute type="xs:string" name="paddingLight" use="optional"/>
+        <xs:attribute type="xs:string" name="paddingBottom" use="optional"/>
+        
+        <xs:attribute type="xs:string" name="layout_weight" use="optional"/>
+        
+        <xs:attribute type="bool" name="layout_alignParentLeft" use="optional"/>
+        <xs:attribute type="bool" name="enabled" use="optional"/>
+        <xs:attribute type="bool" name="layout_alignParentTop" use="optional"/>
+        <xs:attribute type="bool" name="layout_alignParentRight" use="optional"/>
+        <xs:attribute type="bool" name="layout_alignParentBottom" use="optional"/>
+        <xs:attribute type="bool" name="layout_centerHorizontal" use="optional"/>
+        <xs:attribute type="bool" name="layout_centerVertical" use="optional"/>
+        <xs:attribute type="bool" name="layout_centerInParent" use="optional"/>
+        
+        <xs:attribute type="xs:string" name="layout_above" use="optional"/>
+        <xs:attribute type="xs:string" name="layout_below" use="optional"/>
+        <xs:attribute type="xs:string" name="layout_toRightOf" use="optional"/>
+        <xs:attribute type="xs:string" name="layout_toLeftOf" use="optional"/>
+        
+        <xs:attribute type="xs:string" name="style" use="optional"/>
+        
+        <xs:attribute type="xs:string" name="minHeight" use="optional"/>
+        <xs:attribute type="xs:string" name="minWidth" use="optional"/>
+    </xs:complexType>
+
+    <!-- TextView -->
+    <xs:element name="TextView" type="TextView" />
+    <xs:complexType name="TextView">
+        <xs:complexContent mixed="false">
+            <xs:extension base="View">
+                <xs:group minOccurs="0" maxOccurs="unbounded" ref="any-view" />
+                <xs:attribute type="text_style" name="textStyle"/>
+                <xs:attribute type="xs:string" name="text" use="optional"/>
+                <xs:attribute type="xs:string" name="textColor" use="optional"/>
+                <xs:attribute type="xs:string" name="hint" use="optional"/>
+                <xs:attribute type="xs:string" name="textSize" use="optional"/>
+                <xs:attribute type="xs:integer" name="ems" use="optional"/>
+                <xs:attribute type="xs:integer" name="lines" use="optional"/>
+                <xs:attribute type="xs:integer" name="maxEms" use="optional"/>
+                <xs:attribute type="xs:integer" name="maxLines" use="optional"/>
+                <xs:attribute type="xs:integer" name="maxLength" use="optional"/>
+                
+                <xs:attribute type="xs:string" name="drawableLeft" use="optional"/>
+                <xs:attribute type="xs:string" name="drawableTop" use="optional"/>
+                <xs:attribute type="xs:string" name="drawableRight" use="optional"/>
+                <xs:attribute type="xs:string" name="drawableBottom" use="optional"/>
+                
+                <xs:attribute type="bool" name="singleLine" use="optional"/>
+                
+                <xs:attribute ref="ellipsize" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:element name="EditText">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="TextView">
+                    <xs:attribute type="bool" name="readonly" use="optional"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="ImageView" type="ImageView" />
+    <xs:complexType name="ImageView">
+        <xs:complexContent mixed="false">
+            <xs:extension base="View">
+                <xs:attribute ref="scaleType" use="optional"/>
+                <xs:attribute type="xs:string" name="src" use="optional"/>                
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="ImageButton">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="ImageView">
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="ProgressBar">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="View">
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Button" type="Button"/>
+    <xs:complexType name="Button">
+        <xs:complexContent mixed="false">
+            <xs:extension base="TextView"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ViewGroup -->
+    <xs:complexType name="ViewGroup">
+        <xs:complexContent mixed="false">
+            <xs:extension base="View">
+                <xs:group minOccurs="0" maxOccurs="unbounded" ref="any-view" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="ViewGroup" type="ViewGroup"/>
+    
+    <!-- ScrollView -->
+    <xs:element name="ScrollView">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="ViewGroup"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="FrameLayout">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="ViewGroup"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="LinearLayout">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="ViewGroup">
+                    <xs:attribute ref="orientation" use="optional"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="GridLayout">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="ViewGroup">
+                    <xs:attribute type="xs:integer" name="colums" use="required" default="1"/>
+                    <xs:attribute type="xs:integer" name="spacing" use="optional"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <!-- RelativeLayout -->
+    <xs:element name="RelativeLayout">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="ViewGroup"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
