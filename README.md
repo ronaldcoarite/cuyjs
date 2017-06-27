@@ -46,3 +46,17 @@ A continuación el layout correspondiente para la vista
         singleLine="true"/>
 </LinearLayout>
 ```
+
+# ¿Que se puede realizar con cuyjs?
+
+Cuyjs no tiene límites, se puede realizar desde pequeñas aplicaciones hasta tener sistemas de informacón con una interfaz moderna e interativa con soporte para patanllas tactives, pantallas responsivas utilizando los layouts de acuerdo a los requerimientos con multiples opciones.
+
+En resumen cuyjs soporta lo siguiente:
+
+- Programación orientada a objecto.
+- Diseño de interfaces basados en xml con componentes Android
+- Soporte de NinePath9 para fondos de componentes con contenido dinámico
+- Posee todos los componentes nativos de Android desde instancia por codigo hasta los tag's en el xml.
+- Paso de parametros entre diferentes "Pages"
+- Creación de nuevos componentes
+- Manejo de ajax mediante la interfax definida de HttpClient.
