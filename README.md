@@ -53,7 +53,7 @@ Cuyjs no tiene límites, se puede realizar desde pequeñas aplicaciones hasta te
 
 En resumen cuyjs soporta lo siguiente:
 
-- Programación orientada a objecto.
+- Programación orientada a objectos. [POO](https://github.com/ronaldcoarite/cuyjs/blob/master/poo.md). 
 - Diseño de interfaces basados en xml con componentes Android
 - Soporte de NinePath9 para fondos de componentes con contenido dinámico
 - Posee todos los componentes nativos de Android desde instancia por codigo hasta los tag's en el xml.
