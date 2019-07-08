@@ -1,45 +1,35 @@
 /* global Dialog, LayoutInflater, Class */
 
-PickImage = Dialog.extend
-({
-    onCreate:function()
-    {
-        this.setContentView("layout/seleccionar_imagen.xml");
+PickImage = Dialog.extend({
+    onCreate:function(){
+        this.setContentView("res/layout/seleccionar_imagen.xml");
     },
-    onStart:function()
-    {
+    onStart:function(){
         
     },
-    onCanceled:function()
-    {
+    onCanceled:function(){
         
     },
-    onClickDescartar:function()
-    {
+    onClickDescartar:function(){
         this.cancel();
     },
-    onClickContinuar:function()
-    {
+    onClickContinuar:function(){
         this.cancel();
         var nuevaEntidad2 = new DialogNuevaEntidad2();
         nuevaEntidad2.show();
     }
 });
-Toast=
-{
+Toast={
     LENGTH_SHORT:1000,
     LENGTH_LONG:3400,
-    makeText:function(context,message,length)
-    {
+    makeText:function(context,message,length){
         return new DialogToast(context,message,length);
     }
 };
-DialogToast = Dialog.extend
-({
+DialogToast = Dialog.extend({
     txtMessage:null,
     length:null,
-    init:function(context,message,length)
-    {
+    init:function(context,message,length){
         this._super(context);
         if(length === undefined)
             this.length = Toast.LENGTH_SHORT;
@@ -51,15 +41,13 @@ DialogToast = Dialog.extend
         this.txtMessage.setSingleLine(true);
         this.txtMessage.setText(message);
     },
-    onCreate:function()
-    {
+    onCreate:function(){
         var fraCont = new FrameLayout(this);
         fraCont.addView(this.txtMessage);
-        fraCont.setBackground("drawable/util/bg_toast.9.png");
+        fraCont.setBackground("res/drawable/util/bg_toast.9.png");
         this.setContentView(fraCont);
     },
-    show:function()
-    {
+    show:function(){
         this._super();
         var this_ = this;
         function cancel()
@@ -69,15 +57,13 @@ DialogToast = Dialog.extend
         setTimeout(cancel,this.length);
     }
 });
-AlertDialog = Dialog.extend
-({
-    init:function(context,urlIcon,title,view,btnPositive,btnNegative,message)
-    {
+AlertDialog = Dialog.extend({
+    init:function(context,urlIcon,title,view,btnPositive,btnNegative,message){
         this._super(context);
         var relContenedor = new LinearLayout(this);
         relContenedor.setMinWidth(200);
         relContenedor.setMinHeight(170);
-        relContenedor.setBackground("drawable/general/bg_dialog.9.png");
+        relContenedor.setBackground("res/drawable/general/bg_dialog.9.png");
         //relContenedor.setBackground("#AAFFCC");
         relContenedor.setOrientation(LayoutInflater.VERTICAL);
         var txtTitle = null;
@@ -127,8 +113,7 @@ AlertDialog = Dialog.extend
         this.setContentView(relContenedor);
     }
 });
-BuilderDialog =  Class.extend
-({
+BuilderDialog =  Class.extend({
     urlIcon : null,
     title : null,
     view : null,
@@ -136,8 +121,7 @@ BuilderDialog =  Class.extend
     no : null,
     context:null,
     message:null,
-    init:function(context)
-    {
+    init:function(context){
         this.urlIcon=null;
         this.title=null;
         this.view=null;
@@ -146,38 +130,30 @@ BuilderDialog =  Class.extend
         this.context=context;
         this.message = null;
     },
-    create:function()
-    {
+    create:function(){
         return new AlertDialog(this.context,this.urlIcon,this.title,this.view,this.si,this.no,this.message);
     },
-    show:function()
-    {
+    show:function(){
         var dialog = this.create();
         dialog.show();
         return dialog;
     },
-    setIcon:function(urlIcon)
-    {
+    setIcon:function(urlIcon){
         this.urlIcon = urlIcon;
     },
-    setTitle:function(title)
-    {
+    setTitle:function(title){
         this.title = title;
     },
-    setMessage:function(msg)
-    {
+    setMessage:function(msg){
         this.message = msg;
     },
-    setView:function(view)
-    {
+    setView:function(view){
         this.view = view;
     },
-    setPositiveButton : function(text,onClick)
-    {
+    setPositiveButton : function(text,onClick){
         this.si = {txt:text,click:onClick};
     },
-    setNegativeButton : function(text,onClick)
-    {
+    setNegativeButton : function(text,onClick){
         this.no = {txt:text,click:onClick};
     }
 });

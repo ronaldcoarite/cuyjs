@@ -1,4 +1,4 @@
-/* global CanvasRenderingContext2D, Class, REQUEST_CANCELED */
+/* global CanvasRenderingContext2D, Class, REQUEST_CANCELED, Promise */
 
 // Agregando metodos utiles String
 String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
@@ -48,8 +48,7 @@ function backKeyDown() {
     alert("aaaaaaa");
 }
 // *****************  PARA DEIBUJAR ROUND RECT EN EL CANVAS **********************
-CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r)
-{
+CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r){
     if (w < 2 * r)
         r = w / 2;
     if (h < 2 * r)
@@ -65,67 +64,64 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r)
 };
 
 // *********************** CARGADOR DE CODIGO DE JAVASCRIPT EN LINEA **************************
-function loadScript(url, callback)
-{
-    // Adding the script tag to the head as suggested before
-    var head = document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = url;
+async function loadScriptSync(url){
+    var result= await new Promise(function(resolve,reject){
+        // Adding the script tag to the head as suggested before
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
 
-    // Then bind the event to the callback function.
-    // There are several events for cross browser compatibility.
-    //script.onreadystatechange = callback;
-    script.onload = callback;
-    // Fire the loading
-    head.appendChild(script);
+        // Then bind the event to the callback function.
+        // There are several events for cross browser compatibility.
+        //script.onreadystatechange = callback;
+        function callback(){
+            resolve();
+        }
+        
+        function callbackError(error){
+            reject(error);
+        }
+        
+        script.onerror = callbackError;
+        script.onload = callback;
+        // Fire the loading
+        head.appendChild(script);
+    });
+    
+    return result;
 };
 
-function loadAllScripts(urls, callback)
-{
-    var index = 0;
-    var callv = function()
-    {
-        index++;
-        if(index>=urls.length)
-            callback();
-        else
-            loadScript(urls[index],callv);
-    };
-    loadScript(urls[0],callv);
+async function loadAllScriptsSync(urls){
+    if(Array.isArray(urls)===false)
+        throw "Lista de urls vacio";
+    return await Promise.all(urls.map(x=>loadScript(x)));
 };
 
 // *********************** COMENSANDO NINE PATH ************************
 
 // Verifica si se tiene una image con nine path.
-function NinePatchGetStyle(element, style)
-{
-    if (window.getComputedStyle)
-    {
+function NinePatchGetStyle(element, style){
+    if (window.getComputedStyle){
         var computedStyle = window.getComputedStyle(element, "");
         if (computedStyle === null)
             return "";
         return computedStyle.getPropertyValue(style);
     }
-    else if (element.currentStyle)
-    {
+    else if (element.currentStyle){
         return element.currentStyle[style];
     }
-    else
-    {
+    else{
         return "";
     }
 }
 
 // Cross browser function to find valid property
-function NinePatchGetSupportedProp(propArray)
-{
+function NinePatchGetSupportedProp(propArray){
     var root = document.documentElement; //reference root element of document
-    for (var i = 0; i < propArray.length; i++)
-    {
+    for (var i = 0; i < propArray.length; i++){
         // loop through possible properties
-        if (typeof root.style[propArray[i]] === "string")
-        {
+        if (typeof root.style[propArray[i]] === "string"){
             //if the property value is a string (versus undefined)
             return propArray[i]; // return that string
         }
@@ -140,8 +136,7 @@ function NinePatchGetSupportedProp(propArray)
  * la carga de la imagen y el pintado del elemento div.
  * @returns {NinePatch} Un objeto nine path
  */
-function NinePatch(div,callback)
-{
+function NinePatch(div,callback){
     this.div = div;
     this.callback =callback;
     this.padding = {top:0,left:0,right:0,bottom:0};
@@ -150,8 +145,7 @@ function NinePatch(div,callback)
     this.bgImage.src = NinePatchGetStyle(this.div, 'background-image').replace(/"/g, "").replace(/url\(|\)$/ig, "");
     var este = this;
     
-    this.bgImage.onload = function()
-    {   
+    this.bgImage.onload = function(){
         este.originalBgColor = NinePatchGetStyle(este.div, 'background-color');
         este.div.style.background = 'none';
 
@@ -221,8 +215,7 @@ NinePatch.prototype.verticalPieces = null;
 NinePatch.prototype.bgImage = null;
 
 // Gets the horizontal|vertical pieces based on image data
-NinePatch.prototype.getPieces = function(data, staticColor, repeatColor)
-{
+NinePatch.prototype.getPieces = function(data, staticColor, repeatColor){
     var tempDS, tempPosition, tempWidth, tempColor, tempType;
     var tempArray = new Array();
 
@@ -230,8 +223,7 @@ NinePatch.prototype.getPieces = function(data, staticColor, repeatColor)
     tempDS = (tempColor === staticColor ? 's' : (tempColor === repeatColor ? 'r' : 'd'));
     tempPosition = 1;
 
-    for (var i = 4, n = data.length - 4; i < n; i += 4)
-    {
+    for (var i = 4, n = data.length - 4; i < n; i += 4){
         tempColor = data[i] + ',' + data[i + 1] + ',' + data[i + 2] + ',' + data[i + 3];
         tempType = (tempColor === staticColor ? 's' : (tempColor === repeatColor ? 'r' : 'd'));
         if (tempDS !== tempType)
@@ -252,22 +244,19 @@ NinePatch.prototype.getPieces = function(data, staticColor, repeatColor)
     return tempArray;
 };
 
-NinePatch.prototype.getPadBorder = function(dataPad,width,height)
-{
+NinePatch.prototype.getPadBorder = function(dataPad,width,height){
     var staticRight = dataPad[0] + ',' + dataPad[1] + ',' + dataPad[2] + ',' + dataPad[3];
     var pad={top:0,bottom:0};
 
     // Padding para la parte superior
-    for (var i=0;i<dataPad.length;i+=4)
-    {
+    for (var i=0;i<dataPad.length;i+=4){
         var tempColor = dataPad[i] + ',' + dataPad[i + 1] + ',' + dataPad[i + 2] + ',' + dataPad[i + 3];
         if(tempColor !==staticRight)
             break;
         pad.top++;
     }
     // padding inferior
-    for (var i=dataPad.length-4;i>=0;i-=4)
-    {
+    for (var i=dataPad.length-4;i>=0;i-=4){
         var tempColor = dataPad[i] + ',' + dataPad[i + 1] + ',' + dataPad[i + 2] + ',' + dataPad[i + 3];
         if(tempColor !==staticRight)
             break;
@@ -277,8 +266,7 @@ NinePatch.prototype.getPadBorder = function(dataPad,width,height)
 };
 
 // Function to draw the background for the given element size.
-NinePatch.prototype.draw = function()
-{
+NinePatch.prototype.draw = function(){
     var dCtx, dCanvas, dWidth, dHeight;
     
     if(this.horizontalPieces === null)
@@ -406,14 +394,20 @@ NinePatch.prototype.draw = function()
   var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
 
   // The base Class implementation (does nothing)
-  this.Class = function()
-  {
+  this.Class = function(){
       this.constructor = null;
+//      this.parent = this;
   };
 
   // Create a new Class that inherits from this class
-  Class.extend = function(prop)
-  {
+  Class.forName = function(classStringName,param){
+      let vpul = eval("new "+classStringName+"(param);");
+      return vpul;
+  };
+  
+  Class.extend = function(prop){
+//    Page = Class.extend({});
+    
     var _super = this.prototype;
 
     // Instantiate a base class (but only create the instance,
@@ -444,14 +438,21 @@ NinePatch.prototype.draw = function()
           };
         })(name, prop[name]):prop[name];
     }
+    
+//    prototype["parent"] = this;
 
     // The dummy class constructor
-    function Class()
-    {
+    function Class(){
       // All construction is actually done in the init method
       if ( !initializing && this.init )
         this.init.apply(this, arguments);
-//      console.log("aaaaa",arguments.callee.caller)
+//        prototype.PAGE={
+//          this_= this
+//        };
+
+//        console.log("GGGG",Object.keys(this.prototype)[0]);
+//      console.log("aaaaa",arguments.callee);
+//        console.log("INSTANCIA",window['Class']());
     }
 
     // Populate our constructed prototype object
@@ -461,14 +462,15 @@ NinePatch.prototype.draw = function()
     Class.prototype.constructor = Class;
     // And make this class extendable
     Class.extend = arguments.callee;
-//    console.log(myFunc.caller);
+//    console.log("INSTANCIA",Class["extend"]());
+//    console.log("NOMBRESSSS",arguments.callee);
+//    console.log("NOMBRE",Object.keys({prop})[0]);
     return Class;
   };
 })();
 //*********** FIN DE LA FUNCION DE HERENCIA DE JQUERY ***********
 
-Exception = function (messajeException)
-{
+Exception = function (messajeException){
     this.message= messajeException;
     this.toString=function()
     {
@@ -476,8 +478,7 @@ Exception = function (messajeException)
     };
 };
 
-var ADLayoutUtils = 
-{
+var ADLayoutUtils = {
     onLoadPage:function(callback)
     {
         if (window.attachEvent)
@@ -495,8 +496,7 @@ var ADLayoutUtils =
     }
 };
 
-var LayoutInflater =
-{
+var LayoutInflater ={
     // Atributos generales para los layouts
     ATTR_LAYOUT_WIDTH : "layout_width",
     ATTR_LAYOUT_HEIGHT : "layout_height",
@@ -576,8 +576,7 @@ var LayoutInflater =
     INVISIBLE : "invisible",
     GONE : "gone",
     
-    parse:function(context,firstElement)
-    {
+    parse:function(context,firstElement){
         var view = null;
         try
         {
@@ -591,67 +590,60 @@ var LayoutInflater =
         view.parse(firstElement);
         return view;
     },
-    createView:function(context,domXmlElement)
-    {
+    createView:function(context,domXmlElement){
         return this.parse(context,domXmlElement);
     },
-    inflateFromURL:function(context,urlXmlLayout,onFinished,params)
-    {
+    inflateFromURL:function(context,urlXmlLayout,params,contextPath){
         var este = this;
-        var xmlhttp;
-        if (window.XMLHttpRequest)
-            xmlhttp = new XMLHttpRequest();
-        else
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        // Iteramos todo el xml para ver si tiene atributos con la estructura {{atributo}}
-        // para remplazarlos con ese valor
-        var variablePatern = /{{\w+(?:\}\})/;
-        var remplazarValores = function(nodeXml)
-        {
-            for (var j in nodeXml.attributes)
-            {
-                var attr = nodeXml.attributes[j];
-                if(typeof attr === "object")
+        return new Promise(function(resolve,reject){
+            var xmlhttp;
+            if (window.XMLHttpRequest)
+                xmlhttp = new XMLHttpRequest();
+            else
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            // Iteramos todo el xml para ver si tiene atributos con la estructura {{atributo}}
+            // para remplazarlos con ese valor
+            var variablePatern = /{{\w+(?:\}\})/;
+            var remplazarValores = function(nodeXml){
+                for (var j in nodeXml.attributes)
                 {
-                    if(variablePatern.test(attr.value))
+                    var attr = nodeXml.attributes[j];
+                    if(typeof attr === "object")
                     {
-                        var varName = attr.value.replace("{{","");
-                        var varName = varName.replace("}}","");
-                        if(params[varName])
-                            attr.value = params[varName];
+                        if(variablePatern.test(attr.value))
+                        {
+                            var varName = attr.value.replace("{{","");
+                            var varName = varName.replace("}}","");
+                            if(params[varName])
+                                attr.value = params[varName];
+                        }
                     }
                 }
-            }
-            if(nodeXml.children.length === 0)
-                return;
-            for (var index=0;index<nodeXml.children.length;index++)
-                remplazarValores(nodeXml.children[index]);
-        };
-            
-        xmlhttp.onreadystatechange = function()
-        {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200)
-            {
-                if(params)
-                    remplazarValores(xmlhttp.responseXML.documentElement);
-                
-                var view = este.parse(context,xmlhttp.responseXML.documentElement);
-                if(onFinished)
-                {                        
-                    onFinished(view,xmlhttp.responseXML.documentElement);
+                if(nodeXml.children.length === 0)
+                    return;
+                for (var index=0;index<nodeXml.children.length;index++)
+                    remplazarValores(nodeXml.children[index]);
+            };
+
+            xmlhttp.onreadystatechange = function(){
+                if (xmlhttp.readyState === 4){
+                    if(xmlhttp.status === 200){
+                        if(params)
+                            remplazarValores(xmlhttp.responseXML.documentElement);
+
+                        var view = este.parse(context,xmlhttp.responseXML.documentElement);
+                        resolve(view);
+                        este= null;
+                    }else{
+                        reject(xmlhttp.statusText);
+                    }
                 }
-                else
-                {
-                    throw new Exception("No se encuentra el metodo [onFinished] en el metodo [inflateFromURL]");
-                }
-                este= null;
-            }
-        };
-        xmlhttp.open("GET",urlXmlLayout,true);
-        xmlhttp.send(null);
+            };
+            xmlhttp.open("GET",urlXmlLayout,true);
+            xmlhttp.send(null);
+        });
     },
-    inflateFromID:function(idElementRoot)
-    {
+    inflateFromID:function(idElementRoot){
         // Buscamos el elemento
         var element = document.getElementsByTagName(idElementRoot);
         if(element.length===0)
@@ -660,8 +652,7 @@ var LayoutInflater =
     }
 };
 
-View = Class.extend
-({
+View = Class.extend({
     parentView:null,
     elemDom:null,
     buided:false,
@@ -678,6 +669,7 @@ View = Class.extend
     onClick:null,
     addedInParent:false,
     maxWidth:0,
+    tooltip:null,
     maxHeigth:0,
     name:null,
     minWidth:0,
@@ -687,11 +679,9 @@ View = Class.extend
     INVISIBLE:"INVISIBLE",
     VISIBLE:"VISIBLE",
     
-    setVisibility:function(v)
-    {
+    setVisibility:function(v){
         this.visibility = v;
-        switch (this.visibility)
-        {
+        switch (this.visibility){
             case View.INVISIBLE:
                 this.elemDom.style.visibility = 'hidden';
                 break;
@@ -703,30 +693,28 @@ View = Class.extend
                 break;
         }
     },
-    setMinWidth:function(w)
-    {
+    setToolTip: function(text){
+        if(this.elemDom)
+            this.elemDom.setAttribute("title",text);
+        this.tooltip=text;
+    },
+    setMinWidth:function(w){
         this.minWidth = w;
     },
-    getContext:function()
-    {
+    getContext:function(){
         return this.context;
     },
-    setMinHeight:function(h)
-    {
+    setMinHeight:function(h){
         this.minHeigth = h;
     },
-    invalidate:function(onInvalidate)
-    {
-        if(this.ninePatch !== null)
-        {
+    invalidate:function(onInvalidate){
+        if(this.ninePatch !== null){
             this.ninePatch.draw();
         }
-        if(this.context.loaded === true)
-        {
+        if(this.context.loaded === true){
             this.context.loaded = false;
             var this_ = this;
-            var temp = function()
-            {
+            var temp = function(){
                 this_.context.loaded = true;
                 if(onInvalidate !== undefined)
                     onInvalidate();
@@ -736,14 +724,12 @@ View = Class.extend
                     PageManager.getWindowsDimension().height,temp);
         }
     },
-    forseInvalidate:function()
-    {
+    forseInvalidate:function(){
         this.onMeasure(
             this.getWidth(),
             this.getHeight());
     },
-    init:function(context)
-    {
+    init:function(context){
         if(context === undefined||context === null)
             throw new Exception("El contexto no esta en los parametros o es nulo");
         this.context = context;
@@ -753,8 +739,7 @@ View = Class.extend
         this.parentView = null;
         this.name = "View";
     },
-    parse:function(nodeXml)
-    {
+    parse:function(nodeXml){
         // VISIBILITY DEL VIEW
         if(nodeXml.getAttribute(LayoutInflater.ATTR_VISIBILITY)!==null)
         {
@@ -789,6 +774,8 @@ View = Class.extend
         // HEIGHT DEL VIEW
         if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_HEIGHT)!==null)
             this.height = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_HEIGHT);
+        if(nodeXml.getAttribute('tooltip')!==null)
+            this.setToolTip(nodeXml.getAttribute('tooltip'));
 
         // BACKGROUDN DEL VIEW
         if(nodeXml.getAttribute(LayoutInflater.ATTR_BACKGROUND)!==null)
@@ -803,8 +790,7 @@ View = Class.extend
         if(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH)!==null)
             this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH));
     },
-    createDomElement:function()
-    {
+    createDomElement:function(){
         var elem = document.createElement(this.getTypeElement());
         // Margenes por defector
         elem.style.marginTop = '0px';
@@ -820,21 +806,17 @@ View = Class.extend
         elem.style.position = 'absolute';
         return elem;
     },
-    getTypeElement:function()
-    {
+    getTypeElement:function(){
         return 'div';
     },
-    setId:function(id)
-    {
+    setId:function(id){
         this.id = id;
     },
-    clone:function()
-    {
+    clone:function(){
         var copy = Object.assign({},this);
         copy.elemDom = this.elemDom.cloneNode(true);
     },
-    onMeasure:function(maxWidth,maxHeigth,loadListener)
-    {
+    onMeasure:function(maxWidth,maxHeigth,loadListener){
         this.maxHeigth = maxHeigth;
         this.maxWidth = maxWidth;
         if(this.addedInParent === false)
@@ -876,8 +858,7 @@ View = Class.extend
         // Estableciendo fondo de componente
         this.setBackground(this.background,loadListener);
     },
-    checkMinSize:function()
-    {
+    checkMinSize:function(){
         var sw = false;
         if(this.getWidth()<=this.minWidth)
         {
@@ -892,46 +873,37 @@ View = Class.extend
         if(sw === true)
             this.invalidate();
     },
-    getWidth:function()
-    {
+    getWidth:function(){
         return this.elemDom.clientWidth;
     },
-    getHeight:function()
-    {
+    getHeight:function(){
         return this.elemDom.clientHeight;
     },
-    setMargin:function(margin)
-    {
+    setMargin:function(margin){
         if(margin === null||margin === undefined)return;
         var mg = parseInt(margin);
         this.margin.top = this.margin.left=this.margin.right=this.margin.bottom=mg;
     },
-    setMarginTop:function(margin)
-    {
+    setMarginTop:function(margin){
         if(margin === null||margin === undefined)return;
         this.margin.top = parseInt(margin);
     },
-    setMarginLeft:function(margin)
-    {
+    setMarginLeft:function(margin){
         if(margin === null||margin === undefined)return;
         this.margin.left = parseInt(margin);
     },
-    setMarginRight:function(margin)
-    {
+    setMarginRight:function(margin){
         if(margin === null||margin === undefined)return;
         this.margin.right = parseInt(margin);
     },
-    setMarginBottom:function(margin)
-    {
+    setMarginBottom:function(margin){
         if(margin === null||margin === undefined)return;
         this.margin.bottom = parseInt(margin);
     },
-    getBackground:function()
-    {
+    getBackground:function(){
         return this.background;
     },
-    setBackground:function(background,loadListener)
-    {
+    setBackground:function(background,loadListener){
         if(loadListener === undefined)
             loadListener =function(){};
         if(background === null||background === undefined)
@@ -978,20 +950,16 @@ View = Class.extend
         }
         //this.invalidate();
     },
-    setWidth:function(width)
-    {
+    setWidth:function(width){
         this.width = width;
     },
-    setHeight:function(height)
-    {
+    setHeight:function(height){
         this.height = height;
     },
-    setLayoutGravity:function(gravity)
-    {
+    setLayoutGravity:function(gravity){
         this.layoutGravity = gravity;
     },
-    setOnClickListener:function(onCLick)
-    {
+    setOnClickListener:function(onCLick){
         if(onCLick === null)
             return;
         if(typeof onCLick === 'string')
@@ -1027,8 +995,7 @@ View = Class.extend
             };
         }
     },
-    setMP:function(dr,ic,txt,tc)
-    {
+    setMP:function(dr,ic,txt,tc){
         var popupError = new PopupWindow(this.getContext());
         var message = new TextView(popupError);
         message.setText(txt);
@@ -1047,28 +1014,22 @@ View = Class.extend
             },3000);
         });
     },
-    setAlert:function(msg)
-    {
-        this.setMP("drawable/util/bg_alerta.9.png","drawable/util/ic_alert.png",msg,"#653400");
+    setAlert:function(msg){
+        this.setMP("res/drawable/util/bg_alerta.9.png","res/drawable/util/ic_alert.png",msg,"#653400");
     },
-    setConfirm:function(msg)
-    {
-        this.setMP("drawable/util/bg_confirm.9.png","drawable/util/ic_confirm.png",msg,"#346700");
+    setConfirm:function(msg){
+        this.setMP("res/drawable/util/bg_confirm.9.png","res/drawable/util/ic_confirm.png",msg,"#346700");
     },
-    setError:function(msg)
-    {
-        this.setMP("drawable/util/bg_error.9.png","drawable/util/ic_error.png",msg,"#A90400");
+    setError:function(msg){
+        this.setMP("res/drawable/util/bg_error.9.png","res/drawable/util/ic_error.png",msg,"#A90400");
     },
-    setInfo:function(msg)
-    {
-        this.setMP("drawable/util/bg_info.9.png","drawable/util/ic_info.png",msg,"#4C95E7");
+    setInfo:function(msg){
+        this.setMP("res/drawable/util/bg_info.9.png","res/drawable/util/ic_info.png",msg,"#4C95E7");
     }
 });
-ProgressBar = View.extend
-({
+ProgressBar = View.extend({
     imgLoader:null,
-    init:function(context)
-    {
+    init:function(context){
         this._super(context);
         this.name="ProgressBar";
         this.elemDom.style.background='#05112B';
@@ -1076,8 +1037,7 @@ ProgressBar = View.extend
         this.elemDom.appendChild(this.imgLoader);
         this.imgLoader.className = "rotate";
     },
-    onMeasure:function(maxWidth,maxHeight,loadListener)
-    {
+    onMeasure:function(maxWidth,maxHeight,loadListener){
         var width = this.getWidth();
         var height = this.getHeight();
         var min = Math.min(width,height);
@@ -1114,15 +1074,12 @@ ProgressBar = View.extend
         loadListener();
     }
 });
-DomView = View.extend
-({
-    init:function(context)
-    {
+DomView = View.extend({
+    init:function(context){
         this._super(context);
         this.name = "DomView";
     },
-    createDomElement:function()
-    {
+    createDomElement:function(){
         //<input type="text" size="2" placeholder="asas">
         var elemDom =  document.createElement(this.getDomType());
         elemDom.style.margin = '0px';
@@ -1134,20 +1091,17 @@ DomView = View.extend
         elemDom.style.position = 'absolute';
         return elemDom;
     },
-    getDomType:function()
-    {
+    getDomType:function(){
         throw new Exception("No implementado");
     },
-    onPreProccessAttributes:function(onLoaded)
-    {
+    onPreProccessAttributes:function(onLoaded){
         this.padding.top = parseInt(this.elemDom.style.paddingTop);
         this.padding.left = parseInt(this.elemDom.style.paddingLeft);
         this.padding.right = parseInt(this.elemDom.style.paddingRight);
         this.padding.bottom = parseInt(this.elemDom.style.paddingBottom);
         onLoaded();
     },
-    onMeasure:function(maxWidth,maxHeight,loadListener)
-    {
+    onMeasure:function(maxWidth,maxHeight,loadListener){
         var this_ = this;
         var tempListener = function()
         {
@@ -1189,17 +1143,14 @@ DomView = View.extend
         };
         this._super(maxWidth,maxHeight,tempListener);
     },
-    getWidth:function()
-    {
+    getWidth:function(){
         return this.padding.left + this.elemDom.clientWidth+this.padding.right;
     },
-    getHeight:function()
-    {
+    getHeight:function(){
         return this.padding.top + this.elemDom.clientHeight+this.padding.bottom;
     }
 });
-EditText = DomView.extend
-({
+EditText = DomView.extend({
     ems:20,
     lines:1,
     maxEms:80,
@@ -1207,8 +1158,7 @@ EditText = DomView.extend
     hint:null,
     maxLength:-1,
     readonly:false,
-    init:function(context)
-    {
+    init:function(context){
         this._super(context);
         this.margin.left = this.margin.top = this.margin.right = this.bottom = 4;
         this.name = "EditText";
@@ -1224,16 +1174,13 @@ EditText = DomView.extend
         if(this.lines===1)
             this.elemDom.style.height = '22px';
     },
-    parse:function(nodeXml)
-    {
+    parse:function(nodeXml){
         this._super(nodeXml);
-        if(nodeXml.getAttribute("ems")!==null)
-        {
+        if(nodeXml.getAttribute("ems")!==null){
             this.ems = parseInt(nodeXml.getAttribute("ems"));
             this.elemDom.cols = this.ems;
         }
-        if(nodeXml.getAttribute("lines")!==null)
-        {
+        if(nodeXml.getAttribute("lines")!==null){
             this.lines = parseInt(nodeXml.getAttribute("lines"));
             this.elemDom.rows = this.lines;
             this.elemDom.style.height = (this.elemDom.rows*22)+'px';
@@ -1256,69 +1203,79 @@ EditText = DomView.extend
         if(nodeXml.getAttribute("enabled")==="false")
             this.elemDom.disabled = true;
     },
-    getDomType:function()
-    {
+    getDomType:function(){
         return 'TextArea';
     },
-    getText:function()
-    {
+    getText:function(){
         return this.elemDom.value;
     },
-    setText:function(txt)
-    {
+    setText:function(txt){
         this.elemDom.value = txt;
     },
-    setEnabled:function(sw)
-    {
+    setEnabled:function(sw){
         this.elemDom.disabled=!sw;
     },
-    setError:function(msg)
-    {
+    setError:function(msg){
         this._super(msg);
         this.elemDom.focus();
     }
 });
-FileChooserDialog = 
-{
-    showSelectFile:function(type,cbSelected)
-    {
-        var domoInput = document.getElementById("files");
-        domoInput.click();
-        domoInput.onchange = function()
-        {
-            var reader = new FileReader();
-            reader.onload = function(evt)
-            {
-                var parser = new DOMParser();
-                var contents = evt.target.result;
-                var doc = parser.parseFromString(contents, "application/xml");
-                cbSelected(doc.documentElement);
+FileChooserDialog = {
+    showSelectFile:function(type){
+        return new Promise(function(resolve,reject){
+            var domoInput = document.getElementById("files");
+            domoInput.click();
+            domoInput.onchange = function(){
+                var reader = new FileReader();
+                reader.onload = function(evt){
+//                    var parser = new DOMParser();
+                    var contents = evt.target.result;
+                    // El contenido se encuentra en Base64
+                    // application/octet-stream;base64,UEsDBBQAAAgIAEe8.....
+                    let posBase = contents.indexOf(',');
+                    contents = posBase===-1?contents:contents.substr(posBase+1);
+//                    var doc = parser.parseFromString(contents, "application/xml");
+                    resolve({
+                        fileName: domoInput.files[0].name,
+                        data: contents,
+                        size: domoInput.files[0].size,
+                        lastModified: domoInput.files[0].lastModified
+                    });
+//                    cbSelected(doc.documentElement);
+                };
+                reader.onerror = function(error){
+                    reject(error);
+                },
+//                reader.readAsBinaryString(domoInput.files[0],"UTF-8");
+                reader.readAsDataURL(domoInput.files[0]);
             };
-            reader.readAsText(domoInput.files[0],"UTF-8");
-        };
+            
+        });
     }
 };
-ImageView = DomView.extend
-({
+ImageView = DomView.extend({
     src:null,
     scaleType:LayoutInflater.FIT_XY,
-    init:function(context)
-    {
+    init:function(context){
         this._super(context);
         this.name = "ImageView";
     },
-    parse:function(nodeXml)
-    {
+    parse:function(nodeXml){
         this._super(nodeXml);
         this.src = nodeXml.getAttribute(LayoutInflater.ATTR_SRC);
         this.scaleType = nodeXml.getAttribute(LayoutInflater.ATTR_SCALE_TYPE);
     },
-    getDomType:function()
-    {
+    getDomType:function(){
         return 'img';
     },
-    setImageFromURL:function(urlImage,onLoaded)
-    {
+    setImageFromBase64: function(txtImageBase64){
+//        console.log("ASSSSSSSSSS",this.elemDom.getAttribute("src"));
+        this.elemDom.setAttribute(LayoutInflater.ATTR_SRC,'data:image/png;base64,'+txtImageBase64);
+//        this.elemDom.setAttribute(LayoutInflater.ATTR_SRC,"data:image/png;base64, "+txtImageBase64);
+//        this.elemDom.src=("data:image/png;base64, "+txtImageBase64);
+//        this.elemDom.setAttribute(LayoutInflater.ATTR_SRC,"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MEVBMTczNDg3QzA5MTFFNjk3ODM5NjQyRjE2RjA3QTkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MEVBMTczNDk3QzA5MTFFNjk3ODM5NjQyRjE2RjA3QTkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowRUExNzM0NjdDMDkxMUU2OTc4Mzk2NDJGMTZGMDdBOSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowRUExNzM0NzdDMDkxMUU2OTc4Mzk2NDJGMTZGMDdBOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PjjUmssAAAGASURBVHjatJaxTsMwEIbpIzDA6FaMMPYJkDKzVYU+QFeEGPIKfYU8AETkCYI6wANkZQwIKRNDB1hA0Jrf0rk6WXZ8BvWkb4kv99vn89kDrfVexBSYgVNwDA7AN+jAK3gEd+AlGMGIBFDgFvzouK3JV/lihQTOwLtOtw9wIRG5pJn91Tbgqk9kSk7GViADrTD4HCyZ0NQnomi51sb0fUyCMQEbp2WpU67IjfNjwcYyoUDhjJVcZBjYBy40j4wXgaobWoe8Z6Y80CJBwFpunepIzt2AUgFjtXXshNXjVmMh+K+zzp/CMs0CqeuzrxSRpbOKfdCkiMTS1VBQ41uxMyQR2qbrXiiwYN3ACh1FDmsdK2Eu4J6Tlo31dYVtCY88h5ELZIJJ+IRMzBHfyJINrigNkt5VsRiub9nXICdsYyVd2NcVvA3ScE5t2rb5JuEeyZnAhmLt9NK63vX1O5Pe8XaPSuGq1uTrfUgMEp9EJ+CQvr+BJ/AAKvAcCiAR+bf9CjAAluzmdX4AEIIAAAAASUVORK5CYII=");
+    },
+    setImageFromURL:function(urlImage,onLoaded){
         this.src = urlImage;
         if(this.src !== null)
         {
@@ -1371,8 +1328,7 @@ ImageView = DomView.extend
                 onLoaded();
         }
     },
-    onPreProccessAttributes:function(onLoaded)
-    {
+    onPreProccessAttributes:function(onLoaded){
         var this_ = this;
         var tempLoader = function()
         {
@@ -1381,8 +1337,7 @@ ImageView = DomView.extend
         this._super(tempLoader);
     }
 });
-ImageButton = ImageView.extend
-({
+ImageButton = ImageView.extend({
     init:function(context)
     {
         this._super(context);
@@ -1396,8 +1351,7 @@ ImageButton = ImageView.extend
         return elemDom;
     }
 });
-TextView = View.extend
-({
+TextView = View.extend({
     text:null,
     elemText:null,
     elemIcon:null,
@@ -1408,56 +1362,47 @@ TextView = View.extend
     gravityIcon:"none",
     singleLine:false,
     ellipsize:"none",
-    getTypeElement:function()
-    {
+    getTypeElement:function(){
         return 'TextView';
     },
-    init:function(context)
-    {
+    init:function(context){
         this._super(context);
         this.name = "TextView";
     },
-    parse:function(nodeXml)
-    {
+    parse:function(nodeXml){
         this._super(nodeXml);
         this.text = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TEXT);
         this.elemText.innerHTML = this.text;
         
         if(nodeXml.getAttribute("textColor")!==null)
             this.elemText.style.color = nodeXml.getAttribute("textColor");
-        if(nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_LEFT)!==null)
-        {
+        if(nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_LEFT)!==null){
             this.gravityIcon = LayoutInflater.LEFT;
             this.drawableLeft = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_LEFT);
         }
-        else if(nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_RIGHT)!==null)
-        {
+        else if(nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_RIGHT)!==null){
             this.gravityIcon = LayoutInflater.RIGHT;
             this.drawableRight = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_RIGHT);            
         }
-        else if(nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_TOP)!==null)
-        {
+        else if(nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_TOP)!==null){
             this.gravityIcon = LayoutInflater.TOP;
             this.drawableTop = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_TOP);
         }
-        else if(nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM)!==null)
-        {
+        else if(nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM)!==null){
             this.gravityIcon = LayoutInflater.BOTTOM;
             this.drawableBottom = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM);            
         }
         else
              this.gravityIcon = "none";
          
-        if(nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM)!==null)
-        {
+        if(nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM)!==null){
             this.gravityIcon = LayoutInflater.BOTTOM;
             this.drawableBottom = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM);            
         }
         this.singleLine = (nodeXml.getAttribute("singleLine")==="true");
         if(this.singleLine === true)
             this.elemText.style.whiteSpace="nowrap";
-        if(nodeXml.getAttribute("textStyle") !== null)
-        {
+        if(nodeXml.getAttribute("textStyle") !== null){
             switch(nodeXml.getAttribute("textStyle"))
             {
                 case "bold":this.elemText.style.fontWeight = 'bold';break;
@@ -1468,18 +1413,15 @@ TextView = View.extend
         if(nodeXml.getAttribute("textSize") !== null)
             this.elemText.style.fontSize = nodeXml.getAttribute("textSize");
     },
-    setSingleLine:function(single)
-    {
+    setSingleLine:function(single){
         this.singleLine = single;
         if(this.singleLine === true)
             this.elemText.style.whiteSpace="nowrap";
     },
-    setTextColor:function(color)
-    {
+    setTextColor:function(color){
         this.elemText.style.color = color;
     },
-    createDomElement:function()
-    {
+    createDomElement:function(){
         // Texto
         this.elemText = document.createElement('span');
         this.elemText.style.margin = '0px';
@@ -1504,13 +1446,10 @@ TextView = View.extend
         elemDom.appendChild(this.elemIcon);
         return elemDom;
     },
-    onMeasure:function(maxWidth,maxHeight,loadListener)
-    {
+    onMeasure:function(maxWidth,maxHeight,loadListener){
         var this_ = this;
-        var tempListener = function()
-        {
-            var onDrawableLoaded = function()
-            {
+        var tempListener = function(){
+            var onDrawableLoaded = function(){
                 // Pintar el drawable
                 var marginDrawable = 4; // 4px
                 switch (this_.gravityIcon)
@@ -1680,14 +1619,11 @@ TextView = View.extend
         };
         this._super(maxWidth,maxHeight,tempListener);
     },
-    cdf:function(dr,of)
-    {
+    cdf:function(dr,of){
         var img = new Image();
         var this_ = this;
-        if(typeof of === "function")
-        {
-            img.onload = function()
-            {
+        if(typeof of === "function"){
+            img.onload = function(){
                 this_.elemIcon.src = this.src;
                 if(of !== undefined)
                     of();
@@ -1695,67 +1631,55 @@ TextView = View.extend
         }
         img.src = dr;
     },
-    setDrawableLeft:function(drawable,onLoadedDrawable)
-    {
+    setDrawableLeft:function(drawable,onLoadedDrawable){
         this.gravityIcon = LayoutInflater.LEFT;
         this.drawableLeft = drawable;
         this.cdf(drawable,onLoadedDrawable);
     },
-    setDrawableTop:function(drawable,onLoadedDrawable)
-    {
+    setDrawableTop:function(drawable,onLoadedDrawable){
         this.gravityIcon = LayoutInflater.TOP;
         this.drawableTop = drawable;
         this.cdf(drawable,onLoadedDrawable);
     },
-    setDrawableRight:function(drawable,onLoadedDrawable)
-    {
+    setDrawableRight:function(drawable,onLoadedDrawable){
         this.gravityIcon = LayoutInflater.RIGHT;
         this.drawableTop = drawable;
         this.cdf(drawable,onLoadedDrawable);
     },
-    setText:function(text,onChange)
-    {
+    setText:function(text,onChange){
         this.text = text;
         this.elemText.innerHTML = text;
         this.invalidate(onChange);
     },
-    getText:function()
-    {
+    getText:function(){
         return this.text;
     }
 });
-Button = TextView.extend
-({
-    init:function(context)
-    {
+Button = TextView.extend({
+    init:function(context){
         this._super(context);
         this.margin.left = this.margin.top = this.margin.right = this.margin.bottom = 4;
         this.padding.left = this.padding.top = this.padding.right = this.padding.bottom = 4;
         this.name = "Button";
     },
-    getTypeElement:function()
-    {
-        return 'Buttoon';
+    getTypeElement:function(){
+        return 'Button';
     },
-    createDomElement:function()
-    {
+    createDomElement:function(){
         var elemDom = this._super();
         elemDom.classList.add("AndButton");
         return elemDom;
     }
 });
-ViewGroup = View.extend
-({
+ViewGroup = View.extend({
     viewsChilds:null,
-    init:function(context)
-    {
+    init:function(context){
         this._super(context);
         this.viewsChilds = new Array();
         this.name = "ViewGroup";
         this.elemDom.style.overflow='hidden';
     },
-    parse:function(nodeXml)
-    {
+    parse:function(nodeXml){
         this._super(nodeXml);
         // Verificamos si tiene hijos
         if(nodeXml.children.length === 0 )
@@ -1764,15 +1688,13 @@ ViewGroup = View.extend
         for (var index=0;index<nodeXml.children.length;index++)
             this.parseViewChild(nodeXml.children[index]);
     },
-    parseViewChild:function(nodeChild)
-    {
+    parseViewChild:function(nodeChild){
         var child = LayoutInflater.parse(this.context,nodeChild);
         child.parentView = this;
         this.viewsChilds.push(child);
         return child;
     },
-    findViewById:function(idView)
-    {
+    findViewById:function(idView){
         if(idView === null&&idView === undefined)
             return null;
         for(var i=0;i<this.viewsChilds.length;i++)
@@ -1789,8 +1711,7 @@ ViewGroup = View.extend
         }
         return null;
     },
-    findViewChildById:function(idView)
-    {
+    findViewChildById:function(idView){
         if(idView === null&&idView === undefined)
             return null;
         for(var i=0;i<this.viewsChilds.length;i++)
@@ -1801,16 +1722,14 @@ ViewGroup = View.extend
         }
         return null;
     },
-    addView:function(viewChild)
-    {
+    addView:function(viewChild){
         if(viewChild === null||viewChild===undefined)
             throw new Exception("El view que desea agregar  es nulo o no esta definido");
         viewChild.parentView = this;
         this.viewsChilds.push(viewChild);
         this.invalidate();
     },
-    getViewVisibles:function()
-    {
+    getViewVisibles:function(){
         // agrupamos los GONE's y los INVISIBLE's
         var vistos = new Array();
         for(var index =0;index<this.viewsChilds.length;index++)
@@ -1821,28 +1740,22 @@ ViewGroup = View.extend
         }
         return vistos;
     },
-    getChildCount:function()
-    {
+    getChildCount:function(){
         return this.viewsChilds.length;
     },
-    getChildAt:function(i)
-    {
+    getChildAt:function(i){
         return this.viewsChilds[i];
     }
 });
-ScrollView = ViewGroup.extend
-({
-    init:function(context)
-    {
+ScrollView = ViewGroup.extend({
+    init:function(context){
         this._super(context);
         this.name="ScrollView";
     },
-    getTypeElement:function()
-    {
+    getTypeElement:function(){
         return "ScrollView";
     },
-    onMeasure:function(maxWidth,maxHeight,loadListener)
-    {
+    onMeasure:function(maxWidth,maxHeight,loadListener){
         var this_= this;
         var childs = this.getViewVisibles();
         if(childs.length === 0 )
@@ -1881,23 +1794,20 @@ ScrollView = ViewGroup.extend
                         e.preventDefault();
                     };
                 };
-                var  mouseOut= function()
-                {
+                var  mouseOut= function(){
                     dom.onmousemove = null;
                 };
                 dom.onmouseup = mouseOut;
                 //dom.onmouseout = mouseOut;
                 dom.onmouseover = mouseOut;
                 
-                dom.ontouchstart = function(e)
-                {
+                dom.ontouchstart = function(e){
                     var touch = e.touches[0];
                     boxtop = parseInt(dom.style.top);
                     starty = parseInt(touch.clientY);
                     e.preventDefault();
                 };
-                dom.ontouchmove = function(e)
-                {
+                dom.ontouchmove = function(e){
                     if(dom.clientHeight>alto)
                     {
                         var touch = e.touches[0];
@@ -1922,19 +1832,15 @@ ScrollView = ViewGroup.extend
         this._super(maxWidth,maxHeight,tempListener);
     }
 });
-FrameLayout = ViewGroup.extend
-({
-    init:function(context)
-    {
+FrameLayout = ViewGroup.extend({
+    init:function(context){
         this._super(context);
         this.name = "FrameLayout";
     },
-    getTypeElement:function()
-    {
+    getTypeElement:function(){
         return "FrameLayout";
     },
-    parseViewChild:function(nodeXml)
-    {
+    parseViewChild:function(nodeXml){
         var view = this._super(nodeXml);
         if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_GRAVITY)!==null)
             view.layoutGravity = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_GRAVITY);
@@ -1942,18 +1848,15 @@ FrameLayout = ViewGroup.extend
             view.layoutGravity = null;
         return view;
     },
-    onMeasure:function(maxWidth,maxHeight,loadListener)
-    {
+    onMeasure:function(maxWidth,maxHeight,loadListener){
         var this_=this;
-        var tempListener = function()
-        {
+        var tempListener = function(){
             var ancho = this_.getWidth();
             var alto = this_.getHeight();
             
             var mayHeight = 0;
             var mayWidth = 0;
-            if(this_.viewsChilds.length === 0)
-            {
+            if(this_.viewsChilds.length === 0){
                 switch (this_.height)
                 {
                     case LayoutInflater.MATCH_PARENT:break;
@@ -2063,21 +1966,17 @@ FrameLayout = ViewGroup.extend
     }
 });
 
-GridLayout = ViewGroup.extend
-({
+GridLayout = ViewGroup.extend({
     colums:2,
     spacing:0,
-    init:function(context)
-    {
+    init:function(context){
         this._super(context);
         this.name = "GridLayout";
     },
-    getTypeElement:function()
-    {
+    getTypeElement:function(){
         return "GridLayout";
     },
-    parse:function(nodeXml)
-    {
+    parse:function(nodeXml){
         this._super(nodeXml);
         if(nodeXml.children.length === 0)
             return;
@@ -2086,8 +1985,7 @@ GridLayout = ViewGroup.extend
         if(nodeXml.getAttribute("spacing")!==null)
             this.spacing = parseInt(nodeXml.getAttribute("spacing"));
     },
-    onMeasure:function(maxWidth,maxHeight,loadListener)
-    {
+    onMeasure:function(maxWidth,maxHeight,loadListener){
         var this_= this;
         var childs = this.getViewVisibles();
         if(childs.length === 0 )
@@ -2111,8 +2009,7 @@ GridLayout = ViewGroup.extend
             var y = this_.padding.left;
             var col = 0;
             
-            var viewListener = function()
-            {
+            var viewListener = function(){
                 view.elemDom.style.left = x+'px';
                 view.elemDom.style.top = y+'px';
 
@@ -2172,26 +2069,21 @@ GridLayout = ViewGroup.extend
         this._super(maxWidth,maxHeight,tempListener);
     }
 });
-LinearLayout = ViewGroup.extend
-({
+LinearLayout = ViewGroup.extend({
     orientation:LayoutInflater.HORIZONTAL,
-    init:function(context)
-    {
+    init:function(context){
         this._super(context);
         this.name = "LinearLayout";
     },
-    getTypeElement:function()
-    {
+    getTypeElement:function(){
         return "LinearLayout";
     },
-    parse:function(nodeXml)
-    {
+    parse:function(nodeXml){
         this._super(nodeXml);
         if(nodeXml.getAttribute(LayoutInflater.ATTR_ORIENTATION)===LayoutInflater.VERTICAL)
             this.orientation = LayoutInflater.VERTICAL;
     },
-    parseViewChild:function(nodeXml)
-    {
+    parseViewChild:function(nodeXml){
         var view = this._super(nodeXml);
         if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_GRAVITY)!==null)
             view.layoutGravity = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_GRAVITY);
@@ -2201,11 +2093,9 @@ LinearLayout = ViewGroup.extend
             view.layoutWeight = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WEIGHT);
         return view;
     },
-    onMeasure:function(maxWidth,maxHeight,loadListener)
-    {
+    onMeasure:function(maxWidth,maxHeight,loadListener){
         var this_ = this;
-        var tempListener = function()
-        {
+        var tempListener = function(){
             var visibles = this_.getViewVisibles();
             if(visibles.length===0)
             {
@@ -2241,8 +2131,7 @@ LinearLayout = ViewGroup.extend
         };
         this._super(maxWidth,maxHeight,tempListener);
     },
-    onMeasureVertical:function(visibles,maxWidth,maxHeight,loadListener)
-    {
+    onMeasureVertical:function(visibles,maxWidth,maxHeight,loadListener){
         var this_=this;
 //        var ancho = this_.getWidth();
 //        var alto = this_.getHeight();
@@ -2377,8 +2266,7 @@ LinearLayout = ViewGroup.extend
             else
                 loadAllCompleted();
         };
-        var viewWrapListener = function()
-        {
+        var viewWrapListener = function(){
             if (view.layoutWeight)
                 arrayWeigh.push(view);
             else
@@ -2412,8 +2300,7 @@ LinearLayout = ViewGroup.extend
                     viewWrapListener);
         }
     },
-    onMeasureHorizontal:function(visibles,maxWidth,maxHeight,loadListener)
-    {
+    onMeasureHorizontal:function(visibles,maxWidth,maxHeight,loadListener){
         var this_=this;
         var ancho = maxWidth;
         var alto = maxHeight;
@@ -2574,25 +2461,20 @@ LinearLayout = ViewGroup.extend
             view.onMeasure(ancho,alto,viewWrapListener);
         }
     },
-    setOrientation:function(orientation)
-    {
+    setOrientation:function(orientation){
         this.orientation = orientation;
     }
 });
 
-RelativeLayout = ViewGroup.extend
-({
-    init:function(context)
-    {
+RelativeLayout = ViewGroup.extend({
+    init:function(context){
         this._super(context);
         this.name = "RelativeLayout";
     },
-    getTypeElement:function()
-    {
+    getTypeElement:function(){
         return "RelativeLayout";
     },
-    parseViewChild:function(nodeXml)
-    {
+    parseViewChild:function(nodeXml){
         var view = this._super(nodeXml);
         view.alignParentTop = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ALIGNPARENTTOP)=== "true");
         view.alignParentRight = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ALIGNPARENTRIGHT)=== "true");
@@ -2609,8 +2491,7 @@ RelativeLayout = ViewGroup.extend
         view.toLeftOf = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TOLEFTOF);
         return view;
     },
-    onMeasure:function(maxWidth,maxHeight,loadListener)
-    {
+    onMeasure:function(maxWidth,maxHeight,loadListener){
         var this_=this;
         var tempListener = function()
         {
@@ -2791,15 +2672,17 @@ RelativeLayout = ViewGroup.extend
         this._super(maxWidth,maxHeight,tempListener);        
     }
 });
-Context = Class.extend
-({
-    getLayoutInflater:function()
-    {
+Context = Class.extend({
+    getLayoutInflater:function(){
         return LayoutInflater;
+    },
+    getResource: function(){
+        return {
+            loadJs: loadScript
+        };
     }
 });
-Intent = function(context,pageName)
-{
+Intent = function(context,pageName){
     this.extras = {};
     this.pageName = pageName;
     this.action = null;
@@ -2808,17 +2691,14 @@ Intent = function(context,pageName)
     else
         this.context = context;
     this.backPage = null,
-    this.putExtra=function(name,value)
-    {
+    this.putExtra = function(name,value){
         this.extras[name] = value;
     };
-    this.getExtra=function(name)
-    {
+    this.getExtra=function(name){
         return this.extras[name];
     };
 };
-Page = Context.extend
-({
+Page = Context.extend({
     viewRoot:null,
     viewListener:null,
     urlView:null,
@@ -2832,20 +2712,17 @@ Page = Context.extend
     requestCode:-1,
     loaded:false,
     
-    findViewById:function(idView)
-    {
+    findViewById:function(idView){
         if(this.viewRoot !== null)
             if(this.viewRoot.id === idView)
                 return this.viewRoot;
-        if(this.viewRoot instanceof ViewGroup)
-        {
+        if(this.viewRoot instanceof ViewGroup){
             return this.viewRoot.findViewById(idView);
         }
         else
             throw new Exception("El contenidor principal para la pagina no es heredado de ViewGroup");
     },
-    setContentView:function(objView)
-    {
+    setContentView:function(objView){
         if(objView instanceof View)
             this.viewRoot = objView;
         else
@@ -2857,22 +2734,18 @@ Page = Context.extend
     onPause:function(){},
     onResume:function(){},
     
-    setNoHistory:function(history)
-    {
+    setNoHistory:function(history){
         this.history = !history;
     },
-    startPage:function(intent)
-    {
+    startPage:function(intent){
         if(intent === undefined||intent === null)
             throw new Exception("El intent es nulo o no esta definido");
         PageManager.startPage(intent);
     },
-    setTitle:function(title)
-    {
+    setTitle:function(title){
         document.title = title;
     },
-    finish:function()
-    {
+    finish:function(){
         PageManager.finishPage(this);
         if(this.previusPage !== null)
         {
@@ -2880,36 +2753,30 @@ Page = Context.extend
                 this.previusPage.onPageResult(this.requestCode,this.resultCode,this.resultData);
         }
     },
-    startPageForResult:function(intent,requestCode)
-    {
+    startPageForResult:function(intent,requestCode){
         this.requestCode = requestCode;
         this.startPage(intent);
     },
     onPageResult:function(requestCode,resultCode,intent){}
 });
 
-Dialog = Page.extend
-({
+Dialog = Page.extend({
     elemBackground:null,
     context:null,
     bgVisble:true,
     bgProgressVisble:true,
-    showBackground:function(show)
-    {
+    showBackground:function(show){
         this.bgVisble = show;
     },
-    showBackgroundProgress:function(show)
-    {
+    showBackgroundProgress:function(show){
         this.bgProgressVisble = show;
     },
-    init:function(context)
-    {
+    init:function(context){
         if(context === undefined||context === null)
             throw new Exception("El contexto no esta en los parametros o es nulo ["+context+"]");
         this.context = context;
     },
-    show:function()
-    {
+    show:function(){
         // Creamos un fondo opaco para el dialogo
         if(this.bgVisble===true)
         {
@@ -2932,98 +2799,80 @@ Dialog = Page.extend
             document.body.appendChild(this.elemBackground);
         }
         var this_ = this;
-        PageManager.loadPage(null,this,this,function(page)
-        {
-            // Centramos el dialogo
-            var navigator = PageManager.getWindowsDimension();
-            page.viewRoot.elemDom.style.left = (navigator.width/2-page.viewRoot.elemDom.clientWidth/2)+'px';
-            page.viewRoot.elemDom.style.top = (navigator.height/2-page.viewRoot.elemDom.clientHeight/2)+'px';
-        },
+        PageManager.loadPage(null,this,this,
         {
             left:(PageManager.getWindowsDimension().width/2-100/2),
             top:(PageManager.getWindowsDimension().height/2-100/2),
             width:150,height:150,showBackground:this_.bgProgressVisble
+        }).then(page=>{
+            // Centramos el dialogo
+            var navigator = PageManager.getWindowsDimension();
+            page.viewRoot.elemDom.style.left = (navigator.width/2-page.viewRoot.elemDom.clientWidth/2)+'px';
+            page.viewRoot.elemDom.style.top = (navigator.height/2-page.viewRoot.elemDom.clientHeight/2)+'px';
         });
     },
-    cancel:function()
-    {
+    cancel:function(){
         PageManager.removeContext(this);
         if(this.bgVisble===true)
             this.elemBackground.parentNode.removeChild(this.elemBackground);
     },
-    getContext:function()
-    {
+    getContext:function(){
         return this.context;
     }
 });
-PopupWindow = Page.extend
-({
+PopupWindow = Page.extend({
     gravity:"none",
     view:null,
     context:null,
     margin:{left:0,top:0,right:0,bottom:0},
-    init:function(context)
-    {
+    init:function(context){
         if(context===null||context===undefined)
             throw new Exception("Falta el parametro context en e constructor del PopupWindows");
         this.context = context;
     },
-    setPositionOnView:function(gravity)
-    {
+    setPositionOnView:function(gravity){
         this.gravity = gravity;
     },
-    setAlign:function()
-    {
+    setAlign:function(){
         
     },
-    setMarginLeft:function(marginLeft)
-    {
+    setMarginLeft:function(marginLeft){
         this.margin={left:marginLeft,top:this.margin.top,right:this.margin.right,bottom:this.margin.bottom};
     },
-    setView:function(view)
-    {
+    setView:function(view){
         this.view = view;
     },
-    show:function(onLoad)
-    {
+    show:function(){
         var this_ = this;
         var rect = this.view.elemDom.getBoundingClientRect();
-        PageManager.loadPage(null,this,this,function(page)
-        {
-            // Capturando ubicacion del view
-            // Centramos el dialogo
-            page.viewRoot.elemDom.style.left = (rect.left+page.margin.left)+'px';
-            page.viewRoot.elemDom.style.top = (rect.top -page.viewRoot.elemDom.clientHeight)+'px';
-            if(onLoad !== undefined)
-                onLoad();
-        },
+        return PageManager.loadPage(null,this,this,
         {
             left:rect.left,
             top:rect.top,
             width:this_.view.getWidth(),
             height:this_.view.getHeight(),
             showBackground:false
+        }).then(page=>{
+            // Capturando ubicacion del view
+            // Centramos el dialogo
+            page.viewRoot.elemDom.style.left = (rect.left+page.margin.left)+'px';
+            page.viewRoot.elemDom.style.top = (rect.top -page.viewRoot.elemDom.clientHeight)+'px';
         });
     },
-    cancel:function()
-    {
+    cancel:function(){
         PageManager.removeContext(this);
     }
 });
 
-PageManager = 
-{
+PageManager = {
     mainPage:null,
-    getInstance:function()
-    {
+    getInstance:function(){
         return this;
     },
-    setMainPage:function(mainPageName)
-    {
+    setMainPage:function(mainPageName){
         this.mainPage = mainPageName;
     },
-    startAplication:function()
-    {
+    startAplication:function(){
         // Verificar si funciona
         initEventDevice();
         
@@ -3068,12 +2917,10 @@ PageManager =
         var intent = new Intent(null,this.mainPage);
         this.startPage(intent);
     },
-    startPage:function(intent)
-    {
+    startPage:function(intent){
         // Instanciamos la Pagina
         var page = null;
-        try
-        {
+        try{
             if(intent.action !== null)
                 page = eval("new " + intent.action + "()");
             else
@@ -3088,162 +2935,157 @@ PageManager =
         }
         page.className = intent.pageName;
         
-        this.loadPage(intent.context,page,intent,function()
-        {
-            window.location.hash = page.className;
-        },
+        return this.loadPage(intent.context,page,intent,
         {
             left:(PageManager.getWindowsDimension().width/2-150/2),
             top:(PageManager.getWindowsDimension().height/2-150/2),
             width:150,height:150,showBackground:true
+        }).then(page=>{
+            window.location.hash = page.className; 
         });
     },
     // proProgress:{left:?,top:?,width,height,showBackground:true}
-    loadPage:function(contextPrevius,page,data,onLoaded,propProgress)
-    {
+    loadPage:function(contextPrevius,page,data,propProgress){
         var this_ = this;
-        page.previusPage = contextPrevius;
-        // LLamamos el on create de la pagina
-        page.onCreate(data.extras);
-        
-        // Creamos el loader para la pagina
-        var elemLoader = null;
-        if(propProgress.showBackground === true)
-        {
-            elemLoader = document.createElement('div');
-            elemLoader.style.margin='0px';
-            elemLoader.style.width='100%';
-            elemLoader.style.height='100%';
-            elemLoader.style.position='absolute';
-            elemLoader.style.backgroundColor = "rgba(1, 11,20, 0.5)";
-        }
-        
-        var elemImgLoader = document.createElement('div');
-        elemImgLoader.style.width=propProgress.width+'px';
-        elemImgLoader.style.height=propProgress.height+'px';
-        elemImgLoader.style.position='absolute';
-        elemImgLoader.style.background='#05112B';
-        elemImgLoader.style.top=propProgress.top+'px';
-        elemImgLoader.style.left=propProgress.left+'px';
+        return new Promise(function(resolve,reject){
+            page.previusPage = contextPrevius;
+            // LLamamos el on create de la pagina
+            page.onCreate(data);
 
-        var min = Math.min(propProgress.width,propProgress.height);
-        propProgress.width = min;
-        propProgress.height = min;
-
-        var imgLoader = document.createElement('canvas');
-        var radiusBack = propProgress.width/8;
-        
-        imgLoader.setAttribute("width",propProgress.width-radiusBack*2);
-        imgLoader.setAttribute("height",propProgress.height-radiusBack*2);
-        
-        
-        imgLoader.style.position='absolute';
-        imgLoader.style.top=radiusBack+'px';
-        imgLoader.style.left=radiusBack+'px';
-        var ctx = imgLoader.getContext("2d");
-        
-        // Pintando spinner
-        var lines = 13;
-        var radius = imgLoader.width/10;
-        var rotation = radius;
-        ctx.save();
-        
-        elemImgLoader.style.borderRadius=(radiusBack)+'px';
-        
-        ctx.translate(imgLoader.width / 2, imgLoader.height / 2);
-        ctx.rotate(Math.PI * 2 * rotation);
-        for (var i = 0; i < lines; i++)
-        {
-            ctx.beginPath();
-            ctx.rotate(Math.PI * 2 / lines);
-            ctx.fillStyle = "rgba(250,254,255," + (1-i / lines) + ")";
-            ctx.arc(imgLoader.width/2-radius,0, radius,0, 2 * Math.PI, false);
-            ctx.fill();
-            radius = radius-radius/(lines-1);
-            if(radius<1)
-                break;
-        }
-        ctx.restore();
-        
-        if(propProgress.showBackground === true)
-            document.body.appendChild(elemLoader);
-        imgLoader.style.left = (elemImgLoader.clientWidth/2+radiusBack)+"px";
-        elemImgLoader.appendChild(imgLoader);
-        document.body.appendChild(elemImgLoader);
-        imgLoader.className = "rotate";
-        
-        // Establecemos el listener para identificar cuando se
-        // termino la carga de todas las vistas
-        var viewListener = function()
-        {
-            if(contextPrevius !== null)
-            {
-                if(contextPrevius.history === false)
-                    this_.removeContext(contextPrevius);
-                contextPrevius.onDestroy();
-            }
-            // Ocultamos el progress
+            // Creamos el loader para la pagina
+            var elemLoader = null;
             if(propProgress.showBackground === true)
-                elemLoader.parentNode.removeChild(elemLoader);
-                //document.body.removeChild(elemLoader);
-            elemImgLoader.parentNode.removeChild(elemImgLoader);
-            // Iniciamos la pagina
-            page.viewRoot.elemDom.style.opacity = 0;
-            page.viewRoot.elemDom.style.visibility = 'visible';
-            
-            //page.viewRoot.elemDom.style["-moz-transition"] = "opacity 5s ease-in-out";
-            page.viewRoot.elemDom.style.transition = "opacity 5s ease-in-out";
-            page.viewRoot.elemDom.style.opacity = 1;
-            onLoaded(page);
-            page.loaded = true;
-            page.onStart(data);
-        };
-        
-        // Verificamos si tiene el view root
-        if(page.viewRoot!==null)
-        {
-            page.viewRoot.elemDom.style.visibility = 'hidden';
-            document.body.appendChild(page.viewRoot.elemDom);
-            var navigator = this_.getWindowsDimension();
-            page.viewRoot.onMeasure(
-                navigator.width,
-                navigator.height,
-                viewListener);
-        }
-        else if(page.urlView !== null)
-        {
-            LayoutInflater.inflateFromURL(
-                    page,
-                    page.urlView,function(view)
+            {
+                elemLoader = document.createElement('div');
+                elemLoader.style.margin='0px';
+                elemLoader.style.width='100%';
+                elemLoader.style.height='100%';
+                elemLoader.style.position='absolute';
+                elemLoader.style.backgroundColor = "rgba(1, 11,20, 0.5)";
+            }
+
+            var elemImgLoader = document.createElement('div');
+            elemImgLoader.style.width=propProgress.width+'px';
+            elemImgLoader.style.height=propProgress.height+'px';
+            elemImgLoader.style.position='absolute';
+            elemImgLoader.style.background='#05112B';
+            elemImgLoader.style.top=propProgress.top+'px';
+            elemImgLoader.style.left=propProgress.left+'px';
+
+            var min = Math.min(propProgress.width,propProgress.height);
+            propProgress.width = min;
+            propProgress.height = min;
+
+            var imgLoader = document.createElement('canvas');
+            var radiusBack = propProgress.width/8;
+
+            imgLoader.setAttribute("width",propProgress.width-radiusBack*2);
+            imgLoader.setAttribute("height",propProgress.height-radiusBack*2);
+
+            imgLoader.style.position='absolute';
+            imgLoader.style.top=radiusBack+'px';
+            imgLoader.style.left=radiusBack+'px';
+            var ctx = imgLoader.getContext("2d");
+
+            // Pintando spinner
+            var lines = 13;
+            var radius = imgLoader.width/10;
+            var rotation = radius;
+            ctx.save();
+
+            elemImgLoader.style.borderRadius=(radiusBack)+'px';
+
+            ctx.translate(imgLoader.width / 2, imgLoader.height / 2);
+            ctx.rotate(Math.PI * 2 * rotation);
+            for (var i = 0; i < lines; i++){
+                ctx.beginPath();
+                ctx.rotate(Math.PI * 2 / lines);
+                ctx.fillStyle = "rgba(250,254,255," + (1-i / lines) + ")";
+                ctx.arc(imgLoader.width/2-radius,0, radius,0, 2 * Math.PI, false);
+                ctx.fill();
+                radius = radius-radius/(lines-1);
+                if(radius < 1)
+                    break;
+            }
+            ctx.restore();
+
+            if(propProgress.showBackground === true)
+                document.body.appendChild(elemLoader);
+            imgLoader.style.left = (elemImgLoader.clientWidth/2+radiusBack)+"px";
+            elemImgLoader.appendChild(imgLoader);
+            document.body.appendChild(elemImgLoader);
+            imgLoader.className = "rotate";
+
+            // Establecemos el listener para identificar cuando se
+            // termino la carga de todas las vistas
+            var viewListener = function(){
+                if(contextPrevius !== null)
                 {
-                    page.viewRoot = view;
-                    page.viewRoot.elemDom.style.visibility = 'hidden';
-                    document.body.appendChild(page.viewRoot.elemDom);
-                    
-                    var navigator = this_.getWindowsDimension();
-                    page.viewRoot.onMeasure(
-                            navigator.width,
-                            navigator.height,
-                            viewListener);
-                });
-        }
-        else // Ni un view establecido
-        {
-            
-        }
+                    if(contextPrevius.history === false)
+                        this_.removeContext(contextPrevius);
+                    contextPrevius.onDestroy();
+                }
+                // Ocultamos el progress
+                if(propProgress.showBackground === true)
+                    elemLoader.parentNode.removeChild(elemLoader);
+                    //document.body.removeChild(elemLoader);
+                elemImgLoader.parentNode.removeChild(elemImgLoader);
+                // Iniciamos la pagina
+                page.viewRoot.elemDom.style.opacity = 0;
+                page.viewRoot.elemDom.style.visibility = 'visible';
+
+                //page.viewRoot.elemDom.style["-moz-transition"] = "opacity 5s ease-in-out";
+                page.viewRoot.elemDom.style.transition = "opacity 5s ease-in-out";
+                page.viewRoot.elemDom.style.opacity = 1;
+                resolve(page);
+                page.loaded = true;
+                page.onStart(data);
+            };
+
+            // Verificamos si tiene el view root
+            if(page.viewRoot!==null)
+            {
+                page.viewRoot.elemDom.style.visibility = 'hidden';
+                document.body.appendChild(page.viewRoot.elemDom);
+                var navigator = this_.getWindowsDimension();
+                page.viewRoot.onMeasure(
+                    navigator.width,
+                    navigator.height,
+                    viewListener);
+            }
+            else if(page.urlView !== null)
+            {
+                LayoutInflater.inflateFromURL(
+                        page,
+                        page.urlView).then((view)=>{
+                            page.viewRoot = view;
+                            page.viewRoot.elemDom.style.visibility = 'hidden';
+                            document.body.appendChild(page.viewRoot.elemDom);
+
+                            var navigator = this_.getWindowsDimension();
+                            page.viewRoot.onMeasure(
+                                    navigator.width,
+                                    navigator.height,
+                                    viewListener);
+                        }).catch((error)=>{
+                            reject(error);
+                        });
+            }
+            else // Ni un view establecido
+            {
+
+            }
+        });
     },
-    removeContext:function(context)
-    {
+    removeContext:function(context){
         var element = context.viewRoot.elemDom;
         element.parentNode.removeChild(element);
         context.onDestroy();
     },
-    finishPage:function(context)
-    {
+    finishPage:function(context){
         this.removeContext(context);
     },
-    getWindowsDimension:function()
-    {
+    getWindowsDimension:function(){
 //        return {
 //                    width:document.body.clientWidth,
 //                    height:document.body.clientHeight
@@ -3257,15 +3099,13 @@ PageManager =
 };
 
 // ********* PARA LAS CONEXION A SERVICIOS WEB ***********
-HttpRequest = Class.extend
-({
+HttpRequest = Class.extend({
     url:null,
     params:null,
     condition:null,
     data:null,
     xmlhttp:null,
-    init:function(url)
-    {
+    init:function(url){
         this.url = url;
         this.params = new Array();
         if (window.XMLHttpRequest)
@@ -3273,88 +3113,81 @@ HttpRequest = Class.extend
         else
             this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
     },
-    setEntity:function(d)
-    {
+    setEntity:function(d){
         this.data = d;
     },
-    getMethod:function()
-    {
+    getMethod:function(){
         return null;
     },
-    setUrl:function(url)
-    {
+    setUrl:function(url){
         this.url = url;
     },
-    addParam:function(name,value)
-    {
+    addParam:function(name,value){
         this.params[name] = value;
     },
-    setCondition:function(condition)
-    {
+    setCondition:function(condition){
         this.condition = condition;
     },
-    send:function(callback,error)
-    {
-        var url = this.url;
-        if(this.condition !== null)
-            url = url+'?'+this.condition;
-        else
-        {
-            if(this.params.length >0)
-            {
-                url = url+'?';
-                for(var elem in this.params)
+    send:function(){
+        let this_=this;
+        return new Promise((resolve,reject)=>{
+            var url = this.url;
+            if(this.condition !== null)
+                url = url+'?'+this.condition;
+            else{
+                if(this.params.length >0)
                 {
-                    url=(url+(elem+'='+this.params[elem])+"&&");
+                    url = url+'?';
+                    for(var elem in this.params){
+                        url=(url+(elem+'='+this.params[elem])+"&&");
+                    }
+                    url = url.substring(0,url.length-2);
                 }
-                url = url.substring(0,url.length-2);
             }
-        }
-        this.xmlhttp.open(this.getMethod(),url,true);
-        // xmlhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        var this_ = this;
-        this.xmlhttp.onreadystatechange = function()
-        {
-            if (this_.xmlhttp.readyState === 4 && this_.xmlhttp.status === 200)
-            {
-                var httpResonse = new HttpResponse(this_.xmlhttp);
-                callback(httpResonse);
-            }
-//            else
-//                error(this_.xmlhttp);
-        };
-//        this.xmlhttp.onloadend = function()
-//        {
-//            var httpResonse = new HttpResponse(this_.xmlhttp);
-//            callback(httpResonse);
-//        };
-        this.xmlhttp.send(null);
+            console.log("METODO",this.getMethod());
+            console.log("URL",url);
+            
+            this.xmlhttp.open(this.getMethod(),url,true);
+            this.xmlhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
+            this.xmlhttp.setRequestHeader('Content-Type', 'application/json');
+            this.xmlhttp.setRequestHeader('Content-Type', 'application/json');
+            
+            var this_ = this;
+            this.xmlhttp.onreadystatechange = function(){
+                if (this_.xmlhttp.readyState === XMLHttpRequest.DONE && this_.xmlhttp.status === 200){
+                    var httpResonse = new HttpResponse(this_.xmlhttp);
+                    resolve(httpResonse);
+                }
+    //            else
+    //                error(this_.xmlhttp);
+            };
+    //        this.xmlhttp.onloadend = function()
+    //        {
+    //            var httpResonse = new HttpResponse(this_.xmlhttp);
+    //            callback(httpResonse);
+    //        };
+            this.xmlhttp.send(''+JSON.stringify(this.data));
+        });        
     },
-    abort:function()
-    {
+    abort:function(){
         this.xmlhttp.abort();
     }
 });
-var HttpResponse = function(xmlhttp)
-{
+var HttpResponse = function(xmlhttp){
     this.xmlhttp = xmlhttp;
     this.showProgress = false;
     this.message = null;
-    this.getJson = function()
-    {
+    this.getJson = function(){
         return JSON.parse(xmlhttp.responseText);
         // JSON.stringify(arr);
     };
-    this.getRootElementXml = function()
-    {
+    this.getRootElementXml = function(){
         return this.xmlhttp.responseXML.documentElement;
     };
-    this.getText = function()
-    {
+    this.getText = function(){
         return this.xmlhttp.responseText;
     };
-    this.getImage=function()
-    {
+    this.getImage=function(){
     };
 };
 
@@ -3363,12 +3196,10 @@ HttpPost = HttpRequest.extend({getMethod:function(){return "POST";}});
 HttpPut = HttpRequest.extend({getMethod:function(){return "PUT";}});
 HttpDelete = HttpRequest.extend({getMethod:function(){return "DELETE";}});
 
-var DefaultHttpClient = function(url)
-{
+var DefaultHttpClient = function(url){
     this.url = url;
-    this.execute = function(httpRequest,onResponse,onError)
-    {
+    this.execute = function(httpRequest){
         httpRequest.setUrl(this.url);
-        httpRequest.send(onResponse,onError);
+        return httpRequest.send();
     };
 };
