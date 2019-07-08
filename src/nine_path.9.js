@@ -1,3 +1,21 @@
+// *********************** COMENSANDO NINE PATH ************************
+
+// Verifica si se tiene una image con nine path.
+function NinePatchGetStyle(element, style) {
+    if (window.getComputedStyle) {
+        var computedStyle = window.getComputedStyle(element, "");
+        if (computedStyle === null)
+            return "";
+        return computedStyle.getPropertyValue(style);
+    }
+    else if (element.currentStyle) {
+        return element.currentStyle[style];
+    }
+    else {
+        return "";
+    }
+}
+
 // Stores the HTMLDivElement that's using the 9patch image
 NinePatch.prototype.div = null;
 // Padding
