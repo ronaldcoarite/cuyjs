@@ -152,7 +152,7 @@ var LayoutInflater = {
      * @param {*} context  EL contexto de la pagina
      * @param {*} firstElement El primer elemento de tipo XML para crear la vista
      */
-    createViewRootFromXml: function (context, firstElement) {
+    parse: async function (context, firstElement) {
         var view = null;
         try {
             var view = eval("new " + firstElement.tagName + "(context)");
@@ -161,7 +161,7 @@ var LayoutInflater = {
             console.log(o);
             throw new Exception("No existe la vista [" + firstElement.tagName + "]");
         }
-        view.parseFromXml(firstElement);
+        await view.parse(firstElement);
         return view;
     },
     // createView: function (context, domXmlElement) {
@@ -207,13 +207,23 @@ View = Class.extend({
 
     elemDom: null,
 
-    isBuilded: function(){
-        return this.elemDom?true:false;
-    },
     setVisibility: function (v) {
         this.visibility = v;
+        switch (this.visibility) {
+            case View.INVISIBLE:
+                this.elemDom.style.visibility = 'hidden';
+                break;
+            case View.GONE:
+                this.elemDom.style.visibility = 'hidden';
+                break;
+            default:
+                this.elemDom.style.visibility = 'block';
+                break;
+        }
     },
     setToolTip: function (text) {
+        if (this.elemDom)
+            this.elemDom.setAttribute("title", text);
         this.tooltip = text;
     },
     setMinWidth: function (w) {
@@ -225,16 +235,40 @@ View = Class.extend({
     setMinHeight: function (h) {
         this.minHeigth = h;
     },
+
+    invalidate: function (onInvalidate) {
+        if (this.ninePatch !== null) {
+            this.ninePatch.draw();
+        }
+        if (this.context.loaded === true) {
+            this.context.loaded = false;
+            var this_ = this;
+            var temp = function () {
+                this_.context.loaded = true;
+                if (onInvalidate !== undefined)
+                    onInvalidate();
+            };
+            this.context.viewRoot.onMeasure(
+                PageManager.getWindowsDimension().width,
+                PageManager.getWindowsDimension().height, temp);
+        }
+    },
+    forseInvalidate: function () {
+        this.onMeasure(
+            this.getWidth(),
+            this.getHeight());
+    },
     init: function (context) {
         if (context === undefined || context === null)
             throw new Exception("El contexto no esta en los parametros o es nulo");
         this.context = context;
         this.margin = { top: 0, left: 0, right: 0, bottom: 0 };
         this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
-        //this.elemDom = this.createDomElement();
+        this.elemDom = this.createDomElement();
         this.parentView = null;
+        this.name = "View";
     },
-    parse: function (nodeXml) {
+    parseSync: function (nodeXml) {
         // VISIBILITY DEL VIEW
         if (nodeXml.getAttribute(LayoutInflater.ATTR_VISIBILITY) !== null) {
             this.visibility = nodeXml.getAttribute(LayoutInflater.ATTR_VISIBILITY);
@@ -305,196 +339,9 @@ View = Class.extend({
     setId: function (id) {
         this.id = id;
     },
-    /*clone: function () {
+    clone: function () {
         var copy = Object.assign({}, this);
         copy.elemDom = this.elemDom.cloneNode(true);
-    },*/
-    getWidth: function () {
-        if(this.isBuilded())
-            return this.elemDom.clientWidth;
-        return this.width,
-    },
-    getHeight: function () {
-        if(this.isBuilded())
-            return this.elemDom.clientHeight;
-        return this.height;
-    },
-    setMargin: function (margin) {
-        if (margin === null || margin === undefined) return;
-        var mg = parseInt(margin);
-        this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = mg;
-        this.repaint();
-    },
-    setMarginTop: function (margin) {
-        if (margin === null || margin === undefined) return;
-        this.margin.top = parseInt(margin);
-        this.repaint();
-    },
-    setMarginLeft: function (margin) {
-        if (margin === null || margin === undefined) return;
-        this.margin.left = parseInt(margin);
-        this.repaint();
-    },
-    setMarginRight: function (margin) {
-        if (margin === null || margin === undefined) return;
-        this.margin.right = parseInt(margin);
-        this.repaint();
-    },
-    setMarginBottom: function (margin) {
-        if (margin === null || margin === undefined) return;
-        this.margin.bottom = parseInt(margin);
-        this.repaint();
-    },
-    getBackground: function () {
-        return this.background;
-    },
-    setBackgroundSync: async function (background) {
-        this.background = background;
-        this.repaint();
-    },
-    setWidth: function (width) {
-        this.width = width;
-        this.repaint();
-    },
-    setHeight: function (height) {
-        this.height = height;
-        this.repaint();
-    },
-    setLayoutGravity: function (gravity) {
-        this.layoutGravity = gravity;
-        this.repaint();
-    },
-    setOnClickListener: function (onCLick) {
-        if (onCLick === null){
-            this.onCLick  = null;
-            return;
-        }
-        if (typeof onCLick === 'string') {
-            // Buscamos el nombre de metodo en el contexto
-            var encontrado = false;
-            var this_ = this;
-            for (var obj in this.context) {
-                // Falta verificar si el objeto es una funcion
-                if (typeof this.context[obj] === 'function') {
-                    if (obj === onCLick) {
-                        encontrado = true;
-                        break;
-                    }
-                }
-            }
-            if (encontrado === false)
-                throw new Exception(`No se pudo encontrar la funcion [${onCLick}] dentro del contexto`);
-        }else if (typeof onCLick === 'function') {
-            this.onClick = onCLick;
-        }
-    },
-    setMP: function (dr, ic, txt, tc) {
-        var popupError = new PopupWindow(this.getContext());
-        var message = new TextView(popupError);
-        message.setText(txt);
-        if (ic !== null)
-            message.setDrawableLeft(ic);
-        message.setBackground(dr);
-        message.setSingleLine(true);
-        message.setTextColor(tc);
-
-        popupError.setView(this);
-        popupError.setContentView(message);
-        popupError.show(function () {
-            setTimeout(function () {
-                popupError.cancel();
-            }, 3000);
-        });
-    },
-    showAlertMsg: function (msg) {
-        this.setMP("res/drawable/util/bg_alerta.9.png", "res/drawable/util/ic_alert.png", msg, "#653400");
-    },
-    showConfirmMsg: function (msg) {
-        this.setMP("res/drawable/util/bg_confirm.9.png", "res/drawable/util/ic_confirm.png", msg, "#346700");
-    },
-    showErrorMsg: function (msg) {
-        this.setMP("res/drawable/util/bg_error.9.png", "res/drawable/util/ic_error.png", msg, "#A90400");
-    },
-    showInfoMsg: function (msg) {
-        this.setMP("res/drawable/util/bg_info.9.png", "res/drawable/util/ic_info.png", msg, "#4C95E7");
-    },
-    /**
-     * Realiza la atualización de la vista con los valores actuales de la vista. Si la vista no fué compilada
-     * el metódo no realiza ni una acción. 
-     */
-    repaint = function(){
-        if(this.isBuilded())
-            this.invalidate();
-    },
-    invalidate: function (onInvalidate) {
-        this.elemDom.onclick = function () {
-            this_.context[obj](this_);
-        };
-        this.elemDom.setAttribute("title", text);
-        // Campos
-        switch (this.visibility) {
-            case View.INVISIBLE:
-                this.elemDom.style.visibility = 'hidden';
-                break;
-            case View.GONE:
-                this.elemDom.style.visibility = 'hidden';
-                break;
-            default:
-                this.elemDom.style.visibility = 'block';
-                break;
-        }
-
-        // Inicio de fondo de vista
-        if (background.match(/\.9\.(png|gif)/i)) // Es nine path?
-        {
-            this.elemDom.style.backgroundRepeat = "no-repeat";
-            this.elemDom.style.backgroundPosition = "-1000px -1000px";
-            this.elemDom.style.backgroundImage = "url('" + background + "')";
-            var this_ = this;
-            this.ninePatch = new NinePatch(this.elemDom, function () {
-                this_.padding.left = this_.ninePatch.padding.left;
-                this_.padding.top = this_.ninePatch.padding.top;
-                this_.padding.right = this_.ninePatch.padding.right;
-                this_.padding.bottom = this_.ninePatch.padding.bottom;
-            });
-        }
-        else if (background.match(/.(png|gif|jpg)/i)) { // Es una imagen de fondo
-            this.ninePatch = null;
-            this.elemDom.style.backgroundRepeat = "no-repeat";
-            this.elemDom.style.backgroundPosition = "0px 0px";
-            var img = new Image();
-            var this_ = this;
-            img.onload = function () {
-                this_.elemDom.style.backgroundImage = "url('" + this.src + "')";
-                if (loadListener !== undefined)
-                    loadListener();
-            };
-            img.src = background;
-        }
-        else // es un fondo de un color
-        {
-            this.ninePatch = null;
-            this.elemDom.style.background = background;
-            loadListener();
-        }
-        //this.invalidate();
-
-        // FIN de fondo de vista
-        if (this.ninePatch !== null) {
-            this.ninePatch.draw();
-        }
-        if (this.context.loaded === true) {
-            this.context.loaded = false;
-            var this_ = this;
-            var temp = function () {
-                this_.context.loaded = true;
-                if (onInvalidate !== undefined)
-                    onInvalidate();
-            };
-            this.context.viewRoot.onMeasure(
-                PageManager.getWindowsDimension().width,
-                PageManager.getWindowsDimension().height, temp);
-        }
     },
     onMeasure: function (maxWidth, maxHeigth, loadListener) {
         this.maxHeigth = maxHeigth;
@@ -535,6 +382,157 @@ View = Class.extend({
         // Estableciendo fondo de componente
         this.setBackground(this.background, loadListener);
     },
+    checkMinSize: function () {
+        var sw = false;
+        if (this.getWidth() <= this.minWidth) {
+            this.elemDom.style.width = this.minWidth + 'px';
+            sw = true;
+        }
+        if (this.getHeight() <= this.minHeigth) {
+            this.elemDom.style.height = this.minHeigth + 'px';
+            sw = true;
+        }
+        if (sw === true)
+            this.invalidate();
+    },
+    getWidth: function () {
+        return this.elemDom.clientWidth;
+    },
+    getHeight: function () {
+        return this.elemDom.clientHeight;
+    },
+    setMargin: function (margin) {
+        if (margin === null || margin === undefined) return;
+        var mg = parseInt(margin);
+        this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = mg;
+    },
+    setMarginTop: function (margin) {
+        if (margin === null || margin === undefined) return;
+        this.margin.top = parseInt(margin);
+    },
+    setMarginLeft: function (margin) {
+        if (margin === null || margin === undefined) return;
+        this.margin.left = parseInt(margin);
+    },
+    setMarginRight: function (margin) {
+        if (margin === null || margin === undefined) return;
+        this.margin.right = parseInt(margin);
+    },
+    setMarginBottom: function (margin) {
+        if (margin === null || margin === undefined) return;
+        this.margin.bottom = parseInt(margin);
+    },
+    getBackground: function () {
+        return this.background;
+    },
+    setBackgroundSync: async function (background) {
+        if(!background) return;
+
+        this.background = background;
+        if (background.match(/\.9\.(png|gif)/i)) // Es nine path?
+        {
+            this.elemDom.style.backgroundRepeat = "no-repeat";
+            this.elemDom.style.backgroundPosition = "-1000px -1000px";
+            this.elemDom.style.backgroundImage = "url('" + background + "')";
+            var this_ = this;
+            this.ninePatch = new NinePatch(this.elemDom, function () {
+                this_.padding.left = this_.ninePatch.padding.left;
+                this_.padding.top = this_.ninePatch.padding.top;
+                this_.padding.right = this_.ninePatch.padding.right;
+                this_.padding.bottom = this_.ninePatch.padding.bottom;
+            });
+        }
+        else if (background.match(/.(png|gif|jpg)/i)) { // Es una imagen de fondo
+            this.ninePatch = null;
+            this.elemDom.style.backgroundRepeat = "no-repeat";
+            this.elemDom.style.backgroundPosition = "0px 0px";
+            var img = new Image();
+            var this_ = this;
+            img.onload = function () {
+                this_.elemDom.style.backgroundImage = "url('" + this.src + "')";
+                if (loadListener !== undefined)
+                    loadListener();
+            };
+            img.src = background;
+        }
+        else // es un fondo de un color
+        {
+            this.ninePatch = null;
+            this.elemDom.style.background = background;
+            loadListener();
+        }
+        //this.invalidate();
+    },
+    setWidth: function (width) {
+        this.width = width;
+    },
+    setHeight: function (height) {
+        this.height = height;
+    },
+    setLayoutGravity: function (gravity) {
+        this.layoutGravity = gravity;
+    },
+    setOnClickListener: function (onCLick) {
+        if (onCLick === null)
+            return;
+        if (typeof onCLick === 'string') {
+            // Buscamos el nombre de metodo en el contexto
+            var encontrado = false;
+            var this_ = this;
+            for (var obj in this.context) {
+                // Falta verificar si el objeto es una funcion
+                if (typeof this.context[obj] === 'function') {
+                    if (obj === onCLick) {
+                        this.elemDom.onclick = function () {
+                            this_.context[obj](this_);
+                        };
+                        encontrado = true;
+                        break;
+                    }
+                }
+            }
+            if (encontrado === false)
+                throw new Exception("No se pudo encontrar la funcion [" + onCLick + "] dentro del contexto");
+        }else if (typeof onCLick === 'function') {
+            this.onClick = onCLick;
+            if(this.elemDom){
+                var this_ = this;
+                this.elemDom.onclick = function () {
+                    onCLick(this_);
+                };
+            }
+        }
+    },
+    setMP: function (dr, ic, txt, tc) {
+        var popupError = new PopupWindow(this.getContext());
+        var message = new TextView(popupError);
+        message.setText(txt);
+        if (ic !== null)
+            message.setDrawableLeft(ic);
+        message.setBackground(dr);
+        message.setSingleLine(true);
+        message.setTextColor(tc);
+
+        popupError.setView(this);
+        popupError.setContentView(message);
+        popupError.show(function () {
+            setTimeout(function () {
+                popupError.cancel();
+            }, 3000);
+        });
+    },
+    showAlertMsg: function (msg) {
+        this.setMP("res/drawable/util/bg_alerta.9.png", "res/drawable/util/ic_alert.png", msg, "#653400");
+    },
+    showConfirmMsg: function (msg) {
+        this.setMP("res/drawable/util/bg_confirm.9.png", "res/drawable/util/ic_confirm.png", msg, "#346700");
+    },
+    showErrorMsg: function (msg) {
+        this.setMP("res/drawable/util/bg_error.9.png", "res/drawable/util/ic_error.png", msg, "#A90400");
+    },
+    showInfoMsg: function (msg) {
+        this.setMP("res/drawable/util/bg_info.9.png", "res/drawable/util/ic_info.png", msg, "#4C95E7");
+    }
 });
 
 ProgressBar = View.extend({
