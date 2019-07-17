@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:noNamespaceSchemaLocation='https://raw.githubusercontent.com/ronaldcoarite/cuyjs/master/src/layout-xml.xsd'
+    layout_width="700px"
+    layout_height="wrap_content"
+    padding="10px"
+    orientation="vertical"
+    id="linPrueba">
+    <Button
+        text="Agregar Vehiculo"
+        singleLine="true"/>
+</LinearLayout>

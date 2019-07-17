@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html style="background: white; overflow:hidden;">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">        
+        <link rel="stylesheet" type="text/css" href="../../src/style/theme.css" />
+
+        <script type="text/javascript" src="../src/core/Context.js"></script>
+        <script type="text/javascript" src="../src/core/Exception.js"></script>
+        <script type="text/javascript" src="../src/core/Intent.js"></script>
+        <script type="text/javascript" src="../src/core/LayoutInflater.js"></script>
+        <script type="text/javascript" src="../src/core/PageManager.js"></script>
+        <script type="text/javascript" src="../src/views/View.js"></script>
+        <script type="text/javascript" src="../src/page/Page.js"></script>
+        
+        <script type="text/javascript">
+            ADLayoutUtils.onLoadPage(function(){
+                console.log("Todos los recursos cargados correctamente");
+                // PageManager.setMainPage("PruebaPage");
+                PageManager.startAplication('MainPage');
+            });
+
+            class MainPage extends Page{
+                onCreate(intent){
+                    this.setContentView("layout_test.xml");
+                }
+            }
+        </script>
+        <title>Layouts</title>
+    </head>
+    <body style="min-width: 1250px; height: 950px;">
+    </body>
+</html>
