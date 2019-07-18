@@ -239,23 +239,37 @@ class View {
             this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH));
     }
     invalidate(onInvalidate) {
+        if(!this.elemDom)
+            return;
         // OnClick
-        this.elemDom.onclick = function () {
-            onCLick(this_);
+        this.elemDom.onclick=()=>{
+            this.onClick(this);
         };
+        if(this.background){
+            // Se verifica que tipo de fondo
+            if(this.background.match(/\.9\.(png|gif)/i)) // Imagen de fondo de nine path
+                this.backgroundPainter = new NinepathBackground(this.elemDom);
+
+            
+            else if(/.(png|gif|jpg)/i) // Imagen de fondo
+                this.backgroundPainter = new ImageBackground(this.elemDom);
+            else if(/data:image\/([a-zA-Z]*);base64,([^\"]*)/g) // Imagen en Base64
+                this.backgroundPainter = new ImageBase64Background(this.elemDom);
+            else
+                throw new Exception(`No se pudo identificar el tipo de fondo [${this.background}]`);
+        }else
+            this.backgroundPainter = new EmplyBackground(this.elemDom);
+
+        // // Quitando fondo de pantalla
+        // this.elemDom.style.backgroundImage = null;
+        // this.elemDom.style.backgroundColor = null;
+        
+
+      
         // Fondo de pantalla
         if (background.match(/\.9\.(png|gif)/i)) // Es nine path?
         {
-            this.elemDom.style.backgroundRepeat = "no-repeat";
-            this.elemDom.style.backgroundPosition = "-1000px -1000px";
-            this.elemDom.style.backgroundImage = "url('" + background + "')";
-            var this_ = this;
-            this.ninePatch = new NinePatch(this.elemDom, function () {
-                this_.padding.left = this_.ninePatch.padding.left;
-                this_.padding.top = this_.ninePatch.padding.top;
-                this_.padding.right = this_.ninePatch.padding.right;
-                this_.padding.bottom = this_.ninePatch.padding.bottom;
-            });
+            
         }
         else if (background.match(/.(png|gif|jpg)/i)) { // Es una imagen de fondo
             this.ninePatch = null;
