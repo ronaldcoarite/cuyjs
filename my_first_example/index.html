@@ -6,6 +6,7 @@
 
         <script type="text/javascript" src="../src/core/Context.js"></script>
         <script type="text/javascript" src="../src/core/Exception.js"></script>
+        <script type="text/javascript" src="../src/core/Resource.js"></script>
         <script type="text/javascript" src="../src/core/Intent.js"></script>
         <script type="text/javascript" src="../src/core/LayoutInflater.js"></script>
         <script type="text/javascript" src="../src/core/PageManager.js"></script>
@@ -13,7 +14,7 @@
         <script type="text/javascript" src="../src/page/Page.js"></script>
         
         <script type="text/javascript">
-            ADLayoutUtils.onLoadPage(function(){
+            Resource.waitToLoadAllResources().then(function(){
                 console.log("Todos los recursos cargados correctamente");
                 // PageManager.setMainPage("PruebaPage");
                 PageManager.startAplication('MainPage');

@@ -33,6 +33,12 @@ class View {
         this.elemDom = this.createDomElement();
         this.parentView = null;
         this.name = "View";
+        this.maxWidth = 0;
+        this.maxHeigth = 0;
+        this.minHeigth = 0;
+        this.minHeigth = 0;
+        this.width = LayoutInflater.WRAP_CONTENT;
+        this.height = LayoutInflater.WRAP_CONTENT;
     }
 
     setVisibility(v) {
@@ -238,7 +244,7 @@ class View {
         if (nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH) !== null)
             this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH));
     }
-    invalidate(onInvalidate) {
+    async invalidate() {
         if(!this.elemDom)
             return;
         // OnClick
@@ -247,52 +253,21 @@ class View {
         };
         if(this.background){
             // Se verifica que tipo de fondo
-            if(this.background.match(/\.9\.(png|gif)/i)) // Imagen de fondo de nine path
+            if(this.background instanceof BaseBackground)
+                this.backgroundPainter = this.background;
+            else if(Resource.isImageNinePathResource(this.background)) // Imagen de fondo de nine path
                 this.backgroundPainter = new NinepathBackground(this.elemDom);
-
-            
-            else if(/.(png|gif|jpg)/i) // Imagen de fondo
+            else if(Resource.isImageResource(this.background) || Resource.isBase64Resource(this.background))
                 this.backgroundPainter = new ImageBackground(this.elemDom);
-            else if(/data:image\/([a-zA-Z]*);base64,([^\"]*)/g) // Imagen en Base64
-                this.backgroundPainter = new ImageBase64Background(this.elemDom);
             else
                 throw new Exception(`No se pudo identificar el tipo de fondo [${this.background}]`);
         }else
             this.backgroundPainter = new EmplyBackground(this.elemDom);
-
-        // // Quitando fondo de pantalla
-        // this.elemDom.style.backgroundImage = null;
-        // this.elemDom.style.backgroundColor = null;
-        
-
-      
-        // Fondo de pantalla
-        if (background.match(/\.9\.(png|gif)/i)) // Es nine path?
-        {
             
-        }
-        else if (background.match(/.(png|gif|jpg)/i)) { // Es una imagen de fondo
-            this.ninePatch = null;
-            this.elemDom.style.backgroundRepeat = "no-repeat";
-            this.elemDom.style.backgroundPosition = "0px 0px";
-            var img = new Image();
-            var this_ = this;
-            img.onload = function () {
-                this_.elemDom.style.backgroundImage = "url('" + this.src + "')";
-                if (loadListener !== undefined)
-                    loadListener();
-            };
-            img.src = background;
-        }
-        else // es un fondo de un color
-        {
-            this.ninePatch = null;
-            this.elemDom.style.background = background;
-            loadListener();
-        }
-        // ToolTip
-        if (this.elemDom)
-            this.elemDom.setAttribute("title", text);
+        await this.backgroundPainter.load();
+
+        // Tooltip de Vista
+        this.elemDom.setAttribute("title", text);
         // Visibilidad
         switch (this.visibility) {
             case View.INVISIBLE:
@@ -305,61 +280,42 @@ class View {
                 this.elemDom.style.visibility = 'block';
                 break;
         }
-
-        // Nine Path
-        if (this.ninePatch !== null) {
-            this.ninePatch.draw();
-        }
-        if (this.context.loaded === true) {
-            this.context.loaded = false;
-            var this_ = this;
-            var temp = function () {
-                this_.context.loaded = true;
-                if (onInvalidate !== undefined)
-                    onInvalidate();
-            };
-            this.context.viewRoot.onMeasure(
-                PageManager.getWindowsDimension().width,
-                PageManager.getWindowsDimension().height, temp);
-        }
-    },
-    onMeasure: function (maxWidth, maxHeigth, loadListener) {
-        this.maxHeigth = maxHeigth;
-        this.maxWidth = maxWidth;
-        if (this.addedInParent === false) {
-            if (this.parentView !== null)
-                this.parentView.elemDom.appendChild(this.elemDom);
-            this.addedInParent = true;
-        }
+    }
+    // this.parentView.elemDom.appendChild(this.elemDom);
+    async onMeasure(maxWidth, maxHeigth) {
+        if(!this.elemDom) return; // No realizada nada si no fué agregado a la vista
+        // this.maxHeigth = maxHeigth;
+        // this.maxWidth = maxWidth;
 
         // ************  ANCHO DE PANTALLA  ************
         switch (this.width) {
             case LayoutInflater.MATCH_PARENT:
-                this.elemDom.style.width = (maxWidth - this.margin.left - this.margin.right) + 'px';
+                this.elemDom.style.width = (Math.max(maxWidth,this.maxWidth) - this.margin.left - this.margin.right) + 'px';
                 break;
             case LayoutInflater.WRAP_CONTENT:
-                //this.elemDom.style.width = 'auto';
+                this.elemDom.style.width = 'auto';
                 break;
             default:
                 var width = parseInt(this.width);
+                width = Math.max(width,this.maxWidth);
                 this.elemDom.style.width = width + 'px';
                 break;
         }
 
         switch (this.height) {
             case LayoutInflater.MATCH_PARENT:
-                this.elemDom.style.height = (maxHeigth - this.margin.top - this.margin.bottom) + 'px';
+                this.elemDom.style.height = (Math.max(maxHeigth,this.maxHeigth) - this.margin.top - this.margin.bottom) + 'px';
                 break;
             case LayoutInflater.WRAP_CONTENT:
-                //this.elemDom.style.height = 'auto';
+                this.elemDom.style.height = 'auto';
                 break;
             default:
                 var height = parseInt(this.height);
+                height = Math.max(height,this.maxHeigth);
                 this.elemDom.style.height = height + 'px';
                 break;
         }
-        //this.checkMinSize();
-        // Estableciendo fondo de componente
-        this.setBackground(this.background, loadListener);
-    },
-});
+
+        await this.backgroundPainter.paint();
+    }
+}

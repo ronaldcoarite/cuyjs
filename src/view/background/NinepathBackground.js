@@ -1,18 +1,14 @@
-class NinepathBackground{
-    constructor(domElement){
-        this.domElement = domElement;
+class NinepathBackground extends BaseBackground{
+    constructor(domElement,imageNinePathBase64){
         // Stores the HTMLDivElement that's using the 9patch image
-        this.div = null;
+        this.domElement = domElement;
         // Padding
         this.padding = null;
-        // Get padding
-        this.callback = null;
-        // Stores the original background css color to use later
-        this.originalBG = null;
         // Stores the pieces used to generate the horizontal layout
         this.horizontalPieces = null;
         // Stores the pieces used to generate the vertical layout
         this.verticalPieces = null;
+        this.imageNinePathBase64 = imageNinePathBase64;
         // Stores the 9patch image
         this.bgImage = null;
     }
@@ -72,8 +68,8 @@ class NinepathBackground{
         if (this.horizontalPieces === null)
             return;
     
-        dWidth = this.div.clientWidth;
-        dHeight = this.div.clientHeight;
+        dWidth = this.domElement.clientWidth;
+        dHeight = this.domElement.clientHeight;
     
         if (dWidth === 0 || dHeight === 0)
             return;
@@ -169,16 +165,29 @@ class NinepathBackground{
         var tempIMG = new Image();
     
         var _this = this;
-        tempIMG.onload = function (event) {
-            _this.div.style.background = _this.originalBgColor + " url(" + url + ") no-repeat";
+        tempIMG.onload = ()=>{
+            this.domElement.style.background = `url(${url}) no-repeat`;
         };
         tempIMG.src = url;
     }
 
+    // @Override
     async load(){
+        this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
+        // Cargamos la imagen 
+        this.bgImage = await Resource.loadImage(this.imageNinePathBase64);
+
+        this.domElement.style.background = 'none';
+        this.domElement.style.backgroundRepeat = "no-repeat";
+        
         // this.elemDom.style.backgroundRepeat = "no-repeat";
         // this.elemDom.style.backgroundPosition = "-1000px -1000px";
         // this.elemDom.style.backgroundImage = "url('" + background + "')";
+
+
+
+
+
         // var this_ = this;
         // this.ninePatch = new NinePatch(this.elemDom, function () {
         //     this_.padding.left = this_.ninePatch.padding.left;
@@ -188,5 +197,44 @@ class NinepathBackground{
         // });
     }
     
-    async paint(){}
+    // @Override
+    async paint(){
+        // Create a temporary canvas to get the 9Patch index data.
+        var tempCtx, tempCanvas;
+        tempCanvas = document.createElement('canvas');
+        tempCanvas.width = this.bgImage.width;
+        tempCanvas.height = this.bgImage.height;
+        tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(this.bgImage, 0, 0);
+
+        // Obteniendo el padding lateral derecho
+        var dataPad = tempCtx.getImageData(this.bgImage.width - 1, 0, 1, this.bgImage.height).data;
+        var padRight = this.getPadBorder(dataPad, this.bgImage.width, this.bgImage.height);
+        this.padding.top = padRight.top;
+        this.padding.bottom = padRight.bottom;
+        dataPad = tempCtx.getImageData(0, this.bgImage.height - 1, this.bgImage.width, 1).data;
+        var padBottom = this.getPadBorder(dataPad, this.bgImage.width, this.bgImage.height);
+
+        this.padding.left = padBottom.top;
+        this.padding.right = padBottom.bottom;
+
+        // Loop over each  horizontal pixel and get piece
+        var data = tempCtx.getImageData(0, 0, this.bgImage.width, 1).data;
+
+        // Use the upper-left corner to get staticColor, use the upper-right corner
+        // to get the repeatColor.
+        var tempLength = data.length - 4;
+        var staticColor = data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3];
+        var repeatColor = data[tempLength] + ',' + data[tempLength + 1] + ',' +
+            data[tempLength + 2] + ',' + data[tempLength + 3];
+
+        this.horizontalPieces = this.getPieces(data, staticColor, repeatColor);
+
+        // Loop over each  horizontal pixel and get piece
+        data = tempCtx.getImageData(0, 0, 1, this.bgImage.height).data;
+        this.verticalPieces = this.getPieces(data, staticColor, repeatColor);
+
+        // use this.horizontalPieces and this.verticalPieces to generate image
+        this.draw();
+    }
 }

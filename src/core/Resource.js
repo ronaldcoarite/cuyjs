@@ -55,4 +55,64 @@ class Resource{
         });
         return rootXml;
     }
+
+    static async loadImage(urlOrTextBase64){
+        if(!urlOrTextBase64)
+            throw "No se envió la imagen para la carga";
+        if(typeof urlOrTextBase64 !== 'string')
+            throw "El parámetro para cargar la imagen no es de tipo texto";
+        let image = await new Promise(function(resolve,reject){
+            let image = new Image();
+            image.onload = function(){
+                resolve(image);
+            }
+            if(this.isBase64Resource(urlOrTextBase64))
+                image.src = `data:image/png;base64,${urlOrTextBase64}`;
+            else
+                image.src = `ES UNA URL DE IMAGEN`;
+        });
+        return image;
+    }
+
+    static isBase64Resource(urlOrTextBase64){
+        if(!urlOrTextBase64)
+            return false;
+        if(typeof urlOrTextBase64!=='string')
+            return false;
+        return urlOrTextBase64.math(/data:image\/([a-zA-Z]*);base64,([^\"]*)/g);
+    }
+
+    static isImageNinePathResource(urlOrTextBase64){
+        if(!urlOrTextBase64)
+            return false;
+        if(typeof urlOrTextBase64!=='string')
+            return false;
+        return urlOrTextBase64.math(/\.9\.(png|gif)/i);
+    }
+
+    static isImageResource(urlOrTextBase64){
+        if(!urlOrTextBase64)
+            return false;
+        if(typeof urlOrTextBase64!=='string')
+            return false;
+        return urlOrTextBase64.math(/.(png|gif|jpg)/i);
+    }
+
+    static async waitToLoadAllResources(){
+        await new Promise(function(resolve){
+            let callback = function(){
+                resolve();
+            };
+
+            if (window.attachEvent){
+                window.attachEvent('onload', callback);
+            }
+            else if (window.addEventListener){
+                window.addEventListener('load', callback, false);
+            }
+            else{
+                document.addEventListener('load', callback, false);
+            }
+        });
+    }
 }
