@@ -98,6 +98,14 @@ class Resource{
         return urlOrTextBase64.math(/.(png|gif|jpg)/i);
     }
 
+    static isColorResource(hexColorText){
+        if(!hexColorText)
+            return false;
+        if(typeof hexColorText!=='string')
+            return false;
+        return urlOrTextBase64.math(/^#[0-9A-F]{6}$/i);
+    }
+
     static async waitToLoadAllResources(){
         await new Promise(function(resolve){
             let callback = function(){

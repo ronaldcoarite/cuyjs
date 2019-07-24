@@ -1,4 +1,4 @@
-class Exception{
+class Exception extends Error{
     // message = null
     constructor(message){
         this.message = message;

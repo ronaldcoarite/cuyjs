@@ -1,5 +1,5 @@
 class Context{
     getLayoutInflater() {
-        return LayoutInflater;
+        return new LayoutInflater();
     }
 };

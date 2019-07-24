@@ -1,36 +1,16 @@
 class View {
-    // parentView: null,
-    // margin: null,
-    // padding: null,
-    // context: null,
-    // visibility: LayoutInflater.VISIBLE,
-    // width: LayoutInflater.WRAP_CONTENT,
-    // height: LayoutInflater.WRAP_CONTENT,
-    // id: null,
-    // layoutGravity: (LayoutInflater.LEFT + '|' + LayoutInflater.TOP),
-    // background: null,
-    // onClick: null,
-    // addedInParent: false,
-    // maxWidth: 0,
-    // maxHeigth: 0,
-    // name: null,
-    // tooltip: null,
-    // minWidth: 0,
-    // minHeigth: 0,
-
-    // GONE: "GONE",
     static INVISIBLE = "INVISIBLE";
     static VISIBLE = "VISIBLE";
-
-    // elemDom: null,
+    static GONE = "GONE";
 
     constructor(context) {
         if (!context)
             throw new Exception("El contexto no esta en los parametros o es nulo");
         this.context = context;
+        this.visibility = View.VISIBLE;
         this.margin = { top: 0, left: 0, right: 0, bottom: 0 };
         this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
-        this.elemDom = this.createDomElement();
+        // this.elemDom = this.createDomElement();
         this.parentView = null;
         this.name = "View";
         this.maxWidth = 0;
@@ -39,6 +19,11 @@ class View {
         this.minHeigth = 0;
         this.width = LayoutInflater.WRAP_CONTENT;
         this.height = LayoutInflater.WRAP_CONTENT;
+        this.id = null;
+        this.background = null;
+        this.onClick = null;
+        this.tooltip = null;
+        this.layoutGravity = (LayoutInflater.LEFT + '|' + LayoutInflater.TOP);
     }
 
     setVisibility(v) {
@@ -148,7 +133,6 @@ class View {
         if (typeof onCLick === 'string') {
             // Buscamos el nombre de metodo en el contexto
             var encontrado = false;
-            var this_ = this;
             for (var obj in this.context) {
                 // Falta verificar si el objeto es una funcion
                 if (typeof this.context[obj] === 'function') {
@@ -197,10 +181,8 @@ class View {
     }
     parse(nodeXml) {
         // VISIBILITY DEL VIEW
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_VISIBILITY) !== null) {
+        if (nodeXml.getAttribute(LayoutInflater.ATTR_VISIBILITY) !== null) 
             this.visibility = nodeXml.getAttribute(LayoutInflater.ATTR_VISIBILITY);
-            this.setVisibility(this.visibility);
-        }
 
         // PADDING DEL VIEW
         var padding = nodeXml.getAttribute(LayoutInflater.ATTR_PADDING);
@@ -209,11 +191,16 @@ class View {
             this.padding.top = this.padding.left = this.padding.right = this.padding.bottom = pad;
         }
         // MARGEN DEL COMPONENTE
-        this.setMargin(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN));
-        this.setMarginBottom(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_BOTTOM));
-        this.setMarginLeft(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_LEFT));
-        this.setMarginRight(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_RIGHT));
-        this.setMarginTop(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_TOP));
+        if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN)!=null)
+            this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN));
+        if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_BOTTOM)!=null)
+            this.margin.bottom = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_BOTTOM));
+        if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_LEFT)!=null)
+            this.margin.left = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_LEFT));
+        if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_RIGHT)!=null)
+            this.margin.right = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_RIGHT));
+        if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_TOP)!=null)
+            this.margin.top = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_TOP));
 
         // ID DEL VIEW
         if (nodeXml.getAttribute(LayoutInflater.ATTR_ID) !== null)
@@ -228,15 +215,11 @@ class View {
         // HEIGHT DEL VIEW
         if (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_HEIGHT) !== null)
             this.height = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_HEIGHT);
-        if (nodeXml.getAttribute('tooltip') !== null)
-            this.setToolTip(nodeXml.getAttribute('tooltip'));
+        this.tooltip = nodeXml.getAttribute('tooltip');
 
         // BACKGROUDN DEL VIEW
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_BACKGROUND) !== null)
-            this.background = nodeXml.getAttribute(LayoutInflater.ATTR_BACKGROUND);
-        // SET ON CLICK DEL VIEW
+        this.background = nodeXml.getAttribute(LayoutInflater.ATTR_BACKGROUND);
         this.onClick = nodeXml.getAttribute(LayoutInflater.ATTR_ON_CLICK);
-        this.setOnClickListener(this.onClick);
 
         if (nodeXml.getAttribute(LayoutInflater.ATTR_MIN_HEIGHT) !== null)
             this.minHeigth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_HEIGHT));
@@ -245,20 +228,23 @@ class View {
             this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH));
     }
     async invalidate() {
-        if(!this.elemDom)
+        if(!this.elemDom) // Verificamos que el elemento este agregado a la vista y que exista
             return;
         // OnClick
-        this.elemDom.onclick=()=>{
-            this.onClick(this);
-        };
+        if(this.onClick)
+            this.elemDom.onclick=()=>{
+                this.onClick(this);
+            };
         if(this.background){
             // Se verifica que tipo de fondo
             if(this.background instanceof BaseBackground)
                 this.backgroundPainter = this.background;
             else if(Resource.isImageNinePathResource(this.background)) // Imagen de fondo de nine path
-                this.backgroundPainter = new NinepathBackground(this.elemDom);
+                this.backgroundPainter = new NinepathBackground(this.elemDom,this.background);
             else if(Resource.isImageResource(this.background) || Resource.isBase64Resource(this.background))
-                this.backgroundPainter = new ImageBackground(this.elemDom);
+                this.backgroundPainter = new ImageBackground(this.elemDom,this.background);
+            else if(Resource.isColorResource(this.background))
+                this.backgroundPainter = new ColorBackground(this.elemDom,this.background);
             else
                 throw new Exception(`No se pudo identificar el tipo de fondo [${this.background}]`);
         }else
@@ -281,6 +267,7 @@ class View {
                 break;
         }
     }
+    
     // this.parentView.elemDom.appendChild(this.elemDom);
     async onMeasure(maxWidth, maxHeigth) {
         if(!this.elemDom) return; // No realizada nada si no fué agregado a la vista
@@ -290,7 +277,7 @@ class View {
         // ************  ANCHO DE PANTALLA  ************
         switch (this.width) {
             case LayoutInflater.MATCH_PARENT:
-                this.elemDom.style.width = (Math.max(maxWidth,this.maxWidth) - this.margin.left - this.margin.right) + 'px';
+                this.elemDom.style.width = (maxWidth - this.margin.left - this.margin.right) + 'px';
                 break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.width = 'auto';
@@ -304,7 +291,7 @@ class View {
 
         switch (this.height) {
             case LayoutInflater.MATCH_PARENT:
-                this.elemDom.style.height = (Math.max(maxHeigth,this.maxHeigth) - this.margin.top - this.margin.bottom) + 'px';
+                this.elemDom.style.height = (maxHeigth - this.margin.top - this.margin.bottom) + 'px';
                 break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.height = 'auto';
