@@ -1,5 +1,6 @@
 class EmplyBackground extends BaseBackground{
     constructor(domElement){
+        super(domElement);
         this.domElement = domElement;
     }
     async load(){

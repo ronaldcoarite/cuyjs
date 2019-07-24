@@ -13,6 +13,7 @@ class Page extends Context{
     // loaded: false,
 
     constructor(){
+        super();
         this.className = null;
     }
 

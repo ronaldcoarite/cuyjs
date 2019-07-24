@@ -1,5 +1,6 @@
 class NinepathBackground extends BaseBackground{
     constructor(domElement,imageNinePathBase64){
+        super(domElement,imageNinePathBase64);
         // Stores the HTMLDivElement that's using the 9patch image
         this.domElement = domElement;
         // Padding

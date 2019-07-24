@@ -1,5 +1,6 @@
 class ImageBackground extends BaseBackground{
     constructor(domElement,urlOrBase64Image){
+        super(domElement,urlOrBase64Image);
         this.domElement = domElement;
         this.urlOrBase64Image = urlOrBase64Image;
     }

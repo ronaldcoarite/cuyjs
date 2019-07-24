@@ -27,19 +27,19 @@ class SpinnerAnimation {
         }
 
         this.elemImgLoader = document.createElement('div');
-        this.elemImgLoader.style.width = propProgress.width + 'px';
-        this.elemImgLoader.style.height = propProgress.height + 'px';
+        this.elemImgLoader.style.width = this.propProgress.width + 'px';
+        this.elemImgLoader.style.height = this.propProgress.height + 'px';
         this.elemImgLoader.style.position = 'absolute';
         this.elemImgLoader.style.background = '#05112B';
-        this.elemImgLoader.style.top = propProgress.top + 'px';
-        this.elemImgLoader.style.left = propProgress.left + 'px';
+        this.elemImgLoader.style.top = this.propProgress.top + 'px';
+        this.elemImgLoader.style.left = this.propProgress.left + 'px';
 
         var min = Math.min(this.propProgress.width, this.propProgress.height);
         // propProgress.width = min;
         // propProgress.height = min;
 
         var imgLoader = document.createElement('canvas');
-        var radiusBack = propProgress.width / 8;
+        var radiusBack = this.propProgress.width / 8;
 
         imgLoader.setAttribute("width", this.propProgress.width - radiusBack * 2);
         imgLoader.setAttribute("height", this.propProgress.height - radiusBack * 2);
@@ -73,7 +73,7 @@ class SpinnerAnimation {
 
         if (this.propProgress.showBackground === true)
             document.body.appendChild(this.elemLoader);
-        imgLoader.style.left = (elemImgLoader.clientWidth / 2 + radiusBack) + "px";
+        imgLoader.style.left = (this.elemImgLoader.clientWidth / 2 + radiusBack) + "px";
         this.elemImgLoader.appendChild(imgLoader);
         document.body.appendChild(this.elemImgLoader);
         imgLoader.className = "rotate";

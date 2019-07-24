@@ -1,5 +1,5 @@
-PageManager = {
-    startAplicationSync: async function (mainPageName) {
+class PageManager{
+    static async startAplicationSync(mainPageName) {
         // Eliminamos margenes y padding del contenedor principal (body,html)
         document.body.style.paddingBottom = '0px';
         document.body.style.paddingTop = '0px';
@@ -47,8 +47,8 @@ PageManager = {
         // Iniciamos la actividad principal
         var intent = new Intent(null, mainPageName);
         await this.startPageSync(intent);
-    },
-    startPageSync: async function (intent) {
+    }
+    static async startPageSync(intent) {
         // Instanciamos la Pagina
         var page = null;
         try {
@@ -60,9 +60,9 @@ PageManager = {
         page.className = intent.pageName;
 
         await this.loadPageSync(intent.context, page, intent);
-    },
+    }
     // proProgress:{left:?,top:?,width,height,showBackground:true}
-    loadPageSync: async function (previusPage, page, intent) {
+    static async loadPageSync(previusPage, page, intent) {
         page.previusPage = previusPage;
         // LLamamos el on create de la pagina
         page.onCreate(intent);
@@ -90,16 +90,16 @@ PageManager = {
         page.loadedFinized(); // Carga finalizada
         page.onStart(intent);
         pageAnimation.hide();
-    },
-    removeContext: function (context) {
+    }
+    static removeContext(context) {
         var element = context.viewRoot.elemDom;
         element.parentNode.removeChild(element);
         context.onDestroy();
-    },
-    finishPage: function (context) {
+    }
+    static finishPage(context) {
         this.removeContext(context);
-    },
-    getWindowsDimension: function () {
+    }
+    static getWindowsDimension() {
         //        return {
         //                    width:document.body.clientWidth,
         //                    height:document.body.clientHeight
@@ -110,4 +110,4 @@ PageManager = {
         };
         return dim;
     }
-};
+}

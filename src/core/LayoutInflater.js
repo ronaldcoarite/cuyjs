@@ -83,7 +83,7 @@ class LayoutInflater{
      * @param {*} context  EL contexto de la pagina
      * @param {*} firstElement El primer elemento de tipo XML para crear la vista
      */
-    parse(context, firstElement) {
+    static parse(context, firstElement) {
         var view = null;
         try {
             var view = eval("new " + firstElement.tagName + "(context)");
@@ -100,4 +100,4 @@ class LayoutInflater{
         var view = this.parse(context, xmlRoot);
         return view;
     }
-};
+}
