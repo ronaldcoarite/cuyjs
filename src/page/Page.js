@@ -31,8 +31,11 @@ class Page extends Context{
     setContentView(objView) {
         if (objView instanceof View)
             this.viewRoot = objView;
-        else
+        else if(typeof objView==='string')
             this.urlView = objView;
+        else{
+            throw "La vista debe ser una instancia de View o una url de un archivo XML"
+        }
     }
 
     startLoaded(){

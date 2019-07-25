@@ -48,6 +48,7 @@ class PageManager{
         var intent = new Intent(null, mainPageName);
         await this.startPageSync(intent);
     }
+
     static async startPageSync(intent) {
         // Instanciamos la Pagina
         var page = null;
@@ -79,17 +80,20 @@ class PageManager{
         // Verificamos si tiene contenido la pagina
         if(!page.viewRoot && !page.urlView)
             throw new Exception(`La pagina [${page.className}] no tiene contenido definido. Asigne un contenido con page.setContentView`);
-        if(page.urlView) // La pagina cargara los elementos a partir de una URL
-            page.viewRoot = await Resource.loadLayoutSync(page.urlView);
-        
-        document.body.appendChild(page.viewRoot.elemDom);
-        page.startLoaded(); // Iniciando carga
+        if(page.urlView){ // La pagina cargara los elementos a partir de una URL
+            let rootXml = await Resource.loadLayoutSync(page.urlView);
+            page.viewRoot = LayoutInflater.inflate(page,rootXml);
+        }
+
+        document.body.appendChild(page.viewRoot.createDomElement());
+        // page.startLoaded(); // Iniciando carga
 
         var navigator = this.getWindowsDimension();
+        await page.viewRoot.invalidateSync();
         await page.viewRoot.onMeasureSync(navigator.width,navigator.height);
         page.loadedFinized(); // Carga finalizada
-        page.onStart(intent);
         pageAnimation.hide();
+        page.onStart(intent);
     }
     static removeContext(context) {
         var element = context.viewRoot.elemDom;

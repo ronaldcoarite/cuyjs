@@ -10,23 +10,39 @@
         <script type="text/javascript" src="../src/core/PageManager.js"></script>
         <script type="text/javascript" src="../src/core/Intent.js"></script>
         <script type="text/javascript" src="../src/core/LayoutInflater.js"></script>
+        <script type="text/javascript" src="../src/view/background/BaseBackground.js"></script>
+        <script type="text/javascript" src="../src/view/background/ColorBackground.js"></script>
+        <script type="text/javascript" src="../src/view/background/EmplyBackground.js"></script>
+        <script type="text/javascript" src="../src/view/background/ImageBackground.js"></script>
+        <script type="text/javascript" src="../src/view/background/NinepathBackground.js"></script>
         <script type="text/javascript" src="../src/view/View.js"></script>
         <script type="text/javascript" src="../src/layout/ViewGroup.js"></script>
         <script type="text/javascript" src="../src/page/Page.js"></script>
         <script type="text/javascript" src="../src/page/animation/SpinnerAnimation.js"></script>
         
         <script type="text/javascript">
-            new Exception("PRUEBA ERROR");
-            Resource.waitToLoadAllResources().then(function(){
+            // "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"  --disable-web-security --disable-gpu --user-data-dir=~/chromeTemp
+            Resource.waitToLoadAllResources().then(()=>{
                 console.log("Todos los recursos cargados correctamente");
                 // console.lgg(PageManager);
-                PageManager.startAplicationSync('MainPage');
+                try {
+                    PageManager.startAplicationSync('MainPage');
+                } catch (error) {
+                    console.log(error);
+                }
             });
 
             class MainPage extends Page{
+                // @Override
                 onCreate(intent){
-                    console.log("Llego hasta aca..");
-                    //this.setContentView("layout_test.xml");
+                    console.log("Esableciendo contenido..");
+                    this.setContentView("./layout_test.xml");
+                    console.log("Contenido establesido..");
+                }
+
+                // @Override
+                onStart(){
+                    console.log("Pagina cargada correctamente");
                 }
             }
         </script>

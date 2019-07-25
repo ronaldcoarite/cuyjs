@@ -56,6 +56,7 @@ class View {
         elem.style.paddingRight = '0px';
 
         elem.style.position = 'absolute';
+        this.elemDom = elem;
         return elem;
     }
     getTypeElement() {
@@ -227,7 +228,7 @@ class View {
         if (nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH) !== null)
             this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH));
     }
-    async invalidate() {
+    async invalidateSync() {
         if(!this.elemDom) // Verificamos que el elemento este agregado a la vista y que exista
             return;
         // OnClick
@@ -253,7 +254,7 @@ class View {
         await this.backgroundPainter.load();
 
         // Tooltip de Vista
-        this.elemDom.setAttribute("title", text);
+        this.elemDom.setAttribute("title", this.tooltip);
         // Visibilidad
         switch (this.visibility) {
             case View.INVISIBLE:
@@ -269,7 +270,7 @@ class View {
     }
     
     // this.parentView.elemDom.appendChild(this.elemDom);
-    async onMeasure(maxWidth, maxHeigth) {
+    async onMeasureSync(maxWidth, maxHeigth) {
         if(!this.elemDom) return; // No realizada nada si no fué agregado a la vista
         // this.maxHeigth = maxHeigth;
         // this.maxWidth = maxWidth;

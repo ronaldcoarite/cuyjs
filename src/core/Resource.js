@@ -40,10 +40,10 @@ class Resource{
                 xmlhttp = new XMLHttpRequest();
             else
                 xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        
+
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState === 4) {
-                    if (xmlhttp.status === 200) {
+                    if (xmlhttp.status === 200 ||xmlhttp.status === 0) { // Habilitado para archivos en local host (||xmlhttp.status === 0)
                         resolve(xmlhttp.responseXML.documentElement);
                     } else {
                         reject(xmlhttp.statusText);
@@ -75,35 +75,19 @@ class Resource{
     }
 
     static isBase64Resource(urlOrTextBase64){
-        if(!urlOrTextBase64)
-            return false;
-        if(typeof urlOrTextBase64!=='string')
-            return false;
-        return urlOrTextBase64.math(/data:image\/([a-zA-Z]*);base64,([^\"]*)/g);
+        return /data:image\/([a-zA-Z]*);base64,([^\"]*)/g.test(urlOrTextBase64);
     }
 
     static isImageNinePathResource(urlOrTextBase64){
-        if(!urlOrTextBase64)
-            return false;
-        if(typeof urlOrTextBase64!=='string')
-            return false;
-        return urlOrTextBase64.math(/\.9\.(png|gif)/i);
+        return /\.9\.(png|gif)/i.test(urlOrTextBase64);
     }
 
     static isImageResource(urlOrTextBase64){
-        if(!urlOrTextBase64)
-            return false;
-        if(typeof urlOrTextBase64!=='string')
-            return false;
-        return urlOrTextBase64.math(/.(png|gif|jpg)/i);
+        return /.(png|gif|jpg)/i.test(urlOrTextBase64);
     }
 
     static isColorResource(hexColorText){
-        if(!hexColorText)
-            return false;
-        if(typeof hexColorText!=='string')
-            return false;
-        return urlOrTextBase64.math(/^#[0-9A-F]{6}$/i);
+        return /^#[0-9A-F]{6}$/i.test(hexColorText);
     }
 
     static async waitToLoadAllResources(){

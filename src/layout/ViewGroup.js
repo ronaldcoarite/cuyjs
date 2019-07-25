@@ -9,8 +9,9 @@ class ViewGroup extends View{
     parse(nodeXml) {
         super.parse(nodeXml);
         //console.log("Nro hijos de "+nodeXml.tagName+" = "+nodeXml.children.length);
-        for (var index = 0; index < nodeXml.children.length; index++){
-            var child = LayoutInflater.inflate(this.context, nodeChild);
+        for (let index = 0; index < nodeXml.children.length; index++){
+            let nodeChild = nodeXml.children[index];
+            let child = LayoutInflater.inflate(this.context, nodeChild);
             child.parentView = this;
             this.viewsChilds.push(child);
         }
@@ -18,8 +19,8 @@ class ViewGroup extends View{
     findViewById(idView) {
         if (idView === null && idView === undefined)
             return null;
-        for (var i = 0; i < this.viewsChilds.length; i++) {
-            var view = this.viewsChilds[i];
+        for (let i = 0; i < this.viewsChilds.length; i++) {
+            let view = this.viewsChilds[i];
             if (view.id === idView)
                 return view;
             if (view instanceof ViewGroup) {
@@ -33,8 +34,8 @@ class ViewGroup extends View{
     findViewChildById(idView) {
         if (idView === null && idView === undefined)
             return null;
-        for (var i = 0; i < this.viewsChilds.length; i++) {
-            var view = this.viewsChilds[i];
+        for (let i = 0; i < this.viewsChilds.length; i++) {
+            let view = this.viewsChilds[i];
             if (view.id === idView)
                 return view;
         }
@@ -51,9 +52,9 @@ class ViewGroup extends View{
     }
     getViewVisibles() {
         // agrupamos los GONE's y los INVISIBLE's
-        var vistos = new Array();
-        for (var index = 0; index < this.viewsChilds.length; index++) {
-            var view = this.viewsChilds[index];
+        let vistos = new Array();
+        for (let index = 0; index < this.viewsChilds.length; index++) {
+            let view = this.viewsChilds[index];
             if (view.visibility === View.VISIBLE)
                 vistos.push(view);
         }
@@ -64,5 +65,26 @@ class ViewGroup extends View{
     }
     getChildAt(i) {
         return this.viewsChilds[i];
+    }
+    //@Override
+    createDomElement() {
+        super.createDomElement();
+        for(let view of this.viewsChilds)
+            this.elemDom.appendChild(view.createDomElement());
+        return this.elemDom;
+    }
+    
+    //@Override
+    async invalidateSync(){
+        await super.invalidateSync();
+        for(let view of this.viewsChilds)
+            await view.invalidateSync();
+    }
+    
+    //@Override
+    async onMeasureSync(maxWidth, maxHeigth){
+        await super.onMeasureSync(maxWidth, maxHeigth);
+        for(let view of this.viewsChilds)
+            await view.onMeasureSync(maxWidth, maxHeigth);
     }
 }
