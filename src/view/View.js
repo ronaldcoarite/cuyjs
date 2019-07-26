@@ -240,8 +240,10 @@ class View {
             // Se verifica que tipo de fondo
             if(this.background instanceof BaseBackground)
                 this.backgroundPainter = this.background;
-            else if(Resource.isImageNinePathResource(this.background)) // Imagen de fondo de nine path
+            else if(Resource.isImageNinePathResource(this.background)){ // Imagen de fondo de nine path
+                // let imageInBase64 = Resource.loa
                 this.backgroundPainter = new NinepathBackground(this.elemDom,this.background);
+            } 
             else if(Resource.isImageResource(this.background) || Resource.isBase64Resource(this.background))
                 this.backgroundPainter = new ImageBackground(this.elemDom,this.background);
             else if(Resource.isColorResource(this.background))

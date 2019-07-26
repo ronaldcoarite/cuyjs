@@ -66,10 +66,11 @@ class Resource{
             image.onload = function(){
                 resolve(image);
             }
-            if(this.isBase64Resource(urlOrTextBase64))
+            if(Resource.isBase64Resource(urlOrTextBase64)){
                 image.src = `data:image/png;base64,${urlOrTextBase64}`;
+            }
             else
-                image.src = `ES UNA URL DE IMAGEN`;
+                image.src =urlOrTextBase64;
         });
         return image;
     }

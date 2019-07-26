@@ -2,14 +2,16 @@
 <ViewGroup
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
     xsi:noNamespaceSchemaLocation='https://raw.githubusercontent.com/ronaldcoarite/cuyjs/master/src/layout-xml.xsd'
-    layout_width="700px"
-    layout_height="wrap_content"
+    layout_width="match_parent"
+    layout_height="match_parent"
     padding="10px"
     orientation="vertical"
-    background="#FAF0E6"
+    background="bg_dialog.9.png"
     id="linPrueba">
     <View
-        layout_width="700px"
+        layout_width="100px"
+        layout_height="100px"
         background="#4d0000"
+        tooltip="PRUEBA DE MENSAJE"
         />
 </ViewGroup>

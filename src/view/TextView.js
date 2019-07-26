@@ -1,28 +1,47 @@
-TextView = View.extend({
-    text: null,
-    elemText: null,
-    elemIcon: null,
-    drawableLeft: null,
-    drawableTop: null,
-    drawableRight: null,
-    drawableBottom: null,
-    gravityIcon: "none",
-    singleLine: false,
-    ellipsize: "none",
-    getTypeElement: function () {
-        return 'TextView';
-    },
-    init: function (context) {
-        this._super(context);
-        this.name = "TextView";
-    },
-    parse: function (nodeXml) {
-        this._super(nodeXml);
-        this.text = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TEXT);
-        this.elemText.innerHTML = this.text;
+class TextView extends View{
+    constructor(context){
+        super(context);
+        this.text= null;
+        this.textColor= null;
+        this.textStyle = null;
+        this.textSize = 12;
 
-        if (nodeXml.getAttribute("textColor") !== null)
-            this.elemText.style.color = nodeXml.getAttribute("textColor");
+        this.elemText= null;
+        this.elemIcon= null;
+        this.drawableLeft= null;
+        this.drawableTop= null;
+        this.drawableRight= null;
+        this.drawableBottom= null;
+        this.gravityIcon= "none";
+        this.singleLine= false;
+        this.ellipsize= "none";
+        this.name = "TextView";
+    }
+    //@Override
+    getTypeElement(){
+        return 'TextView';
+
+        this.elemText.innerHTML = this.text;
+        this.elemText.style.color = nodeXml.getAttribute("textColor");
+        if (this.singleLine === true)
+            this.elemText.style.whiteSpace = "nowrap";
+        this.elemText.style.textOverflow = "ellipsis";
+        if ( this.textStyle!== null) {
+            switch (nodeXml.getAttribute("textStyle")) {
+                case "bold": this.elemText.style.fontWeight = 'bold'; break;
+                case "italic": this.elemText.style.fontWeight = 'italic'; break;
+            }
+        }
+        if (nodeXml.getAttribute("textSize") !== null)
+            this.elemText.style.fontSize = nodeXml.getAttribute("textSize");
+        if(this.textColor)
+            this.elemText.style.color = color;
+    }
+    parse(nodeXml) {
+        super.parse(nodeXml);
+        
+        this.text = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TEXT);
+        this.textColor = nodeXml.getAttribute("textColor");
         if (nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_LEFT) !== null) {
             this.gravityIcon = LayoutInflater.LEFT;
             this.drawableLeft = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_LEFT);
@@ -46,28 +65,17 @@ TextView = View.extend({
             this.gravityIcon = LayoutInflater.BOTTOM;
             this.drawableBottom = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM);
         }
-        this.singleLine = (nodeXml.getAttribute("singleLine") === "true");
-        if (this.singleLine === true)
-            this.elemText.style.whiteSpace = "nowrap";
-        if (nodeXml.getAttribute("textStyle") !== null) {
-            switch (nodeXml.getAttribute("textStyle")) {
-                case "bold": this.elemText.style.fontWeight = 'bold'; break;
-                case "italic": this.elemText.style.fontWeight = 'italic'; break;
-            }
-        }
-        this.elemText.style.textOverflow = "ellipsis";
-        if (nodeXml.getAttribute("textSize") !== null)
-            this.elemText.style.fontSize = nodeXml.getAttribute("textSize");
-    },
-    setSingleLine: function (single) {
+        this.singleLine = nodeXml.getAttribute("singleLine")||true;
+        this.textStyle = nodeXml.getAttribute("textStyle");
+        this.textSize = nodeXml.getAttribute("textSize")||this.textSize;
+    }
+    setSingleLine(single) {
         this.singleLine = single;
-        if (this.singleLine === true)
-            this.elemText.style.whiteSpace = "nowrap";
-    },
-    setTextColor: function (color) {
-        this.elemText.style.color = color;
-    },
-    createDomElement: function () {
+    }
+    setTextColor(color) {
+        this.textColor = color;
+    }
+    createDomElement () {
         // Texto
         this.elemText = document.createElement('span');
         this.elemText.style.margin = '0px';
@@ -91,8 +99,8 @@ TextView = View.extend({
         elemDom.appendChild(this.elemText);
         elemDom.appendChild(this.elemIcon);
         return elemDom;
-    },
-    onMeasure: function (maxWidth, maxHeight, loadListener) {
+    }
+    onMeasure(maxWidth, maxHeight, loadListener) {
         var this_ = this;
         var tempListener = function () {
             var onDrawableLoaded = function () {
@@ -258,8 +266,8 @@ TextView = View.extend({
                 onDrawableLoaded();
         };
         this._super(maxWidth, maxHeight, tempListener);
-    },
-    cdf: function (dr, of) {
+    }
+    cdf(dr, of) {
         var img = new Image();
         var this_ = this;
         if (typeof of === "function") {
@@ -294,4 +302,4 @@ TextView = View.extend({
     getText: function () {
         return this.text;
     }
-});
+}

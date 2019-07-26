@@ -1,6 +1,6 @@
 class NinepathBackground extends BaseBackground{
     constructor(domElement,imageNinePathBase64){
-        super(domElement,imageNinePathBase64);
+        super(domElement);
         // Stores the HTMLDivElement that's using the 9patch image
         this.domElement = domElement;
         // Padding
@@ -22,7 +22,7 @@ class NinepathBackground extends BaseBackground{
         tempDS = (tempColor === staticColor ? 's' : (tempColor === repeatColor ? 'r' : 'd'));
         tempPosition = 1;
 
-        for (let i = 4, n = data.length - 4; i < n; i += 4) {
+        for (var i = 4, n = data.length - 4; i < n; i += 4) {
             tempColor = data[i] + ',' + data[i + 1] + ',' + data[i + 2] + ',' + data[i + 3];
             tempType = (tempColor === staticColor ? 's' : (tempColor === repeatColor ? 'r' : 'd'));
             if (tempDS !== tempType) {
@@ -35,10 +35,11 @@ class NinepathBackground extends BaseBackground{
                 tempWidth = 1;
             }
         }
-
+        
         // push end
         tempWidth = (i / 4) - tempPosition;
         tempArray.push(new Array(tempDS, tempPosition, tempWidth));
+
         return tempArray;
     }
 
@@ -177,7 +178,6 @@ class NinepathBackground extends BaseBackground{
         this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
         // Cargamos la imagen 
         this.bgImage = await Resource.loadImage(this.imageNinePathBase64);
-
         this.domElement.style.background = 'none';
         this.domElement.style.backgroundRepeat = "no-repeat";
         
@@ -228,7 +228,6 @@ class NinepathBackground extends BaseBackground{
         var staticColor = data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3];
         var repeatColor = data[tempLength] + ',' + data[tempLength + 1] + ',' +
             data[tempLength + 2] + ',' + data[tempLength + 3];
-
         this.horizontalPieces = this.getPieces(data, staticColor, repeatColor);
 
         // Loop over each  horizontal pixel and get piece

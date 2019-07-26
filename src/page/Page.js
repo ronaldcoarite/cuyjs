@@ -40,11 +40,11 @@ class Page extends Context{
 
     startLoaded(){
         this.viewRoot.elemDom.style.visibility = 'hidden';
+        this.viewRoot.elemDom.style.opacity = 0;
     }
     loadedFinized(){
         this.viewRoot.elemDom.style.transition = "opacity 5s ease-in-out";
         this.viewRoot.elemDom.style.opacity = 1;
-        this.viewRoot.elemDom.style.opacity = 0;
         this.viewRoot.elemDom.style.visibility = 'visible';
     }
     onCreate() { }
