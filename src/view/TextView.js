@@ -8,35 +8,18 @@ class TextView extends View{
 
         this.elemText= null;
         this.elemIcon= null;
-        this.drawableLeft= null;
-        this.drawableTop= null;
-        this.drawableRight= null;
-        this.drawableBottom= null;
+        this.drawableResource= null;
         this.gravityIcon= "none";
         this.singleLine= false;
         this.ellipsize= "none";
         this.name = "TextView";
+        this.imageResource = null;
     }
     //@Override
     getTypeElement(){
         return 'TextView';
-
-        this.elemText.innerHTML = this.text;
-        this.elemText.style.color = nodeXml.getAttribute("textColor");
-        if (this.singleLine === true)
-            this.elemText.style.whiteSpace = "nowrap";
-        this.elemText.style.textOverflow = "ellipsis";
-        if ( this.textStyle!== null) {
-            switch (nodeXml.getAttribute("textStyle")) {
-                case "bold": this.elemText.style.fontWeight = 'bold'; break;
-                case "italic": this.elemText.style.fontWeight = 'italic'; break;
-            }
-        }
-        if (nodeXml.getAttribute("textSize") !== null)
-            this.elemText.style.fontSize = nodeXml.getAttribute("textSize");
-        if(this.textColor)
-            this.elemText.style.color = color;
     }
+    //@Override
     parse(nodeXml) {
         super.parse(nodeXml);
         
@@ -44,26 +27,23 @@ class TextView extends View{
         this.textColor = nodeXml.getAttribute("textColor");
         if (nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_LEFT) !== null) {
             this.gravityIcon = LayoutInflater.LEFT;
-            this.drawableLeft = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_LEFT);
+            this.drawableResource = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_LEFT);
         }
         else if (nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_RIGHT) !== null) {
             this.gravityIcon = LayoutInflater.RIGHT;
-            this.drawableRight = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_RIGHT);
+            this.drawableResource =  nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_RIGHT);
         }
         else if (nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_TOP) !== null) {
             this.gravityIcon = LayoutInflater.TOP;
-            this.drawableTop = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_TOP);
+            this.drawableResource =  nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_TOP);
         }
         else if (nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM) !== null) {
             this.gravityIcon = LayoutInflater.BOTTOM;
-            this.drawableBottom = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM);
+            this.drawableResource = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM);
         }
-        else
+        else{
             this.gravityIcon = "none";
-
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM) !== null) {
-            this.gravityIcon = LayoutInflater.BOTTOM;
-            this.drawableBottom = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM);
+            this.drawableResource = null;
         }
         this.singleLine = nodeXml.getAttribute("singleLine")||true;
         this.textStyle = nodeXml.getAttribute("textStyle");
@@ -75,7 +55,10 @@ class TextView extends View{
     setTextColor(color) {
         this.textColor = color;
     }
+    //@Override
     createDomElement () {
+        super.createDomElement();
+
         // Texto
         this.elemText = document.createElement('span');
         this.elemText.style.margin = '0px';
@@ -95,10 +78,75 @@ class TextView extends View{
         this.elemIcon.style.paddingRight = '0px';
         this.elemIcon.style.position = 'absolute';
 
-        var elemDom = this._super();
-        elemDom.appendChild(this.elemText);
-        elemDom.appendChild(this.elemIcon);
+        this.elemDom.appendChild(this.elemText);
+        this.elemDom.appendChild(this.elemIcon);
         return elemDom;
+    }
+    // @Override
+    async invalidateSync() {
+        await super.invalidateSync();
+        // Estableciendo valores de los atributos
+        this.elemText.innerHTML = this.text;
+        this.elemText.style.color = nodeXml.getAttribute("textColor")||'#000000';
+        if (this.singleLine === true)
+            this.elemText.style.whiteSpace = "nowrap";
+        this.elemText.style.textOverflow = "ellipsis";
+        switch (this.textStyle) {
+            case "bold": this.elemText.style.fontWeight = 'bold'; break;
+            case "italic": this.elemText.style.fontWeight = 'italic'; break;
+            default: this.elemText.style.fontWeight = 'normal'; break;
+        }
+        if(this.textSize)
+            this.elemText.style.fontSize = this.textSize;
+        // Cargando la imagen o icono te texto
+        this.imageResource = null;
+        if(this.drawableResource)
+            this.imageResource = await Resource.loadImage(this.drawableResource);
+        
+    }
+    async onMeasureSync(maxWidth, maxHeigth) {
+        await super.onMeasureSync(maxWidth,maxHeigth);
+        if(this.imageResource){
+            let marginDrawable = 4; // 4px
+            switch(this.gravityIcon){
+                case LayoutInflater.ATTR_DRAWABLE_LEFT: 
+                    this.elemIcon.style.top = this.padding.top + 'px';
+                    this.elemIcon.style.left = this.padding.left + 'px';
+
+                    this.elemText.style.top = this.padding.top + 'px';
+                    this.elemText.style.left = (this.padding.left + this.elemIcon.clientWidth + marginDrawable) + 'px';
+
+                    switch (this.width) {
+                        case LayoutInflater.MATCH_PARENT:
+                            this.elemText.style.width = (
+                                maxWidth -
+                                this.margin.left - this.padding.left -
+                                this.elemIcon.clientWidth -
+                                marginDrawable -
+                                this.padding.right - this.margin.right) + 'px';
+                            break;
+                        case LayoutInflater.WRAP_CONTENT:
+                            break;
+                        default: // tamaño establecido por el usuario
+                            var width = parseInt(this.width);
+                            this.elemText.style.width = (
+                                width -
+                                this.padding.left -
+                                this.elemIcon.clientWidth -
+                                marginDrawable -
+                                this.padding.right) + 'px';
+                            break;
+                    }
+
+                    // establecemos las dimensiones
+                    this.elemDom.style.width = (this.padding.left + this.elemIcon.clientWidth + marginDrawable + this.elemText.clientWidth + this.padding.right) + 'px';
+                    this.elemDom.style.height = (this.padding.top + Math.max(this.elemText.clientHeight, this.elemIcon.clientHeight) + this.padding.bottom) + 'px';
+                    break;
+                case LayoutInflater.ATTR_DRAWABLE_RIGHT: break;
+                case LayoutInflater.ATTR_DRAWABLE_BOTTOM: break;
+                case LayoutInflater.ATTR_DRAWABLE_TOP: break;
+            }
+        }
     }
     onMeasure(maxWidth, maxHeight, loadListener) {
         var this_ = this;

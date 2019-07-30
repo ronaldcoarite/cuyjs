@@ -223,11 +223,28 @@ class View {
         this.onClick = nodeXml.getAttribute(LayoutInflater.ATTR_ON_CLICK);
 
         if (nodeXml.getAttribute(LayoutInflater.ATTR_MIN_HEIGHT) !== null)
-            this.minHeigth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_HEIGHT));
+            this.minHeigth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_HEIGHT))||10;
 
         if (nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH) !== null)
-            this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH));
+            this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH))||10;
     }
+
+    getDomWidth(maxWidth){
+        switch (this.width) {
+            case LayoutInflater.MATCH_PARENT: return maxWidth;
+            case LayoutInflater.WRAP_CONTENT: return this.elemDom.clientWidth;
+            default: return Math.min(parseInt(this.width),maxWidth);
+        }
+    }
+    
+    getDomHeight(maxHeigth){
+        switch (this.height) {
+            case LayoutInflater.MATCH_PARENT: return maxHeigth;
+            case LayoutInflater.WRAP_CONTENT: return this.elemDom.clientHeight;
+            default: Math.min(parseInt(this.width),maxHeigth);
+        }
+    }
+
     async invalidateSync() {
         if(!this.elemDom) // Verificamos que el elemento este agregado a la vista y que exista
             return;
@@ -274,8 +291,7 @@ class View {
     // this.parentView.elemDom.appendChild(this.elemDom);
     async onMeasureSync(maxWidth, maxHeigth) {
         if(!this.elemDom) return; // No realizada nada si no fué agregado a la vista
-        // this.maxHeigth = maxHeigth;
-        // this.maxWidth = maxWidth;
+
 
         // ************  ANCHO DE PANTALLA  ************
         switch (this.width) {
