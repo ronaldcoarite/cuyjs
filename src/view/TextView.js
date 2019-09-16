@@ -83,8 +83,8 @@ class TextView extends View{
         return elemDom;
     }
     // @Override
-    async invalidateSync() {
-        await super.invalidateSync();
+    async loadResources() {
+        await super.loadResources();
         // Estableciendo valores de los atributos
         this.elemText.innerHTML = this.text;
         this.elemText.style.color = nodeXml.getAttribute("textColor")||'#000000';
@@ -104,8 +104,8 @@ class TextView extends View{
             this.imageResource = await Resource.loadImage(this.drawableResource);
         
     }
-    async onMeasureSync(maxWidth, maxHeigth) {
-        await super.onMeasureSync(maxWidth,maxHeigth);
+    async onMeasureSync(maxWidth, maxHeight) {
+        await super.onMeasureSync(maxWidth,maxHeight);
         if(this.imageResource){
             let marginDrawable = 4; // 4px
             switch(this.gravityIcon){

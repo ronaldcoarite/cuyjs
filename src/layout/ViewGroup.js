@@ -11,10 +11,14 @@ class ViewGroup extends View{
         //console.log("Nro hijos de "+nodeXml.tagName+" = "+nodeXml.children.length);
         for (let index = 0; index < nodeXml.children.length; index++){
             let nodeChild = nodeXml.children[index];
-            let child = LayoutInflater.inflate(this.context, nodeChild);
+            let child = this.parseViewChild(nodeChild);
             child.parentView = this;
             this.viewsChilds.push(child);
         }
+    }
+    parseViewChild(nodeXml) {
+        let child = LayoutInflater.inflate(this.context, nodeXml);
+        return child;
     }
     findViewById(idView) {
         if (idView === null && idView === undefined)
@@ -41,14 +45,14 @@ class ViewGroup extends View{
         }
         return null;
     }
-    addView(viewChild) {
+    async addViewSync(viewChild) {
         if (viewChild === null || viewChild === undefined)
             throw new Exception("El view que desea agregar es nulo o no esta definido");
         if(!viewChild instanceof View)
             throw new Exception("El objeto a agregar no es una instancia de View");
         viewChild.parentView = this;
+        this.elemDom.appendChild(viewChild.createDomElement());
         this.viewsChilds.push(viewChild);
-        this.invalidate();
     }
     getViewVisibles() {
         // agrupamos los GONE's y los INVISIBLE's
@@ -75,16 +79,16 @@ class ViewGroup extends View{
     }
     
     //@Override
-    async invalidateSync(){
-        await super.invalidateSync();
+    async loadResources(){
+        await super.loadResources();
         for(let view of this.viewsChilds)
-            await view.invalidateSync();
+            await view.loadResources();
     }
     
     //@Override
-    async onMeasureSync(maxWidth, maxHeigth){
-        await super.onMeasureSync(maxWidth, maxHeigth);
+    async onMeasureSync(maxWidth, maxHeight){
+        await super.onMeasureSync(maxWidth, maxHeight);
         for(let view of this.viewsChilds)
-            await view.onMeasureSync(maxWidth, maxHeigth);
+            await view.onMeasureSync(maxWidth, maxHeight);
     }
 }

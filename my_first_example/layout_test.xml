@@ -8,10 +8,23 @@
     orientation="vertical"
     background="bg_dialog.9.png"
     id="linPrueba">
-    <View
-        layout_width="100px"
-        layout_height="100px"
-        background="#4d0000"
-        tooltip="PRUEBA DE MENSAJE"
-        />
+    <LinearLayout
+        orientation="vertical"
+        layout_width="300px"
+        layout_height="wrap_content"
+        padding="34"
+        background="#4d0000">
+        <View
+            layout_width="100px"
+            layout_height="100px"
+            background="#FF0000"/>
+        <View
+            layout_width="200px"
+            layout_height="75px"
+            background="#228B22"/>
+        <View
+            layout_width="150px"
+            layout_height="120px"
+            background="#808080"/>
+    </LinearLayout>
 </ViewGroup>

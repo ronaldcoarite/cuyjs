@@ -1,29 +1,32 @@
-RelativeLayout = ViewGroup.extend({
-    init: function (context) {
-        this._super(context);
+class RelativeLayout extends ViewGroup{
+    constructor(context) {
+        super(context);
         this.name = "RelativeLayout";
-    },
-    getTypeElement: function () {
+    }
+    //@Override
+    getTypeElement() {
         return "RelativeLayout";
-    },
-    parseViewChild: function (nodeXml) {
-        var view = this._super(nodeXml);
+    }
+    //@Override
+    parseViewChild(nodeXml) {
+        var view = super.parseViewChild(nodeXml);
         view.alignParentTop = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ALIGNPARENTTOP) === "true");
         view.alignParentRight = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ALIGNPARENTRIGHT) === "true");
         view.alignParentBottom = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ALIGNPARENTBOTTOM) === "true");
         view.alignParentLeft = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ALIGNPARENTLEFT) === "true");
-
+        
         view.centerHorizontal = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_CENTERHORIZONTAL) === "true");
         view.centerVertical = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_CENTERVERTICAL) === "true");
         view.centerInParent = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_CENTERINPARENT) === "true");
-
+        
         view.above = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ABOVE);
         view.below = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_BELOW);
         view.toRightOf = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TORIGHTOF);
         view.toLeftOf = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TOLEFTOF);
         return view;
-    },
-    onMeasure: function (maxWidth, maxHeight, loadListener) {
+    }
+    //@Override
+    async onMeasureSync(maxWidth, maxHeight){
         var this_ = this;
         var tempListener = function () {
             var visibles = this_.getViewVisibles();
@@ -184,4 +187,4 @@ RelativeLayout = ViewGroup.extend({
         };
         this._super(maxWidth, maxHeight, tempListener);
     }
-});
+};

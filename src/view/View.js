@@ -229,23 +229,7 @@ class View {
             this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH))||10;
     }
 
-    getDomWidth(maxWidth){
-        switch (this.width) {
-            case LayoutInflater.MATCH_PARENT: return maxWidth;
-            case LayoutInflater.WRAP_CONTENT: return this.elemDom.clientWidth;
-            default: return Math.min(parseInt(this.width),maxWidth);
-        }
-    }
-    
-    getDomHeight(maxHeigth){
-        switch (this.height) {
-            case LayoutInflater.MATCH_PARENT: return maxHeigth;
-            case LayoutInflater.WRAP_CONTENT: return this.elemDom.clientHeight;
-            default: Math.min(parseInt(this.width),maxHeigth);
-        }
-    }
-
-    async invalidateSync() {
+    async loadResources() {
         if(!this.elemDom) // Verificamos que el elemento este agregado a la vista y que exista
             return;
         // OnClick
@@ -286,6 +270,10 @@ class View {
                 this.elemDom.style.visibility = 'block';
                 break;
         }
+    }
+
+    async repaintSync() {
+        await this.backgroundPainter.paint();
     }
     
     // this.parentView.elemDom.appendChild(this.elemDom);

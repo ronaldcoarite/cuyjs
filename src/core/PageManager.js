@@ -89,7 +89,7 @@ class PageManager{
         // page.startLoaded(); // Iniciando carga
 
         var navigator = this.getWindowsDimension();
-        await page.viewRoot.invalidateSync();
+        await page.viewRoot.loadResources();
         await page.viewRoot.onMeasureSync(navigator.width,navigator.height);
         page.loadedFinized(); // Carga finalizada
         pageAnimation.hide();
