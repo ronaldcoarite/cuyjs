@@ -1,0 +1,18 @@
+[
+    "src/core/Context.js",
+    "src/core/Exception.js",
+    "src/core/Resource.js",
+    "src/core/PageManager.js",
+    "src/core/Intent.js",
+    "src/core/LayoutInflater.js",
+    "src/view/background/BaseBackground.js",
+    "src/view/background/ColorBackground.js",
+    "src/view/background/EmplyBackground.js",
+    "src/view/background/ImageBackground.js",
+    "src/view/background/NinepathBackground.js",
+    "src/view/View.js",
+    "src/layout/ViewGroup.js",
+    "src/layout/LinearLayout.js",
+    "src/page/Page.js",
+    "src/page/animation/SpinnerAnimation.js"
+]
