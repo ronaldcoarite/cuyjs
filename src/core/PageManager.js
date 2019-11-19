@@ -21,8 +21,7 @@ class PageManager{
 
         document.body.appendChild(sheet);
 
-        // Convertimos en no seleccinable a todos los elementos
-        // no editores
+        // DESABILITAR ELEMENTOS NO SELECCIONABLES
         var sheet = document.createElement('style');
         sheet.type = "text/css";
         //padding: 4px 20px;
@@ -36,6 +35,54 @@ class PageManager{
                                                 }`;
         document.body.appendChild(sheet);
 
+        // ESTILOS DE COMPONENTES
+        var sheet = document.createElement('style');
+        sheet.type = "text/css";
+        //padding: 4px 20px;
+        sheet.innerHTML = `@font-face
+        {
+            /*font-family: fuente;*/
+            src: url("Digital_tech.otf");
+        }
+        TextView
+        {
+            font-family:fuente;
+            letter-spacing: 3px;
+            color: white;
+            text-shadow: 2px aqua;
+        }
+        EditText
+        {
+            
+        }
+        Button
+        {
+            
+        }
+        CheckBox
+        {
+            
+        }
+        ItemVehiculo
+        {
+            background-color: #00ffff;
+        }
+        ItemVehiculo:hover
+        {
+            background-color: #ccffcc;
+        }
+        input[type=text]
+        {
+            color: #979797;
+            height: 28px;
+            padding: 5px;
+            text-decoration: none;
+            border-radius: 2px;
+            border: 0;
+        }`;
+        document.body.appendChild(sheet);
+        
+        // MULTIDIMENSION
         var sheet = document.createElement('style');
         sheet.type = "text/css";
         sheet.innerHTML = `@keyframes rotate{from {rotate:360deg;} to {rotate:0deg;}}
@@ -46,7 +93,7 @@ class PageManager{
 
         // Iniciamos la actividad principal
         var intent = new Intent(null, mainPageName);
-        await this.startPageSync(intent);
+        await PageManager.startPageSync(intent);
     }
 
     static async startPageSync(intent) {

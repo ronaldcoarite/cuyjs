@@ -56,10 +56,11 @@ class LinearLayout extends ViewGroup {
         //Establenciendo dimensión de los componentes
         for(let view of visibles){
             if (view.layoutWeight)
-            arrayWeigh.push(view);
+                arrayWeigh.push(view);
             else{
                 await view.onMeasureSync(maxWidth,maxHeight);
-                sumHeigthWrap = sumHeigthWrap + view.margin.top + this.elemDom.clientHeight + view.margin.bottom;
+                console.log(view);
+                sumHeigthWrap = sumHeigthWrap + view.margin.top + view.elemDom.clientHeight + view.margin.bottom;
             }
         }
         let altoWeigth = maxHeight - sumHeigthWrap;

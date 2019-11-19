@@ -8,14 +8,12 @@ for(let file of arrayClass){
     //let file = 'D:\\web\\cuyjs\\src\\page\\Page.js';
     console.log("FILE: ",file);
     let bufferFile = fs.readFileSync(`${__dirname.replace('build','')}${path.sep}${file}`, 'utf8');
-    console.log();
-    console.log();
-    console.log();
     // console.log(bufferFile.toString());
     let result = bufferFile.toString()
-                   .replace(/ +(?= )/g,'')
-                   .replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, '')
-                   .replace(/\r?\n|\r/g, " ");
+    // let result = bufferFile.toString()
+    //                .replace(/ +(?= )/g,'')
+    //                .replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, '')
+    //                .replace(/\r?\n|\r/g, " ");
     arrayCode.push(`// Class: ${file}`);
     arrayCode.push(result);
     // console.log(result.code);

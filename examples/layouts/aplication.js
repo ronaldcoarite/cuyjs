@@ -1,14 +1,23 @@
 /* global LayoutInflater, Toast, Dialog, Page, PageManager, ADLayoutUtils, Class */
-
-ADLayoutUtils.onLoadPage(function()
-{
-    PageManager.setMainPage("PruebaPage");
-    PageManager.startAplication();
-});
-PruebaPage = Page.extend
-({
-    onCreate:function(intent)
-    {
-        this.setContentView("layout/test.xml");
+Resource.waitToLoadAllResources().then(()=>{
+    // console.lgg(PageManager);
+    try {
+        PageManager.startAplicationSync('MainPage');
+    } catch (error) {
+        console.log(error);
     }
 });
+
+class MainPage extends Page{
+    // @Override
+    onCreate(intent){
+        console.log("Esableciendo contenido..");
+        this.setContentView("layout/test.xml");
+        console.log("Contenido establesido..");
+    }
+
+    // @Override
+    onStart(){
+        console.log("Pagina cargada correctamente");
+    }
+}

@@ -11,6 +11,7 @@
     "src/view/background/ImageBackground.js",
     "src/view/background/NinepathBackground.js",
     "src/view/View.js",
+    "src/view/TextView.js",
     "src/layout/ViewGroup.js",
     "src/layout/LinearLayout.js",
     "src/page/Page.js",
