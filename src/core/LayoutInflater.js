@@ -20,6 +20,7 @@ class LayoutInflater{
     static ATTR_ON_CLICK= "onClick";
     static ATTR_BACKGROUND= "background";
     static ATTR_ORIENTATION= "orientation";
+    // Utilizado solo en LinearLayout
     static ATTR_LAYOUT_WEIGHT= "layout_weight";
 
     // Atributos de RelativeLayout

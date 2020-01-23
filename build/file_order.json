@@ -12,8 +12,10 @@
     "src/view/background/NinepathBackground.js",
     "src/view/View.js",
     "src/view/TextView.js",
+    "src/view/Button.js",
     "src/layout/ViewGroup.js",
     "src/layout/LinearLayout.js",
+    "src/layout/FrameLayout.js",
     "src/page/Page.js",
     "src/page/animation/SpinnerAnimation.js"
 ]

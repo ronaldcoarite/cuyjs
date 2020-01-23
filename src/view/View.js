@@ -57,6 +57,8 @@ class View {
 
         elem.style.position = 'absolute';
         this.elemDom = elem;
+        if(this.id)
+            this.elemDom.id = this.id;
         return elem;
     }
     getTypeElement() {
@@ -83,11 +85,11 @@ class View {
     //         this.invalidate();
     // },
     getWidth() {
-        return this.width;
-        //elemDom.clientWidth;
+        // return this.width;
+        return this.elemDom? this.elemDom.clientWidth: 0;
     }
     getHeight() {
-        return this.height;
+        return this.elemDom? this.elemDom.clientHeight: 0;
     }
     setMargin(margin) {
         if (!margin) return;
@@ -257,7 +259,8 @@ class View {
         await this.backgroundPainter.load();
 
         // Tooltip de Vista
-        this.elemDom.setAttribute("title", this.tooltip);
+        if(this.tooltip)
+            this.elemDom.setAttribute("title", this.tooltip);
         // Visibilidad
         switch (this.visibility) {
             case View.INVISIBLE:

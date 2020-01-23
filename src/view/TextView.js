@@ -20,7 +20,7 @@ class TextView extends View {
         return 'TextView';
     }
     //@Override
-    parse(nodeXml) {
+    parse(nodeXml){
         super.parse(nodeXml);
         
         this.text = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TEXT);
@@ -85,6 +85,7 @@ class TextView extends View {
     // @Override
     async loadResources() {
         await super.loadResources();
+
         // Estableciendo valores de los atributos
         this.elemText.innerHTML = this.text;
         this.elemText.style.color = this.textColor;
@@ -98,11 +99,11 @@ class TextView extends View {
         }
         if(this.textSize)
             this.elemText.style.fontSize = this.textSize;
+        
         // Cargando la imagen o icono te texto
         this.imageResource = null;
         if(this.drawableResource)
             this.imageResource = await Resource.loadImage(this.drawableResource);
-        
     }
     async onMeasureSync(maxWidth, maxHeight) {
         await super.onMeasureSync(maxWidth,maxHeight);
@@ -228,7 +229,7 @@ class TextView extends View {
                                 this.padding.right) + 'px';
                             break;
                     }
-                    switch (this_.height) {
+                    switch (this.height) {
                         case LayoutInflater.MATCH_PARENT:
                             this.elemText.style.height = (
                                 maxHeight -

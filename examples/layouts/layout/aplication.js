@@ -12,7 +12,7 @@ class MainPage extends Page{
     // @Override
     onCreate(intent){
         console.log("Esableciendo contenido..");
-        this.setContentView("layout/test.xml");
+        this.setContentView("test.xml");
         console.log("Contenido establesido..");
     }
 

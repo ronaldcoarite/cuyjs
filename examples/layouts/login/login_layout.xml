@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FrameLayout
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:noNamespaceSchemaLocation='https://raw.githubusercontent.com/ronaldcoarite/cuyjs/master/src/layout-xml.xsd'
+    layout_width="match_parent"
+    layout_height="match_parent"
+    background="casa_futuro.jpg">
+    <!-- <LinearLayout
+        layout_width="260px"
+        layout_height="60px"
+        layout_gravity="center"
+        background="#88162e">
+    </LinearLayout> -->
+    <TextView
+        id="123456"
+        singleLine="true"
+        text="www.domolin.com"
+        textColor="#FFFFFF"
+        background="#ff0000"/>
+</FrameLayout>

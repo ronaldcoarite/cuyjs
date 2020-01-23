@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html style="background: white; overflow:hidden;">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="../../../dist/cuyjs.min.js"></script>
+        <script type="text/javascript">
+            class LoginPage extends Page{
+                // @Override
+                onCreate(intent){
+                    this.setContentView("login_layout.xml");
+                }
+
+                // @Override
+                onStart(){
+                    console.log("Pagina cargada correctamente");
+                }
+            }
+
+            Resource.waitToLoadAllResources().then(()=>{
+                try {
+                    PageManager.startAplicationSync('LoginPage');
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+        </script>
+        <title>Layouts</title>
+    </head>
+    <body style="min-width: 1250px; height: 950px;">
+    </body>
+</html>
