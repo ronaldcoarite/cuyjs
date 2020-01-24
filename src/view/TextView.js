@@ -166,6 +166,7 @@ class TextView extends View {
                         break;
                 }
                 this.elemDom.style.width = (this.padding.left + this.elemIcon.clientWidth +marginDrawable+this.elemText.clientWidth+this.padding.right) + 'px';
+                this.elemDom.style.height = (this.padding.top + this.elemIcon.clientHeight +marginDrawable+this.elemText.clientHeight+this.padding.bottom) + 'px';
                 break;
             case LayoutInflater.ATTR_DRAWABLE_RIGHT:
                 this.elemIcon.style.left = this.padding.left + 'px';
