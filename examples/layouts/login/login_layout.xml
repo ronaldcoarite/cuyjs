@@ -13,6 +13,8 @@
     </LinearLayout> -->
     <TextView
         id="123456"
+        layout_marginLeft="10px"
+        layout_marginTop="10px"
         singleLine="true"
         text="www.domolin.com"
         textColor="#FFFFFF"
