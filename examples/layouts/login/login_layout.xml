@@ -18,5 +18,7 @@
         singleLine="true"
         text="www.domolin.com"
         textColor="#FFFFFF"
-        background="#ff0000"/>
+        background="#ff0000"
+        drawableLeft="home.png"
+        />
 </FrameLayout>

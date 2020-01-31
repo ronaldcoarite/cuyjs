@@ -102,8 +102,10 @@ class TextView extends View {
         
         // Cargando la imagen o icono te texto
         this.imageResource = null;
-        if(this.drawableResource)
+        if(this.drawableResource){
             this.imageResource = await Resource.loadImage(this.drawableResource);
+            this.elemIcon.src = this.imageResource.src;
+        }
     }
     async onMeasureSync(maxWidth, maxHeight) {
         await super.onMeasureSync(maxWidth,maxHeight);
@@ -121,9 +123,10 @@ class TextView extends View {
         }
 
         switch(this.gravityIcon){
-            case LayoutInflater.ATTR_DRAWABLE_LEFT: 
+            case "left": 
+                    console.log("DRAWABLE","["+this.gravityIcon+"] AQUIII");
                 this.elemText.style.left = (this.padding.left + this.elemIcon.clientWidth + marginDrawable) + 'px';
-                this.elemText.style.top = (this.padding.top + this.elemIcon.clientWidth + marginDrawable) + 'px';
+                this.elemText.style.top = (this.padding.top + (this.elemIcon.clientHeight-this.elemText.clientHeight) + marginDrawable) + 'px';
 
                 switch (this.width) {
                     case LayoutInflater.MATCH_PARENT:
@@ -166,9 +169,9 @@ class TextView extends View {
                         break;
                 }
                 this.elemDom.style.width = (this.padding.left + this.elemIcon.clientWidth +marginDrawable+this.elemText.clientWidth+this.padding.right) + 'px';
-                this.elemDom.style.height = (this.padding.top + this.elemIcon.clientHeight +marginDrawable+this.elemText.clientHeight+this.padding.bottom) + 'px';
+                this.elemDom.style.height = (this.padding.top + Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight) +marginDrawable+this.padding.bottom) + 'px';
                 break;
-            case LayoutInflater.ATTR_DRAWABLE_RIGHT:
+            case "right":
                 this.elemIcon.style.left = this.padding.left + 'px';
                 this.elemText.style.left = (this.padding.left + this.elemIcon.clientWidth + marginDrawable) + 'px';
 
@@ -198,7 +201,7 @@ class TextView extends View {
                 this.elemDom.style.width = (this.padding.left + this.elemIcon.clientWidth + marginDrawable + this.elemText.clientWidth + this.padding.right) + 'px';
                 this.elemDom.style.height = (this.padding.top + Math.max(this.elemText.clientHeight, this.elemIcon.clientHeight) + this.padding.bottom) + 'px';
                 break;
-            case LayoutInflater.ATTR_DRAWABLE_BOTTOM: break;
+            case "botton": break;
 
             case LayoutInflater.ATTR_DRAWABLE_TOP:
                 switch (this.width) {
