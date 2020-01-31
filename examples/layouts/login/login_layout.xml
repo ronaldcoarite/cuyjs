@@ -19,6 +19,6 @@
         text="www.domolin.com"
         textColor="#FFFFFF"
         background="#ff0000"
-        drawableLeft="home.png"
+        drawableRight="home.png"
         />
 </FrameLayout>

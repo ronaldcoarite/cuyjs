@@ -121,12 +121,12 @@ class TextView extends View {
             imgAncho = this.imageResource.width;
             imgAlto = this.imageResource.height;
         }
-
         switch(this.gravityIcon){
-            case "left": 
-                    console.log("DRAWABLE","["+this.gravityIcon+"] AQUIII");
+            case "left":
+                this.elemIcon.style.left = (this.padding.left) + 'px';
+                this.elemIcon.style.top = (this.padding.top) + 'px';
                 this.elemText.style.left = (this.padding.left + this.elemIcon.clientWidth + marginDrawable) + 'px';
-                this.elemText.style.top = (this.padding.top + (this.elemIcon.clientHeight-this.elemText.clientHeight) + marginDrawable) + 'px';
+                this.elemText.style.top = (this.padding.top + (this.elemIcon.clientHeight-this.elemText.clientHeight)) + 'px';
 
                 switch (this.width) {
                     case LayoutInflater.MATCH_PARENT:
@@ -172,22 +172,21 @@ class TextView extends View {
                 this.elemDom.style.height = (this.padding.top + Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight) +marginDrawable+this.padding.bottom) + 'px';
                 break;
             case "right":
-                this.elemIcon.style.left = this.padding.left + 'px';
-                this.elemText.style.left = (this.padding.left + this.elemIcon.clientWidth + marginDrawable) + 'px';
+                this.elemText.style.left = (this.padding.left) + 'px';
+                this.elemText.style.top = (this.padding.top + (this.elemIcon.clientHeight-this.elemText.clientHeight)) + 'px';
 
                 switch (this.width) {
                     case LayoutInflater.MATCH_PARENT:
                         this.elemText.style.width = (
                             maxWidth -
-                            this.margin.left - this.padding.left -
-                            this.elemIcon.clientWidth -
+                            this.elemIcon.clientWidth - 
                             marginDrawable -
-                            this.padding.right - this.margin.right) + 'px';
+                            this.padding.left - this.margin.right) + 'px';
                         break;
                     case LayoutInflater.WRAP_CONTENT:
                         break;
-                    default:
-                        var width = parseInt(this.width);
+                    default: // tamaño establecido por el usuario
+                        let width = parseInt(this.width);
                         this.elemText.style.width = (
                             width -
                             this.padding.left -
@@ -196,13 +195,83 @@ class TextView extends View {
                             this.padding.right) + 'px';
                         break;
                 }
-
+                switch (this.height) {
+                    case LayoutInflater.MATCH_PARENT:
+                        this.elemText.style.height = (
+                            maxHeight -
+                            this.elemIcon.clientHeight - 
+                            marginDrawable -
+                            this.padding.top - this.padding.bottom) + 'px';
+                        break;
+                    case LayoutInflater.WRAP_CONTENT:
+                        break;
+                    default: // tamaño establecido por el usuario
+                        let height = parseInt(this.height);
+                        this.elemText.style.height = (
+                            height -
+                            this.padding.top -
+                            this.elemIcon.clientHeight -
+                            marginDrawable -
+                            this.padding.bottom) + 'px';
+                        break;
+                }
+                this.elemIcon.style.left = (this.padding.left+this.elemText.clientWidth+marginDrawable) + 'px';
+                this.elemIcon.style.top = (this.padding.top) + 'px';
                 // establecemos las dimensiones
                 this.elemDom.style.width = (this.padding.left + this.elemIcon.clientWidth + marginDrawable + this.elemText.clientWidth + this.padding.right) + 'px';
                 this.elemDom.style.height = (this.padding.top + Math.max(this.elemText.clientHeight, this.elemIcon.clientHeight) + this.padding.bottom) + 'px';
                 break;
-            case "botton": break;
+            case "botton":
+                switch (this.width) {
+                    case LayoutInflater.MATCH_PARENT:
+                        this.elemText.style.width = (
+                            maxWidth -
+                            this.elemIcon.clientWidth - 
+                            marginDrawable -
+                            this.padding.left - this.margin.right) + 'px';
+                        break;
+                    case LayoutInflater.WRAP_CONTENT:
+                        break;
+                    default: // tamaño establecido por el usuario
+                        let width = parseInt(this.width);
+                        this.elemText.style.width = (
+                            width -
+                            this.padding.left -
+                            this.elemIcon.clientWidth -
+                            marginDrawable -
+                            this.padding.right) + 'px';
+                        break;
+                }
+                switch (this.height) {
+                    case LayoutInflater.MATCH_PARENT:
+                        this.elemText.style.height = (
+                            maxHeight -
+                            this.elemIcon.clientHeight - 
+                            marginDrawable -
+                            this.padding.top - this.padding.bottom) + 'px';
+                        break;
+                    case LayoutInflater.WRAP_CONTENT:
+                        break;
+                    default: // tamaño establecido por el usuario
+                        let height = parseInt(this.height);
+                        this.elemText.style.height = (
+                            height -
+                            this.padding.top -
+                            this.elemIcon.clientHeight -
+                            marginDrawable -
+                            this.padding.bottom) + 'px';
+                        break;
+                }
 
+                this.elemText.style.left = (maxWidth-Math.max(this.elemText.clientWidth,this.elemIcon.clientWidth)/2+this.padding.left) + 'px';
+                this.elemText.style.top = (this.padding.top + this.elemIcon.clientHeight-this.elemText.clientHeight)) + 'px';
+
+                this.elemIcon.style.left = (this.padding.left+this.elemText.clientWidth+marginDrawable) + 'px';
+                this.elemIcon.style.top = (this.padding.top) + 'px';
+                // establecemos las dimensiones
+                this.elemDom.style.width = (this.padding.left + this.elemIcon.clientWidth + marginDrawable + this.elemText.clientWidth + this.padding.right) + 'px';
+                this.elemDom.style.height = (this.padding.top + Math.max(this.elemText.clientHeight, this.elemIcon.clientHeight) + this.padding.bottom) + 'px';
+                break;
             case LayoutInflater.ATTR_DRAWABLE_TOP:
                 switch (this.width) {
                     case LayoutInflater.MATCH_PARENT:
