@@ -5,20 +5,25 @@
     layout_width="match_parent"
     layout_height="match_parent"
     background="casa_futuro.jpg">
-    <!-- <LinearLayout
-        layout_width="260px"
-        layout_height="60px"
+    <LinearLayout
         layout_gravity="center"
+        orientation="vertical"
         background="#88162e">
-    </LinearLayout> -->
-    <TextView
-        id="123456"
+        <TextView
+            layout_marginLeft="5px"
+            layout_marginTop="5px"
+            singleLine="true"
+            text="Automatización y control para tu Hogar"
+            textColor="#FFFFFF"
+            background="#ff0000"/>
+    </LinearLayout>
+    <!-- <TextView
         layout_marginLeft="10px"
         layout_marginTop="10px"
         singleLine="true"
-        text="www.domolin.com"
+        text="Ingresar"
         textColor="#FFFFFF"
         background="#ff0000"
-        drawableRight="home.png"
-        />
+        drawableLeft="home.png"
+        /> -->
 </FrameLayout>
