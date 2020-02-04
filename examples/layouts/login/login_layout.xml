@@ -16,14 +16,17 @@
             text="Automatización y control para tu Hogar"
             textColor="#FFFFFF"
             background="#ff0000"/>
+        <Button
+            singleLine="true"
+            text="Ingresar"
+            textColor="#FFFFFF"
+            drawableLeft="home.png"/>
     </LinearLayout>
-    <!-- <TextView
-        layout_marginLeft="10px"
-        layout_marginTop="10px"
+    <TextView
+        layout_marginRight="5px"
+        layout_marginBottom="3px"
+        layout_gravity="right|bottom"
         singleLine="true"
-        text="Ingresar"
-        textColor="#FFFFFF"
-        background="#ff0000"
-        drawableLeft="home.png"
-        /> -->
+        text="www.domolin.com"
+        textColor="#FFFFFF"/>
 </FrameLayout>
