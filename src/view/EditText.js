@@ -1,12 +1,12 @@
-EditText = DomView.extend({
-    ems: 20,
-    lines: 1,
-    maxEms: 80,
-    maxLines: 10,
-    hint: null,
-    maxLength: -1,
-    readonly: false,
-    init: function (context) {
+class EditText extends DomView{
+    // ems: 20,
+    // lines: 1,
+    // maxEms: 80,
+    // maxLines: 10,
+    // hint: null,
+    // maxLength: -1,
+    // readonly: false,
+    constructor (context) {
         this._super(context);
         this.margin.left = this.margin.top = this.margin.right = this.bottom = 4;
         this.name = "EditText";
@@ -21,8 +21,9 @@ EditText = DomView.extend({
         this.elemDom.style.resize = 'none';
         if (this.lines === 1)
             this.elemDom.style.height = '22px';
-    },
-    parse: function (nodeXml) {
+    }
+    // @Override
+    parse(nodeXml) {
         this._super(nodeXml);
         if (nodeXml.getAttribute("ems") !== null) {
             this.ems = parseInt(nodeXml.getAttribute("ems"));
@@ -50,21 +51,22 @@ EditText = DomView.extend({
             this.elemDom.rows = 1;
         if (nodeXml.getAttribute("enabled") === "false")
             this.elemDom.disabled = true;
-    },
-    getDomType: function () {
+    }
+    // @Override
+    getDomType() {
         return 'TextArea';
-    },
-    getText: function () {
+    }
+    getText() {
         return this.elemDom.value;
-    },
-    setText: function (txt) {
+    }
+    setText(txt) {
         this.elemDom.value = txt;
-    },
-    setEnabled: function (sw) {
+    }
+    setEnabled(sw) {
         this.elemDom.disabled = !sw;
-    },
-    setError: function (msg) {
+    }
+    setError(msg) {
         this._super(msg);
         this.elemDom.focus();
     }
-});
+}
