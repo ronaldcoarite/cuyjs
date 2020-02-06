@@ -16,6 +16,15 @@
             text="Automatización y control para tu Hogar"
             textColor="#FFFFFF"
             background="#ff0000"/>
+        <TextView
+            singleLine="true"
+            text="Ingresar mediante"
+            textColor="#FFFFFF"
+            background="#ff0000"/>
+        <EditText
+            hint="Nombre de usuario"
+            singleLine="true"
+            />
         <Button
             singleLine="true"
             text="Ingresar"
