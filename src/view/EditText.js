@@ -46,7 +46,7 @@ class EditText extends View{
             this.enabled = false;
     }
     // @Override
-    getDomType() {
+    getTypeElement(){
         return 'TextArea';
     }
     getText() {
@@ -68,9 +68,11 @@ class EditText extends View{
         await super.loadResources();
         //cols="5" rows="1"
         this.elemDom.cols = this.ems;
-        if(this.lines){
-            this.elemDom.rows = this.lines;
-            this.elemDom.style.height = (this.elemDom.rows * 22) + 'px';
+        this.elemDom.rows = this.lines;
+        // this.elemDom.style.height = (this.elemDom.rows * 22) + 'px';
+        if(this.lines === 1){
+            this.elemDom.style.whiteSpace = "nowrap";
+            this.elemDom.style.overflowX = "hidden";
         }
         
         if (this.hint !== null)

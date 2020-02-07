@@ -112,7 +112,6 @@ class TextView extends View {
         const marginDrawable = 4; // 4px
         switch(this.gravityIcon){
             case "left":
-                console.log("PASANDO POR ACAAAAAA",this.padding);
                 this.elemIcon.style.left = (this.padding.left) + 'px';
                 this.elemIcon.style.top = (this.padding.top) + 'px';
 

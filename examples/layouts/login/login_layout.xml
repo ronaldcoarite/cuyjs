@@ -22,8 +22,10 @@
             textColor="#FFFFFF"
             background="#ff0000"/>
         <EditText
+            id="1214"
             hint="Nombre de usuario"
             singleLine="true"
+            text="Nombre usuario"
             />
         <Button
             singleLine="true"
