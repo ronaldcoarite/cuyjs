@@ -20,7 +20,7 @@ class ImageView extends View{
     setImageFromBase64(txtImageBase64) {
         this.elemDom.setAttribute(LayoutInflater.ATTR_SRC, 'data:image/png;base64,' + txtImageBase64);
     }
-    setSyncImageFromURL(urlImage, onLoaded) {
+    async setSyncImageFromURL(urlImage, onLoaded) {
         this.src = urlImage;
         if (this.src !== null) {
             this.elemDom.setAttribute(LayoutInflater.ATTR_SRC, this.src);
