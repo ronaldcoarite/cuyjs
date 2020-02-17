@@ -11,7 +11,7 @@ class EditText extends View{
         this.margin.left = this.margin.top = this.margin.right = this.bottom = 4;
         this.name = "EditText";
         this.ems = 20;
-        this.lines = 1,
+        this.lines = 3,
         this.maxEms = 80;
         this.maxLines = 10;
         this.hint = null;
@@ -74,7 +74,14 @@ class EditText extends View{
             this.elemDom.style.whiteSpace = "nowrap";
             this.elemDom.style.overflowX = "hidden";
         }
-        
+        this.elemDom.onkeydown = (e)=>{
+            if (this.lines===1&& e.keyCode == 13 && !e.shiftKey){
+                e.preventDefault();
+                return false;
+            }
+            else
+                return true;
+        };
         if (this.hint !== null)
             this.elemDom.placeholder = this.hint;
         if (this.maxLength > 0)
