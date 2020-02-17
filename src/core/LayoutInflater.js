@@ -52,9 +52,13 @@ class LayoutInflater{
     // ImageVIew
     static ATTR_SRC= "src";
     static ATTR_SCALE_TYPE= "scaleType";
+
     static FIT_XY= "fitXY";
     static FIT_START= "fitStart";
     static FIT_CENTER= "fitCenter";
+    static FIT_CENTER_CROP= "fitCenterCrop";
+    static FIT_CENTER_INSIDE= "fitCenterInside";
+    static FIT_END= "fitEnd";
     //CENTER = "center"
 
     // LinearLayout
