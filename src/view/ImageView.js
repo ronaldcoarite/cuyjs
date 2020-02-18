@@ -15,7 +15,7 @@ class ImageView extends View{
     parse(nodeXml) {
         super.parse(nodeXml);
         this.src = nodeXml.getAttribute(LayoutInflater.ATTR_SRC);
-        this.scaleType = nodeXml.getAttribute(LayoutInflater.ATTR_SCALE_TYPE||LayoutInflater.FIT_XY);
+        this.scaleType = nodeXml.getAttribute(LayoutInflater.ATTR_SCALE_TYPE)||LayoutInflater.FIT_XY;
     }
     setImageFromBase64(txtImageBase64) {
         this.elemDom.setAttribute(LayoutInflater.ATTR_SRC, 'data:image/png;base64,' + txtImageBase64);
