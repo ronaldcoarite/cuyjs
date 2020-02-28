@@ -14,6 +14,7 @@
     "src/view/TextView.js",
     "src/view/Button.js",
     "src/view/EditText.js",
+    "src/view/ImageView.js",
     "src/layout/ViewGroup.js",
     "src/layout/LinearLayout.js",
     "src/layout/FrameLayout.js",

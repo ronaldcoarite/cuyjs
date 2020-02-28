@@ -28,84 +28,41 @@ class ImageView extends View{
     // @Override
     async onMeasureSync(maxWidth, maxHeight) {
         await super.onMeasureSync(maxWidth,maxHeight);
-        switch (scaleType){
-            case LayoutInflater.FIT_CENTER: // Escalar la imagen 
-                if(this.elemXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WIDTH)===LayoutInflater.MATCH_PARENT){
-                    this.imgElem.setAttribute("width",maxWidth-this.margin.left-this.margin.right-this.padding.left-this.padding.right);
-                    this.imgElem.setAttribute("height","auto");
-                }
-                else{
-                    this.imgElem.setAttribute("width","auto");
-                    this.imgElem.setAttribute("height","auto"); 
-                }
+        // Estableciendo dimensión de componente
+        switch (this.width) {
+            case LayoutInflater.MATCH_PARENT:
+                this.elemText.style.width = Math.max(maxWidth-this.padding.left - this.padding.right,this.elemIcon.clientWidth + this.padding.left + this.padding.right);
                 break;
-            case LayoutInflater.FIT_XY:
-                console.log("Ajustando a este tipo");
-                if(this.elemXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WIDTH)===LayoutInflater.MATCH_PARENT){
-                    this.imgElem.setAttribute("width",maxWidth-this.margin.left-this.margin.right-this.padding.left-this.padding.right);
-                    this.imgElem.setAttribute("height","auto");
-                }
-                else
-                {
-                    this.imgElem.setAttribute("width","auto");
-                    this.imgElem.setAttribute("height","auto");
-                }
+            case LayoutInflater.WRAP_CONTENT:
+                this.elemText.style.width = Math.min(maxWidth-this.padding.left - this.padding.right,this.elemIcon.clientWidth + this.padding.left + this.padding.right);
+                break;
+            default: // tamaño establecido por el usuario
+                let width = parseInt(this.width);
+                this.elemText.style.width = (width -this.padding.left - this.elemIcon.clientWidth - this.padding.right) + 'px';
                 break;
         }
-    }
-    
-    // setImageFromBase64(txtImageBase64) {
-    //     this.elemDom.setAttribute(LayoutInflater.ATTR_SRC, 'data:image/png;base64,' + txtImageBase64);
-    // }
-    async setSyncImageFromURL(urlImage, onLoaded) {
-        this.src = urlImage;
-        if (this.src !== null) {
-            this.elemDom.setAttribute(LayoutInflater.ATTR_SRC, this.src);
 
-            if (onLoaded)
-                onLoaded();
-            //            this.elemDom.onload = function ()
-            //            {               
-            //                    switch (scaleType)
-            //                    {
-            //                        case LayoutInflater.FIT_CENTER:
-            //                            if(this.elemXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WIDTH)===LayoutInflater.MATCH_PARENT)
-            //                            {
-            //                                this.imgElem.setAttribute("width",maxWidth-this.margin.left-this.margin.right-this.padding.left-this.padding.right);
-            //                                this.imgElem.setAttribute("height","auto");
-            //                            }
-            //                            else
-            //                            {
-            //                                this.imgElem.setAttribute("width","auto");
-            //                                this.imgElem.setAttribute("height","auto");                            
-            //                            }
-            //                            break;
-            //                        case LayoutInflater.FIT_XY:
-            //                            console.log("Ajustando a este tipo");
-            //                            if(this.elemXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WIDTH)===LayoutInflater.MATCH_PARENT)
-            //                            {
-            //                                this.imgElem.setAttribute("width",maxWidth-this.margin.left-this.margin.right-this.padding.left-this.padding.right);
-            //                                this.imgElem.setAttribute("height","auto");
-            //                            }
-            //                            else
-            //                            {
-            //                                this.imgElem.setAttribute("width","auto");
-            //                                this.imgElem.setAttribute("height","auto");
-            //                            }
-            //                            break;
-            //                    }
-            //                    this.imgElem.style.top = this.padding.top+'px';
-            //                    this.imgElem.style.left = this.padding.left+'px';
-            //                    this.setWidth(this.padding.left+this.imgElem.clientWidth+this.padding.right);
-            //                    this.setHeight(this.padding.top+this.imgElem.clientHeight+this.padding.bottom);
-            //
-            //                if(onLoaded !== undefined)
-            //                    onLoaded();
-            //            };
+        switch (this.height) {
+            case LayoutInflater.MATCH_PARENT:
+                this.elemText.style.height = Math.max(maxHeight-this.padding.top - this.padding.bottom , this.elemIcon.clientHeight + this.padding.top + this.padding.bottom);
+                break;
+            case LayoutInflater.WRAP_CONTENT:
+                this.elemText.style.height = Math.min(maxHeight-this.padding.top - this.padding.bottom,this.elemIcon.clientHeight + this.padding.top + this.padding.bottom);
+                break;
+            default: // tamaño establecido por el usuario
+                let height = parseInt(this.height);
+                this.elemText.style.height = (height -this.padding.top - this.elemIcon.clientHeight - this.padding.bottom) + 'px';
+                break;
         }
-        else {
-            if (onLoaded)
-                onLoaded();
+
+        // Ajustando Imagen
+        switch (scaleType){ //contain
+            case LayoutInflater.FIT_CENTER: this.elemIcon.style.objectFit = 'none'; break;
+            case LayoutInflater.FIT_START: this.elemIcon.style.objectFit = 'cover'; break;
+            case LayoutInflater.FIT_CENTER_CROP: this.elemIcon.style.objectFit = 'scale-down'; break;
+            case LayoutInflater.FIT_CENTER_INSIDE: this.elemIcon.style.objectFit = 'cover'; break;
+            case LayoutInflater.FIT_END: this.elemIcon.style.objectFit = 'cover'; break;
+            case LayoutInflater.FIT_XY: this.elemIcon.style.objectFit = 'fill'; break;
         }
     }
 }
