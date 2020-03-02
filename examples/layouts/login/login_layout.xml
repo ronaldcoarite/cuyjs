@@ -9,6 +9,11 @@
         layout_gravity="center"
         orientation="vertical"
         background="#88162e">
+        <ImageView
+            layout_height="30px"
+            layout_height="45px"
+            src="logo.jpg"
+        />
         <TextView
             layout_marginLeft="5px"
             layout_marginTop="5px"
