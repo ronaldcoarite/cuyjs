@@ -22,8 +22,8 @@ class ImageView extends View{
     // @Override
     async loadResources() {
         await super.loadResources();
-        this.image = await Resource.loadImage(this.drawableResource);
-        this.elemIcon.src = image.src;
+        this.image = await Resource.loadImage(this.src);
+        this.elemDom.src = this.image.src;
     }
     // @Override
     async onMeasureSync(maxWidth, maxHeight) {
@@ -31,38 +31,38 @@ class ImageView extends View{
         // Estableciendo dimensión de componente
         switch (this.width) {
             case LayoutInflater.MATCH_PARENT:
-                this.elemText.style.width = Math.max(maxWidth-this.padding.left - this.padding.right,this.elemIcon.clientWidth + this.padding.left + this.padding.right);
+                this.elemDom.style.width = Math.max(maxWidth-this.padding.left - this.padding.right,this.image.clientWidth + this.padding.left + this.padding.right);
                 break;
             case LayoutInflater.WRAP_CONTENT:
-                this.elemText.style.width = Math.min(maxWidth-this.padding.left - this.padding.right,this.elemIcon.clientWidth + this.padding.left + this.padding.right);
+                this.elemDom.style.width = Math.min(maxWidth-this.padding.left - this.padding.right,this.image.clientWidth + this.padding.left + this.padding.right);
                 break;
             default: // tamaño establecido por el usuario
                 let width = parseInt(this.width);
-                this.elemText.style.width = (width -this.padding.left - this.elemIcon.clientWidth - this.padding.right) + 'px';
+                this.elemDom.style.width = (width -this.padding.left - this.image.clientWidth - this.padding.right) + 'px';
                 break;
         }
 
         switch (this.height) {
             case LayoutInflater.MATCH_PARENT:
-                this.elemText.style.height = Math.max(maxHeight-this.padding.top - this.padding.bottom , this.elemIcon.clientHeight + this.padding.top + this.padding.bottom);
+                this.elemDom.style.height = Math.max(maxHeight-this.padding.top - this.padding.bottom , this.image.clientHeight + this.padding.top + this.padding.bottom);
                 break;
             case LayoutInflater.WRAP_CONTENT:
-                this.elemText.style.height = Math.min(maxHeight-this.padding.top - this.padding.bottom,this.elemIcon.clientHeight + this.padding.top + this.padding.bottom);
+                this.elemDom.style.height = Math.min(maxHeight-this.padding.top - this.padding.bottom,this.image.clientHeight + this.padding.top + this.padding.bottom);
                 break;
             default: // tamaño establecido por el usuario
                 let height = parseInt(this.height);
-                this.elemText.style.height = (height -this.padding.top - this.elemIcon.clientHeight - this.padding.bottom) + 'px';
+                this.elemDom.style.height = (height -this.padding.top - this.image.clientHeight - this.padding.bottom) + 'px';
                 break;
         }
 
         // Ajustando Imagen
-        switch (scaleType){ //contain
-            case LayoutInflater.FIT_CENTER: this.elemIcon.style.objectFit = 'none'; break;
-            case LayoutInflater.FIT_START: this.elemIcon.style.objectFit = 'cover'; break;
-            case LayoutInflater.FIT_CENTER_CROP: this.elemIcon.style.objectFit = 'scale-down'; break;
-            case LayoutInflater.FIT_CENTER_INSIDE: this.elemIcon.style.objectFit = 'cover'; break;
-            case LayoutInflater.FIT_END: this.elemIcon.style.objectFit = 'cover'; break;
-            case LayoutInflater.FIT_XY: this.elemIcon.style.objectFit = 'fill'; break;
+        switch (this.scaleType){ //contain
+            case LayoutInflater.FIT_CENTER: this.elemDom.style.objectFit = 'none'; break;
+            case LayoutInflater.FIT_START: this.elemDom.style.objectFit = 'cover'; break;
+            case LayoutInflater.FIT_CENTER_CROP: this.elemDom.style.objectFit = 'scale-down'; break;
+            case LayoutInflater.FIT_CENTER_INSIDE: this.elemDom.style.objectFit = 'cover'; break;
+            case LayoutInflater.FIT_END: this.elemDom.style.objectFit = 'cover'; break;
+            case LayoutInflater.FIT_XY: this.elemDom.style.objectFit = 'fill'; break;
         }
     }
 }

@@ -61,18 +61,19 @@ class Resource{
             throw "No se envió la imagen para la carga";
         if(typeof urlOrTextBase64 !== 'string')
             throw "El parámetro para cargar la imagen no es de tipo texto";
-        let image = await new Promise(function(resolve,reject){
-            let image = new Image();
+        let imageProm = await new Promise(function(resolve,reject){
+            var image = new Image();
             image.onload = function(){
                 resolve(image);
             }
             if(Resource.isBase64Resource(urlOrTextBase64)){
                 image.src = `data:image/png;base64,${urlOrTextBase64}`;
             }
-            else
+            else{
                 image.src =urlOrTextBase64;
+            }
         });
-        return image;
+        return imageProm;
     }
 
     static isBase64Resource(urlOrTextBase64){
