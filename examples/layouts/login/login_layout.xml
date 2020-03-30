@@ -12,7 +12,8 @@
         <ImageView
             layout_height="80px"
             layout_width="90px"
-            src="logo.jpg"/>
+            src="logo.jpg"
+            layout_gravity="center_horizontal"/>
         <TextView
             layout_marginLeft="5px"
             layout_marginTop="5px"
@@ -35,7 +36,8 @@
             singleLine="true"
             text="Ingresar"
             textColor="#FFFFFF"
-            drawableLeft="home.png"/>
+            drawableLeft="home.png"
+            layout_gravity="center_horizontal"/>
     </LinearLayout>
     <TextView
         layout_marginRight="5px"

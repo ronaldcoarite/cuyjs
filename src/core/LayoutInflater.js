@@ -5,6 +5,14 @@ class LayoutInflater{
     static ATTR_ID= "id";
     static ATTR_LAYOUT_GRAVITY= "layout_gravity";
 
+    static ATTR_LAYOUT_GRAVITY_LEFT = "left";
+    static ATTR_LAYOUT_GRAVITY_RIGHT = "right";
+    static ATTR_LAYOUT_GRAVITY_TOP = "top";
+    static ATTR_LAYOUT_GRAVITY_BOTTOM = "bottom";
+    static ATTR_LAYOUT_GRAVITY_CENTER = "center";
+    static ATTR_LAYOUT_GRAVITY_CENTER_H = "center_horizontal";
+    static ATTR_LAYOUT_GRAVITY_CENTER_V = "center_vertical";
+
     static ATTR_LAYOUT_MARGIN= "layout_margin";
     static ATTR_LAYOUT_MARGIN_TOP= "layout_marginTop";
     static ATTR_LAYOUT_MARGIN_LEFT= "layout_marginLeft";
@@ -62,8 +70,8 @@ class LayoutInflater{
     //CENTER = "center"
 
     // LinearLayout
-    static HORIZONTAL= "horizontal";
-    static VERTICAL= "vertical";
+    static LIN_ORIENTATION_HORIZONTAL= "horizontal";
+    static LIN_ORIENTATION_VERTICAL= "vertical";
 
     // vista
     static ATTR_VISIBILITY= "visibility";
