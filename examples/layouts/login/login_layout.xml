@@ -8,7 +8,8 @@
     <LinearLayout
         layout_gravity="center"
         orientation="vertical"
-        background="#88162e">
+        background="#88162e"
+        padding="10px">
         <ImageView
             layout_height="80px"
             layout_width="90px"

@@ -25,166 +25,125 @@ class RelativeLayout extends ViewGroup{
         view.toLeftOf = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TOLEFTOF);
         return view;
     }
+
     //@Override
     async onMeasureSync(maxWidth, maxHeight){
-        var this_ = this;
-        var tempListener = function () {
-            var visibles = this_.getViewVisibles();
+        await super.onMeasureSync(maxWidth, maxHeight);
+        let visibles = this.getViewVisibles();
+        var mayHeight = 0;
+        var mayWidth = 0;
+        // Dibujando todos los componentes sin posicionarlos para obtener sus dimensiones candidato
+        for(let view of visibles){
+            await view.onMeasureSync(
+                maxWidth- this.padding.left - this.padding.right,
+                maxHeight-this.padding.top - this_.padding.bottom);
+            let sumWidth = this.padding.left + view.margin.left + view.elemDom.clientWidth + view.margin.right + this.padding.right;
+            if (sumWidth > mayWidth)
+                mayWidth = sumWidth;
+            let sumHeight = this.padding.top + view.margin.top + view.elemDom.clientHeight + view.margin.bottom + this.padding.bottom;
+            if (sumHeight > mayHeight)
+                mayHeight = sumHeight;
+        }
 
-            if (visibles.length === 0) {
-                switch (this.height) {
-                    case LayoutInflater.MATCH_PARENT: break;
-                    case LayoutInflater.WRAP_CONTENT:
-                        this_.elemDom.style.height = (this_.padding.top + this_.padding.bottom) + 'px';
-                        this_.invalidate();
-                        break;
-                    default: break;
-                }
-                switch (this.width) {
-                    case LayoutInflater.MATCH_PARENT: break;
-                    case LayoutInflater.WRAP_CONTENT:
-                        this_.elemDom.style.width = (this_.padding.left + this_.padding.right) + 'px';
-                        this_.invalidate();
-                        break;
-                    default: break;
-                }
-                if (loadListener !== undefined)
-                    loadListener();
-                return;
+        // Iteramos nuevamente para posicionar los elementos a partir de su dimesion y respecto a sus referencias
+        for(let view of visibles){
+            await view.onMeasureSync(
+                maxWidth- this.padding.left - this.padding.right,
+                maxHeight-this.padding.top - this_.padding.bottom);
+
+            // Posicionamos la vista segun el layout
+            if (view.alignParentTop === true)
+                view.elemDom.style.top = (this.padding.top + view.margin.top) + 'px';
+            if (view.alignParentRight === true)
+                view.elemDom.style.left = (this.elemDom.clientWidth - view.elemDom.clientWidth - view.margin.right - this.padding.right) + 'px';
+            if (view.alignParentLeft === true)
+                view.elemDom.style.left = (this.padding.left + view.margin.left) + 'px';
+            if (view.alignParentBottom === true)
+                view.elemDom.style.top = (this.elemDom.clientHeight - view.elemDom.clientHeight - view.margin.bottom - this.padding.bottom) + 'px';
+
+            if (view.centerHorizontal === true)
+                view.elemDom.style.left = (this.elemDom.clientWidth / 2 - view.elemDom.clientWidth / 2) + 'px';
+            if (view.centerVertical === true)
+                view.elemDom.style.top = (this.elemDom.clientHeight / 2 - view.elemDom.clientHeight / 2) + 'px';
+            if (view.centerInParent === true) {
+                view.elemDom.style.left = (this.elemDom.clientWidth / 2 - view.elemDom.clientWidth / 2) + 'px';
+                view.elemDom.style.top = (this.elemDom.clientHeight / 2 - view.elemDom.clientHeight / 2) + 'px';
             }
 
-            var ancho = this_.getWidth();
-            var alto = this_.getHeight();
+            // Ubicación respecto a otros elementos
+            // ATTR_LAYOUT_ABOVE:"layout_above",//id
+            if (view.above) {
+                var viewAbove = this.findViewChildById(view.above);
+                if (!viewAbove)
+                    throw new Exception(`No se encuentra el view hijo con id [${view.above}] citado en la vista [${view.name}], para el contenedor [${this.name}]`);
+                view.elemDom.style.top = (parseInt(viewAbove.elemDom.style.top) - viewAbove.margin.top - view.elemDom.clientHeight - view.margin.bottom) + 'px';
+            }
+            // ATTR_LAYOUT_BELOW:"layout_below",//id
+            if (view.below) {
+                var viewBelow = this.findViewChildById(view.below);
+                if (!viewBelow)
+                    throw new Exception(`No se encuentra el view hijo con id [${view.below}] citado en la vista [${view.name}], para el contenedor [${this.name}]`);
+                view.elemDom.style.top = (parseInt(viewBelow.elemDom.style.top) + viewBelow.elemDom.clientHeight + viewBelow.margin.bottom + view.margin.top) + 'px';
+            }
+            // ATTR_LAYOUT_TORIGHTOF:"layout_toRightOf",//id
+            if (view.toLeftOf) {
+                var viewToLeft = this.findViewChildById(view.toLeftOf);
+                if (!viewToLeft)
+                    throw new Exception(`No se encuentra el view hijo con id [${view.toLeftOf}] citado en la vista [${view.name}], para el contenedor [${this.name}]`);
+                if (view.alignParentLeft === true) {
+                    await view.onMeasureSync(
+                        parseInt(viewToLeft.elemDom.style.left) - view.margin.left - view.margin.right,
+                        this.elemDom.clientHeight - this.padding.top - this.padding.bottom);
+                        // Posiblemente pintar de nuevo la vista de fondo
+                }
+                else if (view.toRightOf !== null) {
+                    console.log("Entrando por aquiiiiiaaaaaaaaaaaaaaaaaai. Pendiente");
+                }
+                else {
+                    view.elemDom.style.left = (parseInt(viewToLeft.elemDom.style.left) - view.elemDom.clientWidth - view.margin.right) + 'px';
+                }
+            }
+            // ATTR_LAYOUT_TOLEFTOF:"layout_toLeftOf",//id
+            if (view.toRightOf) {
+                var viewToRight = this.findViewById(view.toRightOf);
+                if (viewToRight === null)
+                    throw new Exception(`No se encuentra el view hijo con id [${view.toRightOf}] citado en la vista [${view.name}], para el contenedor [${this.name}]`);
 
-            var mayHeight = 0;
-            var mayWidth = 0;
+                view.elemDom.style.left = (
+                    parseInt(viewToRight.elemDom.style.left)
+                    + viewToRight.margin.left
+                    + viewToRight.elemDom.clientWidth
+                    + viewToRight.margin.right
+                    + view.margin.left) + 'px';
+            }
 
-            var index = -1;
-            var view = null;
-            var loadCompleted = function () {
-                switch (this_.height) {
-                    case LayoutInflater.MATCH_PARENT: break;
-                    case LayoutInflater.WRAP_CONTENT:
-                        this_.elemDom.style.height = (mayHeight) + 'px';
-                        this_.invalidate();
-                        break;
-                    default: break;
-                }
-                switch (this_.width) {
-                    case LayoutInflater.MATCH_PARENT: break;
-                    case LayoutInflater.WRAP_CONTENT:
-                        this_.elemDom.style.width = (mayWidth) + 'px';
-                        this_.invalidate();
-                        break;
-                    default: break;
-                }
-                if (loadListener !== undefined)
-                    loadListener();
-            };
-            var viewListener = function () {
-                // Posicionamos la vista segun el layout
-                if (view.alignParentTop === true)
-                    view.elemDom.style.top = (this_.padding.top + view.margin.top) + 'px';
-                if (view.alignParentRight === true)
-                    view.elemDom.style.left = (ancho - view.getWidth() - view.margin.right - this_.padding.right) + 'px';
-                if (view.alignParentLeft === true)
-                    view.elemDom.style.left = (this_.padding.left + view.margin.left) + 'px';
-                if (view.alignParentBottom === true)
-                    view.elemDom.style.top = (alto - view.getHeight() - view.margin.bottom - this_.padding.bottom) + 'px';
-
-                if (view.centerHorizontal === true)
-                    view.elemDom.style.left = (ancho / 2 - view.getWidth() / 2) + 'px';
-                if (view.centerVertical === true)
-                    view.elemDom.style.top = (alto / 2 - view.getHeight() / 2) + 'px';
-                if (view.centerInParent === true) {
-                    view.elemDom.style.left = (ancho / 2 - view.getWidth() / 2) + 'px';
-                    view.elemDom.style.top = (alto / 2 - view.getHeight() / 2) + 'px';
-                }
-
-                //            ATTR_LAYOUT_ABOVE:"layout_above",//id
-                var idViewAbove = view.above;
-                if (idViewAbove !== null && view.above) {
-                    var viewAbove = this_.findViewChildById(idViewAbove);
-                    if (viewAbove === null) {
-                        var msg = "No se encuentra el view hijo con id [" + idViewAbove + "] en el contenedor [" + this_.name + "]";
-                        console.log(msg);
-                        throw new Exception();
-                    }
-                    view.elemDom.style.top = (parseInt(viewAbove.elemDom.style.top) - viewAbove.margin.top - view.getHeight() - view.margin.bottom) + 'px';
-                }
-                //            ATTR_LAYOUT_BELOW:"layout_below",//id
-                var idViewBelow = view.below;
-                if (idViewBelow !== null && view.below) {
-                    var viewBelow = this_.findViewChildById(idViewBelow);
-                    if (viewBelow === null) {
-                        var msg = "No se encuentra el view con id [" + idViewBelow + "] en el contenedor [" + this.elemXml.tagName + "] ()";
-                        console.log(msg);
-                        throw new Exception(msg);
-                    }
-                    view.elemDom.style.top = (parseInt(viewBelow.elemDom.style.top) + viewBelow.getHeight() + viewBelow.margin.bottom + view.margin.top) + 'px';
-                }
-                //            ATTR_LAYOUT_TORIGHTOF:"layout_toRightOf",//id
-                var idViewToLeft = view.toLeftOf;
-                if (idViewToLeft !== null && view.toLeftOf) {
-                    var viewToLeft = this_.findViewChildById(idViewToLeft);
-                    if (viewToLeft === null)
-                        throw new Exception("No se encuentra el view con id [" + idViewToLeft + "] en en el contenedor [" + this_.name + "]");
-
-                    if (view.alignParentLeft === true) {
-                        view.onMeasure(
-                            parseInt(viewToLeft.elemDom.style.left) - view.margin.left - view.margin.right,
-                            alto - this_.padding.top - this_.padding.bottom);
-                    }
-                    else if (view.toRightOf !== null) {
-                        console.log("Entrando por aquiiiiiaaaaaaaaaaaaaaaaaai");
-                    }
-                    else {
-                        view.elemDom.style.left = (parseInt(viewToLeft.elemDom.style.left) - view.getWidth() - view.margin.right) + 'px';
-                    }
-                }
-                //            ATTR_LAYOUT_TOLEFTOF:"layout_toLeftOf",//id
-                var idViewToRight = view.toRightOf;
-                if (idViewToRight !== null && view.toRightOf) {
-                    var viewToRight = this_.findViewById(idViewToRight);
-                    if (viewToRight === null)
-                        throw new Exception("No se encuentra el view con id [" + idViewToRight + "] en en el contenedor [" + this_.name + "]");
-                    view.elemDom.style.left = (
-                        parseInt(viewToRight.elemDom.style.left)
-                        + viewToRight.margin.left
-                        + viewToRight.getWidth()
-                        + viewToRight.margin.right
-                        + view.margin.left) + 'px';
-                }
-                // verificando si tiene position top
-                if (view.elemDom.style.top === "")
-                    view.elemDom.style.top = (this_.padding.top + view.margin.top) + 'px';
-                if (view.elemDom.style.left === "")
-                    view.elemDom.style.left = (this_.padding.left + view.margin.left) + 'px';
-
-                var sum = parseInt(view.elemDom.style.top) + view.getHeight() + this_.padding.bottom + view.margin.bottom;
-                if (sum > mayHeight)
-                    mayHeight = sum;
-                sum = parseInt(view.elemDom.style.left) + view.getWidth() + this_.padding.right + view.margin.right;
-                if (sum > mayWidth)
-                    mayWidth = sum;
-                index++;
-                if (index < visibles.length) {
-                    view = visibles[index];
-                    view.onMeasure(
-                        ancho - this_.padding.left - this_.padding.right,
-                        alto - this_.padding.top - this_.padding.bottom,
-                        viewListener);
-                }
-                else
-                    loadCompleted();
-            };
-            index = 0;
-            view = visibles[index];
-            view.onMeasure(
-                ancho - this_.padding.left - this_.padding.right,
-                alto - this_.padding.top - this_.padding.bottom,
-                viewListener);
-        };
-        this._super(maxWidth, maxHeight, tempListener);
+            // verificando si tiene position top
+            if (view.elemDom.style.top === "")
+                view.elemDom.style.top = (this_.padding.top + view.margin.top) + 'px';
+            if (view.elemDom.style.left === "")
+                view.elemDom.style.left = (this_.padding.left + view.margin.left) + 'px';
+            var sum = parseInt(view.elemDom.style.top) + view.getHeight() + this_.padding.bottom + view.margin.bottom;
+            if (sum > mayHeight)
+                mayHeight = sum;
+            sum = parseInt(view.elemDom.style.left) + view.getWidth() + this_.padding.right + view.margin.right;
+            if (sum > mayWidth)
+                mayWidth = sum;
+        }
+        switch (this.height) {
+            case LayoutInflater.MATCH_PARENT: break;
+            case LayoutInflater.WRAP_CONTENT:
+                this.elemDom.style.height = `${mayHeight}px`;
+                await this.repaintSync();
+                break;
+            default: break;
+        }
+        switch (this.width) {
+            case LayoutInflater.MATCH_PARENT: break;
+            case LayoutInflater.WRAP_CONTENT:
+                this.elemDom.style.width = `${mayWidth}px`;
+                await this.repaintSync();
+                break;
+            default: break;
+        }
     }
 };
