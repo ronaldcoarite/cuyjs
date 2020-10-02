@@ -1,4 +1,4 @@
-class PageManager{
+class PageManager {
     static async startAplicationSync(mainPageName) {
         // Eliminamos margenes y padding del contenedor principal (body,html)
         document.body.style.paddingBottom = '0px';
@@ -51,34 +51,53 @@ class PageManager{
             color: white;
             text-shadow: 2px aqua;
         }
-        EditText
-        {
-            
+        textarea {
+            margin-top: 10px;
+            margin-left: 50px;
+            width: 500px;
+            height: 100px;
+            -moz-border-bottom-colors: none;
+            -moz-border-left-colors: none;
+            -moz-border-right-colors: none;
+            -moz-border-top-colors: none;
+            background: none repeat scroll 0 0 rgba(0, 0, 0, 0.07);
+            border-color: -moz-use-text-color #FFFFFF #FFFFFF -moz-use-text-color;
+            border-image: none;
+            border-radius: 6px 6px 6px 6px;
+            border-style: none solid solid none;
+            border-width: medium 1px 1px medium;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12) inset;
+            color: white;
+            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-size: 1em;
+            line-height: 1.4em;
+            padding: 10px 10px;
+            transition: background-color 0.2s ease 0s;
         }
-        Button
-        {
-            
+          
+        textarea:focus {
+              background: none repeat scroll 0 0 #FFFFFF;
+              outline-width: 0;
         }
+        .Button
+        {
+            border: none;
+            padding: 0;
+            background: none;
+        }
+        .Button: hover , .Button:focus
+        {
+            background-color: rgba(255,200,100,0.5);
+            color:black; 
+        }
+        .Button: active
+        {
+            background-color: rgba(255,220,150,0.7);
+        }
+
         CheckBox
         {
             
-        }
-        ItemVehiculo
-        {
-            background-color: #00ffff;
-        }
-        ItemVehiculo:hover
-        {
-            background-color: #ccffcc;
-        }
-        input[type=text]
-        {
-            color: #979797;
-            height: 28px;
-            padding: 5px;
-            text-decoration: none;
-            border-radius: 2px;
-            border: 0;
         }`;
         document.body.appendChild(sheet);
         
@@ -107,13 +126,14 @@ class PageManager{
         }
         page.className = intent.pageName;
 
-        await this.loadPageSync(intent.context, page, intent);
+        await PageManager.loadPageSync(intent.context, page, intent);
     }
+
     // proProgress:{left:?,top:?,width,height,showBackground:true}
     static async loadPageSync(previusPage, page, intent) {
         page.previusPage = previusPage;
         // LLamamos el on create de la pagina
-        page.onCreate(intent);
+        await page.onCreate(intent);
         let pageAnimation = new SpinnerAnimation();
         pageAnimation.show();
 
@@ -140,7 +160,7 @@ class PageManager{
         await page.viewRoot.onMeasureSync(navigator.width,navigator.height);
         page.loadedFinized(); // Carga finalizada
         pageAnimation.hide();
-        page.onStart(intent);
+        await page.onStart(intent);
     }
     static removeContext(context) {
         var element = context.viewRoot.elemDom;

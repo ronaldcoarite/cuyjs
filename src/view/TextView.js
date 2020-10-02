@@ -159,8 +159,8 @@ class TextView extends View {
                 this.elemText.style.left = (this.padding.left + this.elemIcon.clientWidth + marginDrawable) + 'px';
                 this.elemText.style.top = (this.padding.top + Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight)-this.elemText.clientHeight) + 'px';
 
-                this.elemDom.style.width = (this.padding.left + this.elemIcon.clientWidth +marginDrawable+this.elemText.clientWidth+this.padding.right) + 'px';
-                this.elemDom.style.height = (this.padding.top + Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight) +marginDrawable+this.padding.bottom) + 'px';
+                this.elemDom.style.width = (this.padding.left + (this.elemIcon.clientWidth>0?this.elemIcon.clientWidth+marginDrawable : 0) + this.elemText.clientWidth+this.padding.right) + 'px';
+                this.elemDom.style.height = (this.padding.top + Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight) +marginDrawable + this.padding.bottom) + 'px';
                 break;
             case "right":
                 this.elemText.style.left = (this.padding.left) + 'px';
@@ -210,7 +210,7 @@ class TextView extends View {
                 this.elemText.style.top = (this.padding.top + Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight)-this.elemText.clientHeight) + 'px';
 
                 // establecemos las dimensiones
-                this.elemDom.style.width = (this.padding.left + this.elemIcon.clientWidth + marginDrawable + this.elemText.clientWidth + this.padding.right) + 'px';
+                this.elemDom.style.width = (this.padding.left + (this.elemIcon.clientWidth>0?this.elemIcon.clientWidth+marginDrawable : 0) + this.elemText.clientWidth + this.padding.right) + 'px';
                 this.elemDom.style.height = (this.padding.top + Math.max(this.elemText.clientHeight, this.elemIcon.clientHeight) + this.padding.bottom) + 'px';
                 break;
             case "bottom":
@@ -322,6 +322,7 @@ class TextView extends View {
             default:
                 throw new Exception(`Tipo de alineación [${this.gravityIcon}] no soportada`);
         }
+        await this.repaintSync();
     }
     async setDrawableLeftSync(drawable) {
         this.gravityIcon = LayoutInflater.LEFT;

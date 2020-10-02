@@ -11,13 +11,11 @@ Resource.waitToLoadAllResources().then(()=>{
 class MainPage extends Page{
     // @Override
     onCreate(intent){
-        console.log("Esableciendo contenido..");
         this.setContentView("test.xml");
-        console.log("Contenido establesido..");
     }
 
     // @Override
     onStart(){
-        console.log("Pagina cargada correctamente");
+        
     }
 }

@@ -47,11 +47,11 @@ class Page extends Context{
         this.viewRoot.elemDom.style.opacity = 1;
         this.viewRoot.elemDom.style.visibility = 'visible';
     }
-    onCreate() { }
-    onStart() { }
-    onDestroy() { }
-    onPause() { }
-    onResume() { }
+    async onCreate() { }
+    async onStart() { }
+    async onDestroy() { }
+    async onPause() { }
+    async onResume() { }
 
     setNoHistory(history) {
         this.history = !history;
@@ -59,7 +59,7 @@ class Page extends Context{
     startPage(intent) {
         if (intent === undefined || intent === null)
             throw new Exception("El intent es nulo o no esta definido");
-        PageManager.startPage(intent);
+        PageManager.startPageSync(intent);
     }
     setTitle(title) {
         document.title = title;
@@ -75,5 +75,5 @@ class Page extends Context{
         this.requestCode = requestCode;
         this.startPage(intent);
     }
-    onPageResult(requestCode, resultCode, intent) { }
+    async onPageResult(requestCode, resultCode, intent) { }
 }

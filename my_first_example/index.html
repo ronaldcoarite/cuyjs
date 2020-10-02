@@ -24,7 +24,6 @@
         <script type="text/javascript">
             // "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"  --disable-web-security --disable-gpu --user-data-dir=~/chromeTemp
             Resource.waitToLoadAllResources().then(()=>{
-                console.log("Todos los recursos cargados correctamente");
                 // console.lgg(PageManager);
                 try {
                     PageManager.startAplicationSync('MainPage');
@@ -36,14 +35,12 @@
             class MainPage extends Page{
                 // @Override
                 onCreate(intent){
-                    console.log("Esableciendo contenido..");
                     this.setContentView("./layout_test.xml");
-                    console.log("Contenido establesido..");
                 }
 
                 // @Override
                 onStart(){
-                    console.log("Pagina cargada correctamente");
+                    
                 }
             }
         </script>

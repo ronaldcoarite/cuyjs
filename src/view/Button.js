@@ -7,13 +7,13 @@ class Button extends TextView{
     }
     //@Override
     getTypeElement(){
-        return 'button';
+        return 'Button';
     }
 
     //@Override
     createDomElement () {
         super.createDomElement();
-        //this.elemDom.classList.add("AndButton");
+        this.elemDom.classList.add("Button");
         return this.elemDom;
     }
 };

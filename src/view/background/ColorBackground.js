@@ -1,8 +1,7 @@
 class ColorBackground extends BaseBackground{
-    constructor(domElement,color){
-        super(domElement,color);
+    constructor(view,domElement,color){
+        super(view,domElement);
         this.color= color;
-        this.domElement = domElement;
     }
     async load(){
         this.domElement.style.background = this.color;

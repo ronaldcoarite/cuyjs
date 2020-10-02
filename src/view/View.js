@@ -22,6 +22,7 @@ class View {
         this.id = null;
         this.background = null;
         this.onClick = null;
+        this.onClickDefinition = null;
         this.tooltip = null;
         this.layoutGravity = (LayoutInflater.LEFT + '|' + LayoutInflater.TOP);
     }
@@ -135,18 +136,13 @@ class View {
 
         if (typeof onCLick === 'string') {
             // Buscamos el nombre de metodo en el contexto
-            var encontrado = false;
-            for (var obj in this.context) {
-                // Falta verificar si el objeto es una funcion
-                if (typeof this.context[obj] === 'function') {
-                    if (obj === onCLick) {
-                        this.onClick = this.context[onCLick];
-                        encontrado = true;
-                        break;
-                    }
+            var propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+            if(propertyNames.find(property=>property===onCLick)){
+                this.onClick = async function(){
+                        // Object.getPrototypeOf(this.context)[onCLick];
+                    Reflect.apply(Reflect.get(this.context,onCLick), this.context,this);
                 }
-            }
-            if (encontrado === false)
+            }else
                 throw new Exception(`No se pudo encontrar la funcion [${onCLick}] dentro del contexto [${this.context.className}]`);
         }else if (typeof onCLick === 'function') {
             this.onClick = onCLick;
@@ -222,7 +218,7 @@ class View {
 
         // BACKGROUDN DEL VIEW
         this.background = nodeXml.getAttribute(LayoutInflater.ATTR_BACKGROUND);
-        this.onClick = nodeXml.getAttribute(LayoutInflater.ATTR_ON_CLICK);
+        this.onClickDefinition = nodeXml.getAttribute(LayoutInflater.ATTR_ON_CLICK);
 
         if (nodeXml.getAttribute(LayoutInflater.ATTR_MIN_HEIGHT) !== null)
             this.minHeigth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_HEIGHT))||10;
@@ -234,27 +230,22 @@ class View {
     async loadResources() {
         if(!this.elemDom) // Verificamos que el elemento este agregado a la vista y que exista
             return;
-        // OnClick
-        if(this.onClick)
-            this.elemDom.onclick=()=>{
-                this.onClick(this);
-            };
         if(this.background){
             // Se verifica que tipo de fondo
             if(this.background instanceof BaseBackground)
                 this.backgroundPainter = this.background;
             else if(Resource.isImageNinePathResource(this.background)){ // Imagen de fondo de nine path
                 // let imageInBase64 = Resource.loa
-                this.backgroundPainter = new NinepathBackground(this.elemDom,this.background);
+                this.backgroundPainter = new NinepathBackground(this,this.elemDom,this.background);
             } 
             else if(Resource.isImageResource(this.background) || Resource.isBase64Resource(this.background))
-                this.backgroundPainter = new ImageBackground(this.elemDom,this.background);
+                this.backgroundPainter = new ImageBackground(this,this.elemDom,this.background);
             else if(Resource.isColorResource(this.background))
-                this.backgroundPainter = new ColorBackground(this.elemDom,this.background);
+                this.backgroundPainter = new ColorBackground(this,this.elemDom,this.background);
             else
                 throw new Exception(`No se pudo identificar el tipo de fondo [${this.background}]`);
         }else
-            this.backgroundPainter = new EmplyBackground(this.elemDom);
+            this.backgroundPainter = new EmplyBackground(this,this.elemDom);
             
         await this.backgroundPainter.load();
 
@@ -273,6 +264,25 @@ class View {
                 this.elemDom.style.visibility = 'block';
                 break;
         }
+
+        // Cargando OnClick
+        if (typeof this.onClickDefinition === 'string') {
+            // Buscamos el nombre de metodo en el contexto
+            var propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+            if(propertyNames.find(property=>property===this.onClickDefinition)){
+                this.onClick = async function(){
+                    // alert("Funcion asyncrona llamada correctamente");
+                    Reflect.apply(Reflect.get(this.context,this.onClickDefinition), this.context,this);
+                }
+            }else
+                throw new Exception(`No se pudo encontrar la funcion [${this.this.onClickDefinition}] dentro del contexto [${this.context.className}]`);
+        }
+
+        // OnClick
+        if(this.onClick)
+            this.elemDom.onclick=()=>{
+                this.onClick(this);
+            };
     }
 
     async repaintSync() {

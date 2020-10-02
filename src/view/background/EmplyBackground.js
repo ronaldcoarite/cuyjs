@@ -1,7 +1,6 @@
 class EmplyBackground extends BaseBackground{
-    constructor(domElement){
-        super(domElement);
-        this.domElement = domElement;
+    constructor(view,domElement){
+        super(view,domElement);
     }
     async load(){
         this.domElement.style.background='none';

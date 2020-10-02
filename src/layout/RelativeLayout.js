@@ -36,7 +36,7 @@ class RelativeLayout extends ViewGroup{
         for(let view of visibles){
             await view.onMeasureSync(
                 maxWidth- this.padding.left - this.padding.right,
-                maxHeight-this.padding.top - this_.padding.bottom);
+                maxHeight-this.padding.top - this.padding.bottom);
             let sumWidth = this.padding.left + view.margin.left + view.elemDom.clientWidth + view.margin.right + this.padding.right;
             if (sumWidth > mayWidth)
                 mayWidth = sumWidth;
@@ -49,7 +49,7 @@ class RelativeLayout extends ViewGroup{
         for(let view of visibles){
             await view.onMeasureSync(
                 maxWidth- this.padding.left - this.padding.right,
-                maxHeight-this.padding.top - this_.padding.bottom);
+                maxHeight-this.padding.top - this.padding.bottom);
 
             // Posicionamos la vista segun el layout
             if (view.alignParentTop === true)
@@ -119,13 +119,13 @@ class RelativeLayout extends ViewGroup{
 
             // verificando si tiene position top
             if (view.elemDom.style.top === "")
-                view.elemDom.style.top = (this_.padding.top + view.margin.top) + 'px';
+                view.elemDom.style.top = (this.padding.top + view.margin.top) + 'px';
             if (view.elemDom.style.left === "")
-                view.elemDom.style.left = (this_.padding.left + view.margin.left) + 'px';
-            var sum = parseInt(view.elemDom.style.top) + view.getHeight() + this_.padding.bottom + view.margin.bottom;
+                view.elemDom.style.left = (this.padding.left + view.margin.left) + 'px';
+            var sum = parseInt(view.elemDom.style.top) + view.getHeight() + this.padding.bottom + view.margin.bottom;
             if (sum > mayHeight)
                 mayHeight = sum;
-            sum = parseInt(view.elemDom.style.left) + view.getWidth() + this_.padding.right + view.margin.right;
+            sum = parseInt(view.elemDom.style.left) + view.getWidth() + this.padding.right + view.margin.right;
             if (sum > mayWidth)
                 mayWidth = sum;
         }

@@ -1,4 +1,13 @@
 [
+    "src/core/lang/Thread.js",
+    "src/core/net/DefaultHttpClient.js",
+    "src/core/net/HttpRequest.js",
+    "src/core/net/HttpResponse.js",
+    "src/core/net/HttpGet.js",
+    "src/core/net/HttpPost.js",
+    "src/core/net/HttpPut.js",
+    "src/core/net/HttpDelete.js",
+
     "src/core/Context.js",
     "src/core/Exception.js",
     "src/core/Resource.js",
@@ -15,9 +24,11 @@
     "src/view/Button.js",
     "src/view/EditText.js",
     "src/view/ImageView.js",
+    "src/view/ImageButton.js",
     "src/layout/ViewGroup.js",
     "src/layout/LinearLayout.js",
     "src/layout/FrameLayout.js",
+    "src/layout/RelativeLayout.js",
     "src/page/Page.js",
     "src/page/animation/SpinnerAnimation.js"
 ]

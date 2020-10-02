@@ -1,7 +1,7 @@
 class LinearLayout extends ViewGroup {
     constructor(context) {
         super(context);
-        this.orientation = LayoutInflater.LIN_ORIENTATION_HORIZONTAL;
+        // this.orientation = LayoutInflater.LIN_ORIENTATION_HORIZONTAL;
         this.name = "LinearLayout";
     }
 
@@ -12,20 +12,26 @@ class LinearLayout extends ViewGroup {
 
     //Override
     parse(nodeXml) {
-        super.parse(nodeXml);
         if (nodeXml.getAttribute(LayoutInflater.ATTR_ORIENTATION) === LayoutInflater.LIN_ORIENTATION_VERTICAL)
             this.orientation = LayoutInflater.LIN_ORIENTATION_VERTICAL;
         else if (nodeXml.getAttribute(LayoutInflater.ATTR_ORIENTATION) === LayoutInflater.LIN_ORIENTATION_HORIZONTAL)
             this.orientation = LayoutInflater.LIN_ORIENTATION_HORIZONTAL;
         else
             throw new Exception(
-                `La orientación para LinearLayout debe ser unicamente [horizontal o vertical] pero se envió [${LayoutInflater.ATTR_ORIENTATION}]`);
+                `La orientación para LinearLayout debe ser unicamente [horizontal o vertical]. Establesca el atributo [${LayoutInflater.ATTR_ORIENTATION}] para definir la orientación de la vista`);
+        super.parse(nodeXml);
     }
 
     //Override
     parseViewChild(nodeXml) {
         let view = super.parseViewChild(nodeXml);
-        view.layoutGravity = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_GRAVITY)||LayoutInflater.ATTR_LAYOUT_GRAVITY_LEFT;
+        view.layoutGravity = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_GRAVITY)||
+            (this.orientation===LayoutInflater.LIN_ORIENTATION_VERTICAL?
+                LayoutInflater.ATTR_LAYOUT_GRAVITY_LEFT:
+                LayoutInflater.ATTR_LAYOUT_GRAVITY_TOP);
+            
+        // console.log("LERANRO ORIENTATION GRAVITY: ", this.orientation, " = ",view.layoutGravity,"ATRIBUTE="+nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_GRAVITY));
+
         if (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WEIGHT) !== null){
             let weight = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WEIGHT);
             var num = parseFloat(weight);
@@ -104,7 +110,7 @@ class LinearLayout extends ViewGroup {
                         break;
                     default:
                         throw new Exception(
-                            `El tipo de alineación para el LinearLayout con valor [${gravitys[j]}] no es válido para la vista [${view.name}]. Utilice unicamente [${LayoutInflater.LEFT},${LayoutInflater.RIGHT},${LayoutInflater.CENTER_HORIZONTAL}]`);
+                            `La orientación para el LinearLayout es [${this.orientation}] y la vista [${view.name}] tiene asignado la alineación [${gravitys[j]}]. Utilice unicamente [${LayoutInflater.LEFT},${LayoutInflater.RIGHT},${LayoutInflater.CENTER_HORIZONTAL}]`);
                 }
             }
             // Posición vertical
@@ -187,14 +193,14 @@ class LinearLayout extends ViewGroup {
                         break;
                     default:
                         throw new Exception(
-                            `El tipo de alineación para el LinearLayout con valor [${gravitys[j]}] no es válido para la vista [${view.name}]. Utilice unicamente [${LayoutInflater.TOP},${LayoutInflater.BOTTOM},${LayoutInflater.CENTER_VERTICAL}]`);
+                            `La orientación para el LinearLayout es [${this.orientation}] y la vista [${view.name}] tiene asignado la alineación [${gravitys[j]}]. Utilice unicamente [${LayoutInflater.TOP},${LayoutInflater.BOTTOM},${LayoutInflater.CENTER_VERTICAL}]`);
                 }
             }
             // Posición horizontal
             view.elemDom.style.left = (posLeft + view.margin.left) + 'px';
             posLeft = posLeft + view.margin.left + view.elemDom.clientWidth + view.margin.right;
         }
-        sumWidth+=this.padding.right;
+        sumWidth += this.padding.right;
 
         // Ajustando contenido
         switch (this.height) {

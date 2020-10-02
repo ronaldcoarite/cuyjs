@@ -10,26 +10,35 @@ Al ser un framework basado a la programacion POO, cuyjs es extendible en cualqui
 
 Vea un ejemplo simple de como publicar una aplicación.
 
+
 ```javascript
-ADLayoutUtils.onLoadPage(function()
-{
-    PageManager.setMainPage("PruebaPage");
-    PageManager.startAplication();
+Resource.waitToLoadAllResources().then(() => {
+    try {
+        PageManager.startAplicationSync('PruebaPage');
+    } catch (error) {
+        console.log(error);
+    }
 });
 
-PruebaPage = Page.extend
-({
-    onCreate:function(intent)
-    {
+class PruebaPage extends Page {
+    // @Override
+    onCreate(intent){
         this.setContentView("layout/test.xml");
-    },
-    onClick:function()
+    }
+
+    // @Override
+    onStart(){
+        
+    }
+    onClick()
     {
         Toast.makeText(this,"Este es un mensaje",Toast.LENGTH_LONG).show();
     }
-});
+}
 ```
-A continuación el layout correspondiente para la vista
+
+A continuación el layout correspondiente para la vista archivo *test.xml*
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout
@@ -43,7 +52,8 @@ A continuación el layout correspondiente para la vista
     id="linPrueba">
     <Button
         text="Agregar Vehiculo"
-        singleLine="true"/>
+        singleLine="true"
+        onClick="onClickBoton"/>
 </LinearLayout>
 ```
 

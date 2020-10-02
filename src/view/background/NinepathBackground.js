@@ -1,8 +1,6 @@
 class NinepathBackground extends BaseBackground{
-    constructor(domElement,imageNinePathBase64){
-        super(domElement);
-        // Stores the HTMLDivElement that's using the 9patch image
-        this.domElement = domElement;
+    constructor(view,domElement,imageNinePathBase64){
+        super(view,domElement);
         // Padding
         this.padding = null;
         // Stores the pieces used to generate the horizontal layout
@@ -72,6 +70,10 @@ class NinepathBackground extends BaseBackground{
     
         dWidth = this.domElement.clientWidth;
         dHeight = this.domElement.clientHeight;
+        if(dWidth=== 0 && dHeight===0){
+            console.warn("Dimensiones boton ",dWidth,dHeight);
+            return;
+        }
     
         if (dWidth === 0 || dHeight === 0)
             return;
@@ -180,47 +182,53 @@ class NinepathBackground extends BaseBackground{
         this.bgImage = await Resource.loadImage(this.imageNinePathBase64);
         this.domElement.style.background = 'none';
         this.domElement.style.backgroundRepeat = "no-repeat";
+
+        // this.view.padding = { top: 0, left: 0, right: 0, bottom: 0 };
         
-        // this.elemDom.style.backgroundRepeat = "no-repeat";
-        // this.elemDom.style.backgroundPosition = "-1000px -1000px";
-        // this.elemDom.style.backgroundImage = "url('" + background + "')";
-
-
-
-
-
-        // var this_ = this;
-        // this.ninePatch = new NinePatch(this.elemDom, function () {
-        //     this_.padding.left = this_.ninePatch.padding.left;
-        //     this_.padding.top = this_.ninePatch.padding.top;
-        //     this_.padding.right = this_.ninePatch.padding.right;
-        //     this_.padding.bottom = this_.ninePatch.padding.bottom;
-        // });
-    }
-    
-    // @Override
-    async paint(){
-        // Create a temporary canvas to get the 9Patch index data.
-        var tempCtx, tempCanvas;
-        tempCanvas = document.createElement('canvas');
+        // Obteniendo padding
+        // var tempCtx, tempCanvas;
+        var tempCanvas = document.createElement('canvas');
         tempCanvas.width = this.bgImage.width;
         tempCanvas.height = this.bgImage.height;
-        tempCtx = tempCanvas.getContext('2d');
-        tempCtx.drawImage(this.bgImage, 0, 0);
+        this.tempCtx = tempCanvas.getContext('2d');
+        this.tempCtx.drawImage(this.bgImage, 0, 0);
 
-        // Obteniendo el padding lateral derecho
-        var dataPad = tempCtx.getImageData(this.bgImage.width - 1, 0, 1, this.bgImage.height).data;
+        var dataPad = this.tempCtx.getImageData(this.bgImage.width - 1, 0, 1, this.bgImage.height).data;
         var padRight = this.getPadBorder(dataPad, this.bgImage.width, this.bgImage.height);
         this.padding.top = padRight.top;
         this.padding.bottom = padRight.bottom;
-        dataPad = tempCtx.getImageData(0, this.bgImage.height - 1, this.bgImage.width, 1).data;
+        dataPad = this.tempCtx.getImageData(0, this.bgImage.height - 1, this.bgImage.width, 1).data;
         var padBottom = this.getPadBorder(dataPad, this.bgImage.width, this.bgImage.height);
 
         this.padding.left = padBottom.top;
         this.padding.right = padBottom.bottom;
 
+        this.view.padding= this.padding;
+    }
+    
+    // @Override
+    async paint(){
+        // Create a temporary canvas to get the 9Patch index data.
+        // var tempCtx, tempCanvas;
+        // tempCanvas = document.createElement('canvas');
+        // tempCanvas.width = this.bgImage.width;
+        // tempCanvas.height = this.bgImage.height;
+        // tempCtx = tempCanvas.getContext('2d');
+        // tempCtx.drawImage(this.bgImage, 0, 0);
+
+        // // Obteniendo el padding lateral derecho
+        // var dataPad = tempCtx.getImageData(this.bgImage.width - 1, 0, 1, this.bgImage.height).data;
+        // var padRight = this.getPadBorder(dataPad, this.bgImage.width, this.bgImage.height);
+        // this.padding.top = padRight.top;
+        // this.padding.bottom = padRight.bottom;
+        // dataPad = tempCtx.getImageData(0, this.bgImage.height - 1, this.bgImage.width, 1).data;
+        // var padBottom = this.getPadBorder(dataPad, this.bgImage.width, this.bgImage.height);
+
+        // this.padding.left = padBottom.top;
+        // this.padding.right = padBottom.bottom;
+
         // Loop over each  horizontal pixel and get piece
-        var data = tempCtx.getImageData(0, 0, this.bgImage.width, 1).data;
+        var data = this.tempCtx.getImageData(0, 0, this.bgImage.width, 1).data;
 
         // Use the upper-left corner to get staticColor, use the upper-right corner
         // to get the repeatColor.
@@ -231,7 +239,7 @@ class NinepathBackground extends BaseBackground{
         this.horizontalPieces = this.getPieces(data, staticColor, repeatColor);
 
         // Loop over each  horizontal pixel and get piece
-        data = tempCtx.getImageData(0, 0, 1, this.bgImage.height).data;
+        data = this.tempCtx.getImageData(0, 0, 1, this.bgImage.height).data;
         this.verticalPieces = this.getPieces(data, staticColor, repeatColor);
 
         // use this.horizontalPieces and this.verticalPieces to generate image
