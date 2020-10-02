@@ -30,8 +30,7 @@ class PruebaPage extends Page {
     onStart(){
         
     }
-    onClick()
-    {
+    onClick(){
         Toast.makeText(this,"Este es un mensaje",Toast.LENGTH_LONG).show();
     }
 }
