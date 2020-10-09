@@ -119,6 +119,7 @@
         <xs:attribute type="layout_dimension" name="layout_height" default="wrap_content"/>
         <xs:attribute type="xs:string" name="background" use="optional"/>
         <xs:attribute type="xs:string" name="onClick" use="optional"/>
+        <xs:attribute type="xs:string" name="cssClassList" use="optional"/>
         
         <xs:attribute ref="layout_gravity" use="optional"/>
         <xs:attribute ref="tooltip" use="optional"/>
@@ -166,6 +167,10 @@
                 <xs:group minOccurs="0" maxOccurs="unbounded" ref="any-view" />
                 <xs:attribute type="text_style" name="textStyle"/>
                 <xs:attribute type="xs:string" name="text" use="optional"/>
+                <xs:attribute type="xs:string" name="shadowColor" use="optional"/>
+                <xs:attribute type="xs:integer" name="shadowDx" use="optional"/>
+                <xs:attribute type="xs:integer" name="shadowDy" use="optional"/>
+                <xs:attribute type="xs:integer" name="shadowRadius" use="optional"/>
                 <xs:attribute type="xs:string" name="textColor" use="optional"/>
                 <xs:attribute type="xs:string" name="hint" use="optional"/>
                 <xs:attribute type="xs:string" name="textSize" use="optional"/>

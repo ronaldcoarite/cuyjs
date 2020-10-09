@@ -39,13 +39,8 @@ class PageManager {
         var sheet = document.createElement('style');
         sheet.type = "text/css";
         //padding: 4px 20px;
-        sheet.innerHTML = `@font-face
-        {
-            /*font-family: fuente;*/
-            src: url("Digital_tech.otf");
-        }
-        TextView
-        {
+        sheet.innerHTML = `
+        TextView{
             font-family:fuente;
             letter-spacing: 3px;
             color: white;
@@ -79,24 +74,20 @@ class PageManager {
               background: none repeat scroll 0 0 #FFFFFF;
               outline-width: 0;
         }
-        .Button
-        {
+        .Button {
             border: none;
             padding: 0;
             background: none;
         }
-        .Button: hover , .Button:focus
-        {
+        .Button: hover , .Button:focus {
             background-color: rgba(255,200,100,0.5);
             color:black; 
         }
-        .Button: active
-        {
+        .Button: active {
             background-color: rgba(255,220,150,0.7);
         }
 
-        CheckBox
-        {
+        CheckBox {
             
         }`;
         document.body.appendChild(sheet);

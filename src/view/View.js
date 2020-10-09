@@ -21,6 +21,7 @@ class View {
         this.height = LayoutInflater.WRAP_CONTENT;
         this.id = null;
         this.background = null;
+        this.cssClassList=new Array();
         this.onClick = null;
         this.onClickDefinition = null;
         this.tooltip = null;
@@ -225,6 +226,9 @@ class View {
 
         if (nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH) !== null)
             this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH))||10;
+        if (nodeXml.getAttribute("cssClassList") !== null){
+            this.cssClassList = nodeXml.getAttribute("cssClassList").split(',');
+        }
     }
 
     async loadResources() {
@@ -283,6 +287,10 @@ class View {
             this.elemDom.onclick=()=>{
                 this.onClick(this);
             };
+        // cssClassList
+        if(this.cssClassList.length > 0){
+            this.elemDom.classList.add(this.cssClassList);
+        }
     }
 
     async repaintSync() {

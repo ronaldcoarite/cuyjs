@@ -67,6 +67,7 @@ class LinearLayout extends ViewGroup {
         var arrayWeigh = new Array();
 
         // Establenciendo dimensión de los componentes que no tienen weight
+
         for(let view of visibles){
             if (view.layoutWeight)
                 arrayWeigh.push(view);
@@ -89,6 +90,9 @@ class LinearLayout extends ViewGroup {
                 mayWidth = sumWidth;
             sumHeight+=(view.margin.top + view.elemDom.clientHeight + view.margin.bottom);
         }
+
+        // Verificando tamano de 
+        let maxWidthElement = this.width === LayoutInflater.WRAP_CONTENT?mayWidth : maxWidth;
         
         // Dibujando las vistas
         var posTop = this.padding.top;
@@ -103,10 +107,10 @@ class LinearLayout extends ViewGroup {
                         view.elemDom.style.left = (this.padding.left + view.margin.left) + 'px';
                         break;
                     case LayoutInflater.RIGHT:
-                        view.elemDom.style.left = (mayWidth - view.elemDom.clientWidth - view.margin.right - this.padding.right) + 'px';
+                        view.elemDom.style.left = (maxWidthElement - view.elemDom.clientWidth - view.margin.right - this.padding.right) + 'px';
                         break;
                     case LayoutInflater.CENTER_HORIZONTAL:
-                        view.elemDom.style.left = (mayWidth / 2 - view.elemDom.clientWidth / 2) + 'px';
+                        view.elemDom.style.left = (maxWidthElement / 2 - view.elemDom.clientWidth / 2) + 'px';
                         break;
                     default:
                         throw new Exception(
@@ -172,6 +176,9 @@ class LinearLayout extends ViewGroup {
                 mayHeight = sumHeight;
             sumWidth+=(view.margin.left + view.elemDom.clientWidth + view.margin.right);
         }
+
+        // Verificando tamano de 
+        let maxHeightElement = this.height === LayoutInflater.WRAP_CONTENT?mayHeight : maxHeight;
         
         // Dibujando las vistas
         var posLeft = this.padding.top;
@@ -186,10 +193,10 @@ class LinearLayout extends ViewGroup {
                         view.elemDom.style.top = (this.padding.top + view.margin.top) + 'px';
                         break;
                     case LayoutInflater.BOTTOM:
-                        view.elemDom.style.top = (mayHeight - view.elemDom.clientHeight - view.margin.top - this.padding.top) + 'px';
+                        view.elemDom.style.top = (maxHeightElement - view.elemDom.clientHeight - view.margin.top - this.padding.top) + 'px';
                         break;
                     case LayoutInflater.CENTER_VERTICAL:
-                        view.elemDom.style.top = (mayHeight / 2 - view.elemDom.clientHeight / 2) + 'px';
+                        view.elemDom.style.top = (maxHeightElement / 2 - view.elemDom.clientHeight / 2) + 'px';
                         break;
                     default:
                         throw new Exception(

@@ -63,7 +63,7 @@ class FrameLayout extends ViewGroup {
                     }
                     if (gravity === LayoutInflater.LEFT){
                         horizonalGrav = true;
-                        view.elemDom.style.left = (this_.padding.left + view.margin.left) + 'px';
+                        view.elemDom.style.left = (this.padding.left + view.margin.left) + 'px';
                     }
                     if (gravity === LayoutInflater.BOTTOM){
                         verticalGrav = true;

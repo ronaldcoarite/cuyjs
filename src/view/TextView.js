@@ -3,7 +3,7 @@ class TextView extends View {
         super(context);
         this.text= null;
         this.textColor= null;
-        this.textStyle = null;
+        this.textCssStyle = null;
         this.textSize = 12;
 
         this.elemText= null;
@@ -14,6 +14,12 @@ class TextView extends View {
         this.ellipsize= "none";
         this.name = "TextView";
         this.imageResource = null;
+
+        this.shadowColor = null;
+        this.shadowDx = 0;
+        this.shadowDy = 0;
+        this.shadowRadius = 3;
+
     }
     //@Override
     getTypeElement(){
@@ -47,6 +53,12 @@ class TextView extends View {
         }
         this.singleLine = nodeXml.getAttribute("singleLine")==="true"?true:false;
         this.textStyle = nodeXml.getAttribute("textStyle");
+
+        this.shadowColor = nodeXml.getAttribute("shadowColor");
+        this.shadowDx = parseInt(nodeXml.getAttribute("shadowDx"))||this.shadowDx;
+        this.shadowDy = parseInt(nodeXml.getAttribute("shadowDy"))||this.shadowDy;
+        this.shadowRadius = parseInt(nodeXml.getAttribute("shadowRadius"))||this.shadowRadius;
+
         this.textSize = nodeXml.getAttribute("textSize")||this.textSize;
     }
     setSingleLine(single) {
@@ -99,6 +111,8 @@ class TextView extends View {
         }
         if(this.textSize)
             this.elemText.style.fontSize = this.textSize;
+        if(this.shadowColor)
+            this.elemText.style.textShadow=`${this.shadowDx}px ${this.shadowDy}px ${this.shadowRadius}px ${this.shadowColor}`;
         
         // Cargando la imagen o icono te texto
         this.imageResource = null;
