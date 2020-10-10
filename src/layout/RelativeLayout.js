@@ -1,7 +1,6 @@
 class RelativeLayout extends ViewGroup{
     constructor(context) {
         super(context);
-        this.name = "RelativeLayout";
     }
     //@Override
     getTypeElement() {

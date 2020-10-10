@@ -9,7 +9,6 @@ class EditText extends View{
     constructor (context) {
         super(context);
         this.margin.left = this.margin.top = this.margin.right = this.bottom = 4;
-        this.name = "EditText";
         this.ems = 20;
         this.lines = 3,
         this.maxEms = 80;

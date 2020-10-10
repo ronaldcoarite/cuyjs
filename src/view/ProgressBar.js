@@ -2,7 +2,6 @@ ProgressBar = View.extend({
     imgLoader: null,
     init: function (context) {
         this._super(context);
-        this.name = "ProgressBar";
         this.elemDom.style.background = '#05112B';
         this.imgLoader = document.createElement('canvas');
         this.elemDom.appendChild(this.imgLoader);

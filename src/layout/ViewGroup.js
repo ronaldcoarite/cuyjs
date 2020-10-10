@@ -2,7 +2,6 @@ class ViewGroup extends View{
     constructor(context){
         super(context);
         this.viewsChilds = new Array();
-        this.name = "ViewGroup";
         //this.elemDom.style.overflow = 'hidden';
     }
     // @Override

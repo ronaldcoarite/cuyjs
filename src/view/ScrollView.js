@@ -1,7 +1,6 @@
 ScrollView = ViewGroup.extend({
     init: function (context) {
         this._super(context);
-        this.name = "ScrollView";
     },
     getTypeElement: function () {
         return "ScrollView";

@@ -10,17 +10,6 @@ class PageManager {
         document.body.style.height = '100%';
         document.body.style.position = 'absolute';
 
-        // Creamos el estilo del boton
-        var sheet = document.createElement('style');
-        sheet.type = "text/css";
-        //padding: 4px 20px;
-        //sheet.innerHTML = '.AndButton {background:#ffae00; background: -webkit-linear-gradient(top, #ffae00, #d67600);background: -moz-linear-gradient(top, #ffae00, #d67600);background: -o-linear-gradient(top, #ffae00, #d67600);background: linear-gradient(top, #ffae00, #d67600);border:2px outset #dad9d8; font-family:Andika, Arial, sans-serif;font-size:1.1em;letter-spacing:0.05em;color:#fff;text-shadow: 0px 1px 10px #000;-webkit-border-radius: 15px;-moz-border-radius: 15px;border-radius: 15px;-webkit-box-shadow: rgba(0, 0, 0, .55) 0 1px 6px;-moz-box-shadow: rgba(0, 0, 0, .55) 0 1px 6px;box-shadow: rgba(0, 0, 0, .55) 0 1px 6px;}.AndButton:hover, .AndButton:focus {border:2px solid #dad9d8;}';
-        sheet.innerHTML = `.AndButton {background-color: #2D8FC4;color:#fff;border-radius: 10px;}\n\
-                           .AndButton:hover, .AndButton:focus {background-color: rgba(255,200,100,0.5);color:black;cursor: pointer;cursor: hand;}\n\
-                           .AndButton:active {background-color: rgba(255,220,150,0.7);cursor: move;}`;
-
-        document.body.appendChild(sheet);
-
         // DESABILITAR ELEMENTOS NO SELECCIONABLES
         var sheet = document.createElement('style');
         sheet.type = "text/css";
@@ -33,63 +22,6 @@ class PageManager {
                                                     -ms-user-select: none;
                                                     user-select: none;
                                                 }`;
-        document.body.appendChild(sheet);
-
-        // ESTILOS DE COMPONENTES
-        var sheet = document.createElement('style');
-        sheet.type = "text/css";
-        //padding: 4px 20px;
-        sheet.innerHTML = `
-        TextView{
-            font-family:fuente;
-            letter-spacing: 3px;
-            color: white;
-            text-shadow: 2px aqua;
-        }
-        textarea {
-            margin-top: 10px;
-            margin-left: 50px;
-            width: 500px;
-            height: 100px;
-            -moz-border-bottom-colors: none;
-            -moz-border-left-colors: none;
-            -moz-border-right-colors: none;
-            -moz-border-top-colors: none;
-            background: none repeat scroll 0 0 rgba(0, 0, 0, 0.07);
-            border-color: -moz-use-text-color #FFFFFF #FFFFFF -moz-use-text-color;
-            border-image: none;
-            border-radius: 6px 6px 6px 6px;
-            border-style: none solid solid none;
-            border-width: medium 1px 1px medium;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12) inset;
-            color: white;
-            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-            font-size: 1em;
-            line-height: 1.4em;
-            padding: 10px 10px;
-            transition: background-color 0.2s ease 0s;
-        }
-          
-        textarea:focus {
-              background: none repeat scroll 0 0 #FFFFFF;
-              outline-width: 0;
-        }
-        .Button {
-            border: none;
-            padding: 0;
-            background: none;
-        }
-        .Button: hover , .Button:focus {
-            background-color: rgba(255,200,100,0.5);
-            color:black; 
-        }
-        .Button: active {
-            background-color: rgba(255,220,150,0.7);
-        }
-
-        CheckBox {
-            
-        }`;
         document.body.appendChild(sheet);
         
         // MULTIDIMENSION
@@ -115,7 +47,6 @@ class PageManager {
         catch (o) {
             throw new Exception("No existe la pagina [" + intent.pageName + "]");
         }
-        page.className = intent.pageName;
 
         await PageManager.loadPageSync(intent.context, page, intent);
     }
@@ -137,7 +68,7 @@ class PageManager {
         }
         // Verificamos si tiene contenido la pagina
         if(!page.viewRoot && !page.urlView)
-            throw new Exception(`La pagina [${page.className}] no tiene contenido definido. Asigne un contenido con page.setContentView`);
+            throw new Exception(`La pagina [${page.constructor.name}] no tiene contenido definido. Asigne un contenido con page.setContentView`);
         if(page.urlView){ // La pagina cargara los elementos a partir de una URL
             let rootXml = await Resource.loadLayoutSync(page.urlView);
             page.viewRoot = LayoutInflater.inflate(page,rootXml);

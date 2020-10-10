@@ -22,6 +22,7 @@
     "src/view/View.js",
     "src/view/TextView.js",
     "src/view/Button.js",
+    "src/view/LinkButton.js",
     "src/view/EditText.js",
     "src/view/ImageView.js",
     "src/view/ImageButton.js",

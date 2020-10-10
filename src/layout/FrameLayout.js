@@ -1,7 +1,6 @@
 class FrameLayout extends ViewGroup {
     constructor(context) {
         super(context);
-        this.name = "FrameLayout";
     }
     //Override
     getTypeElement() {

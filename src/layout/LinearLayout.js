@@ -2,7 +2,6 @@ class LinearLayout extends ViewGroup {
     constructor(context) {
         super(context);
         // this.orientation = LayoutInflater.LIN_ORIENTATION_HORIZONTAL;
-        this.name = "LinearLayout";
     }
 
     //Override

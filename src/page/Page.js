@@ -14,7 +14,6 @@ class Page extends Context{
 
     constructor(){
         super();
-        this.className = null;
     }
 
     findViewById(idView) {

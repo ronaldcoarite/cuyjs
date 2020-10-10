@@ -6,7 +6,6 @@ class ImageView extends View{
         this.src = null;
         this.image = null;
         this.scaleType = LayoutInflater.FIT_XY;
-        this.name = "ImageView";
     }
     // @Override
     getTypeElement(){

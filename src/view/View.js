@@ -12,7 +12,6 @@ class View {
         this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
         // this.elemDom = this.createDomElement();
         this.parentView = null;
-        this.name = "View";
         this.maxWidth = 0;
         this.maxHeigth = 0;
         this.minHeigth = 0;
@@ -21,11 +20,13 @@ class View {
         this.height = LayoutInflater.WRAP_CONTENT;
         this.id = null;
         this.background = null;
-        this.cssClassList=new Array();
+        this.cssClassList=this.constructor.name;
         this.onClick = null;
         this.onClickDefinition = null;
         this.tooltip = null;
         this.layoutGravity = (LayoutInflater.LEFT + '|' + LayoutInflater.TOP);
+        this.audioClick = null;
+        this.audioAdove = null;
     }
 
     setVisibility(v) {
@@ -144,7 +145,7 @@ class View {
                     Reflect.apply(Reflect.get(this.context,onCLick), this.context,this);
                 }
             }else
-                throw new Exception(`No se pudo encontrar la funcion [${onCLick}] dentro del contexto [${this.context.className}]`);
+                throw new Exception(`No se pudo encontrar la funcion [${onCLick}] dentro del contexto [${this.context.constructor.name}]`);
         }else if (typeof onCLick === 'function') {
             this.onClick = onCLick;
         }
@@ -180,6 +181,9 @@ class View {
         this.setMP("res/drawable/util/bg_info.9.png", "res/drawable/util/ic_info.png", msg, "#4C95E7");
     }
     parse(nodeXml) {
+        // CARGANDO ATRIBUTOS DEFINIDOS POR EL TEMA SI LO EXISTE
+        Resource.loadThemeAttributes(this,nodeXml);
+
         // VISIBILITY DEL VIEW
         if (nodeXml.getAttribute(LayoutInflater.ATTR_VISIBILITY) !== null) 
             this.visibility = nodeXml.getAttribute(LayoutInflater.ATTR_VISIBILITY);
@@ -226,8 +230,18 @@ class View {
 
         if (nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH) !== null)
             this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH))||10;
-        if (nodeXml.getAttribute("cssClassList") !== null){
-            this.cssClassList = nodeXml.getAttribute("cssClassList").split(',');
+        if (nodeXml.getAttribute("cssClassList") !== null && nodeXml.getAttribute("cssClassList").length>0){
+            // this.cssClassList = `${nodeXml.getAttribute("cssClassList")}`;
+            this.cssClassList = `${this.cssClassList},${nodeXml.getAttribute("cssClassList")}`;
+        }
+
+        // AUDIO PARA EL CLICK
+        if (nodeXml.getAttribute("audioClick") !== null)
+            this.audioClick = new Audio(nodeXml.getAttribute("audioClick"));
+
+        // AUDIO PARA ENCIMA DE CLICK
+        if (nodeXml.getAttribute("audioAdove") !== null){
+            this.audioAdove = new Audio(nodeXml.getAttribute("audioAdove"));
         }
     }
 
@@ -279,17 +293,29 @@ class View {
                     Reflect.apply(Reflect.get(this.context,this.onClickDefinition), this.context,this);
                 }
             }else
-                throw new Exception(`No se pudo encontrar la funcion [${this.this.onClickDefinition}] dentro del contexto [${this.context.className}]`);
+                throw new Exception(`No se pudo encontrar la funcion [${this.this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
         }
 
         // OnClick
         if(this.onClick)
             this.elemDom.onclick=()=>{
+                if(this.audioClick !== null)
+                    this.audioClick.play();
                 this.onClick(this);
             };
+        // Sobre el componente
+        if(this.audioAdove!==null){
+            this.elemDom.onmouseenter=()=>{
+                this.audioAdove.play();
+            };
+            // this.elemDom.onmouseout=()=>{
+                // this.audioAdove.pause();
+                // this.audioAdove.currentTime = 0;
+            // };
+        }
         // cssClassList
         if(this.cssClassList.length > 0){
-            this.elemDom.classList.add(this.cssClassList);
+            this.cssClassList.split(',').forEach(classNameStyle => this.elemDom.classList.add(classNameStyle));
         }
     }
 

@@ -1,5 +1,41 @@
 class Resource{
-    static async loadScriptSync(url) {
+    static listThemes = new Array();
+
+    static async loadTheme(urlTheme) {
+        let rootXml = await this.loadLayoutSync(urlTheme);
+        for (let index = 0; index < rootXml.children.length; index++){
+            // <style name="PageTheme" parent="Page"></style>
+            let styleChildNode = rootXml.children[index];
+            let name = styleChildNode.getAttribute("name");
+            let parent = styleChildNode.getAttribute("parent");
+            let styleObject = {
+                name,parent,attributes:{}
+            };
+            for (let indexJ = 0; indexJ < styleChildNode.children.length; indexJ++){
+                //<item name="textColor">#808080</item>
+                let attributeChildNode = styleChildNode.children[indexJ];
+                let name = attributeChildNode.getAttribute("name");
+                let value = attributeChildNode.textContent;
+                styleObject.attributes[name] = value;
+            }
+            this.listThemes.push(styleObject);
+        }
+    }
+
+    static async loadThemeAttributes(view,nodeXml) {
+        // Buscamos si existe el componente
+        let wantedView = this.listThemes.find(styleItem => styleItem.parent===view.constructor.name);
+        if(wantedView){
+            let attributes = wantedView.attributes;
+            for (let [key, value] of Object.entries(attributes)) {
+                if(nodeXml.getAttribute(key)===null)
+                    nodeXml.setAttribute(key,value);
+            }
+            // console.log(view.constructor.name);
+        }
+    }
+
+    static async importJs(url) {
         await new Promise(function (resolve, reject) {
             // Adding the script tag to the head as suggested before
             var head = document.getElementsByTagName('head')[0];
@@ -24,12 +60,48 @@ class Resource{
             head.appendChild(script);
         });
     };
+
+    static async importCss(url) {
+        await new Promise(function (resolve, reject) {
+            // Adding the script tag to the head as suggested before
+            var head = document.getElementsByTagName('head')[0];
+            var script = document.createElement('link');
+            script.type = 'text/css';
+            script.href = url;
+            script.rel='stylesheet';
     
-    static async loadAllScriptsSync(urls) {
+            // Then bind the event to the callback function.
+            // There are several events for cross browser compatibility.
+            //script.onreadystatechange = callback;
+            function callback() {
+                resolve();
+            }
+    
+            function callbackError(error) {
+                reject(error);
+            }
+    
+            script.onerror = callbackError;
+            script.onload = callback;
+            // Fire the loading
+            head.appendChild(script);
+        });
+    };
+
+    static async import(url){
+        if(url.lastIndexOf(".js")!==-1)
+            await this.importJs(url);
+        else if(url.lastIndexOf(".css")!==-1)
+            await this.importCss(url);
+        else
+            throw new Error(`Tipo de archivo [${url}] no soportado. utilice unicamente .js o .css`);
+    }
+    
+    static async importAll(urls) {
         if (Array.isArray(urls) === false)
             throw "Lista de urls vacio para [loadAllScripts]";
         for(let url of urls){
-            await loadScriptSync(url);
+            await importJs(url);
         }
     };
     

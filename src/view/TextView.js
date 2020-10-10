@@ -12,7 +12,6 @@ class TextView extends View {
         this.gravityIcon= "none";
         this.singleLine= false;
         this.ellipsize= "none";
-        this.name = "TextView";
         this.imageResource = null;
 
         this.shadowColor = null;
