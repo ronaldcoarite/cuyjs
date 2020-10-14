@@ -113,7 +113,7 @@ class LinearLayout extends ViewGroup {
                         break;
                     default:
                         throw new Exception(
-                            `La orientación para el LinearLayout es [${this.orientation}] y la vista [${view.name}] tiene asignado la alineación [${gravitys[j]}]. Utilice unicamente [${LayoutInflater.LEFT},${LayoutInflater.RIGHT},${LayoutInflater.CENTER_HORIZONTAL}]`);
+                            `La orientación para el LinearLayout es [${this.orientation}] y la vista [${view.constructor.name}] tiene asignado la alineación [${gravitys[j]}]. Utilice unicamente [${LayoutInflater.LEFT},${LayoutInflater.RIGHT},${LayoutInflater.CENTER_HORIZONTAL}]`);
                 }
             }
             // Posición vertical
@@ -199,7 +199,7 @@ class LinearLayout extends ViewGroup {
                         break;
                     default:
                         throw new Exception(
-                            `La orientación para el LinearLayout es [${this.orientation}] y la vista [${view.name}] tiene asignado la alineación [${gravitys[j]}]. Utilice unicamente [${LayoutInflater.TOP},${LayoutInflater.BOTTOM},${LayoutInflater.CENTER_VERTICAL}]`);
+                            `La orientación para el LinearLayout es [${this.orientation}] y la vista [${view.constructor.name}] tiene asignado la alineación [${gravitys[j]}]. Utilice unicamente [${LayoutInflater.TOP},${LayoutInflater.BOTTOM},${LayoutInflater.CENTER_VERTICAL}]`);
                 }
             }
             // Posición horizontal

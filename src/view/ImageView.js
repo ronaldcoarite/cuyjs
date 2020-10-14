@@ -7,10 +7,12 @@ class ImageView extends View{
         this.image = null;
         this.scaleType = LayoutInflater.FIT_XY;
     }
+
     // @Override
     getTypeElement(){
         return 'img';
     }
+
     // @Override
     parse(nodeXml) {
         super.parse(nodeXml);
@@ -18,12 +20,14 @@ class ImageView extends View{
         this.scaleType = nodeXml.getAttribute(LayoutInflater.ATTR_SCALE_TYPE)||LayoutInflater.FIT_XY;
         this.image = null;
     }
+
     // @Override
     async loadResources() {
         await super.loadResources();
         this.image = await Resource.loadImage(this.src);
         this.elemDom.src = this.image.src;
     }
+    
     // @Override
     async onMeasureSync(maxWidth, maxHeight) {
         await super.onMeasureSync(maxWidth,maxHeight);
@@ -63,5 +67,11 @@ class ImageView extends View{
             case LayoutInflater.FIT_END: this.elemDom.style.objectFit = 'cover'; break;
             case LayoutInflater.FIT_XY: this.elemDom.style.objectFit = 'fill'; break;
         }
+    }
+
+    async setImageResource(pathImage) {
+        this.src = pathImage;
+        this.image = await Resource.loadImage(this.src);
+        this.elemDom.src = this.image.src;
     }
 }

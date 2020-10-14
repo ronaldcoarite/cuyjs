@@ -1,4 +1,8 @@
 class PageManager {
+    static async convertMeasureToPixels(measureStr){
+        
+
+    }
     static async startAplicationSync(mainPageName) {
         // Eliminamos margenes y padding del contenedor principal (body,html)
         document.body.style.paddingBottom = '0px';

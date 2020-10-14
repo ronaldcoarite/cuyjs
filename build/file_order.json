@@ -1,5 +1,10 @@
 [
+    "src/core/lang/Runnable.js",
     "src/core/lang/Thread.js",
+    "src/core/lang/Timer.js",
+    
+    "src/util/FileChooser.js",
+
     "src/core/net/DefaultHttpClient.js",
     "src/core/net/HttpRequest.js",
     "src/core/net/HttpResponse.js",
@@ -14,11 +19,13 @@
     "src/core/PageManager.js",
     "src/core/Intent.js",
     "src/core/LayoutInflater.js",
+
     "src/view/background/BaseBackground.js",
     "src/view/background/ColorBackground.js",
     "src/view/background/EmplyBackground.js",
     "src/view/background/ImageBackground.js",
     "src/view/background/NinepathBackground.js",
+
     "src/view/View.js",
     "src/view/TextView.js",
     "src/view/Button.js",
@@ -26,10 +33,12 @@
     "src/view/EditText.js",
     "src/view/ImageView.js",
     "src/view/ImageButton.js",
+
     "src/layout/ViewGroup.js",
     "src/layout/LinearLayout.js",
     "src/layout/FrameLayout.js",
     "src/layout/RelativeLayout.js",
+
     "src/page/Page.js",
     "src/page/animation/SpinnerAnimation.js"
 ]

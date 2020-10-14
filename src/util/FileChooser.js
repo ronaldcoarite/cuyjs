@@ -1,6 +1,6 @@
-FileChooserDialog = {
-    showSelectFile: function (type) {
-        return new Promise(function (resolve, reject) {
+class FileChooser{
+    static async showSelectFile(type) {
+        return await new Promise(function (resolve, reject) {
             var domoInput = document.getElementById("files");
             domoInput.click();
             domoInput.onchange = function () {
@@ -25,9 +25,20 @@ FileChooserDialog = {
                     reject(error);
                 },
                     //                reader.readAsBinaryString(domoInput.files[0],"UTF-8");
-                    reader.readAsDataURL(domoInput.files[0]);
+                reader.readAsDataURL(domoInput.files[0]);
             };
-
         });
+    }
+
+    static async showSaveFile(fileName,urlFile){
+        console.log("Descargando archivo",urlFile);
+        let a = document.createElement("a");
+        a.style = "display: none";
+        document.body.appendChild(a);
+        a.href = urlFile;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(urlFile);
+        a.remove();
     }
 };

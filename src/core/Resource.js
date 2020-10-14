@@ -37,6 +37,15 @@ class Resource{
 
     static async importJs(url) {
         await new Promise(function (resolve, reject) {
+            // Verificamos antes si el script ya fue cargado
+            var scripts = document.getElementsByTagName("script");
+            for (var i = 0; i < scripts.length; i++) {
+                if (scripts[i].src && scripts[i].src.lastIndexOf(url)!==-1){
+                    resolve();
+                    return;
+                }
+            }
+            
             // Adding the script tag to the head as suggested before
             var head = document.getElementsByTagName('head')[0];
             var script = document.createElement('script');
@@ -63,6 +72,15 @@ class Resource{
 
     static async importCss(url) {
         await new Promise(function (resolve, reject) {
+            // Verificamos antes si el script ya fue cargado
+            var scripts = document.getElementsByTagName("link");
+            for (var i = 0; i < scripts.length; i++) {
+                if (scripts[i].href && scripts[i].href.lastIndexOf(url) !== -1){
+                    resolve();
+                    return;
+                }
+            }
+
             // Adding the script tag to the head as suggested before
             var head = document.getElementsByTagName('head')[0];
             var script = document.createElement('link');

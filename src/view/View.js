@@ -64,12 +64,15 @@ class View {
             this.elemDom.id = this.id;
         return elem;
     }
+
     getTypeElement() {
-        return 'div';
+        return this.constructor.name;
     }
+
     setId(id) {
         this.id = id;
     }
+
     clone() {
         var copy = Object.assign({}, this);
         copy.elemDom = this.elemDom.cloneNode(true);
@@ -91,9 +94,11 @@ class View {
         // return this.width;
         return this.elemDom? this.elemDom.clientWidth: 0;
     }
+
     getHeight() {
         return this.elemDom? this.elemDom.clientHeight: 0;
     }
+    
     setMargin(margin) {
         if (!margin) return;
         var mg = parseInt(margin);
@@ -191,7 +196,7 @@ class View {
         // PADDING DEL VIEW
         var padding = nodeXml.getAttribute(LayoutInflater.ATTR_PADDING);
         if (padding !== null) {
-            var pad = parseInt(padding);
+            let pad = parseInt(padding);
             this.padding.top = this.padding.left = this.padding.right = this.padding.bottom = pad;
         }
         // MARGEN DEL COMPONENTE
@@ -205,6 +210,10 @@ class View {
             this.margin.right = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_RIGHT));
         if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_TOP)!=null)
             this.margin.top = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_TOP));
+        if(nodeXml.getAttribute("paddingLeft"))
+            this.padding.left = parseInt(nodeXml.getAttribute("paddingLeft"));
+        if(nodeXml.getAttribute("paddingLight"))
+            this.padding.right = parseInt(nodeXml.getAttribute("paddingLight"));
 
         // ID DEL VIEW
         if (nodeXml.getAttribute(LayoutInflater.ATTR_ID) !== null)
@@ -317,6 +326,20 @@ class View {
         if(this.cssClassList.length > 0){
             this.cssClassList.split(',').forEach(classNameStyle => this.elemDom.classList.add(classNameStyle));
         }
+    }
+
+    addCssClass(cssString){
+        let array = this.cssClassList.split(',');
+        array.push(cssString);
+        this.cssClassList = array.join(',');
+        if(this.elemDom)
+            this.elemDom.classList.add(cssString);
+    }
+
+    removeCssClass(cssString){
+        this.cssClassList = this.cssClassList.split(',').filter(classCss => classCss !== cssString).join(',');
+        if(this.elemDom)
+            this.elemDom.classList.remove(cssString);
     }
 
     async repaintSync() {
