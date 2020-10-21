@@ -1,7 +1,9 @@
 [
+    "src/core/lang/Exception.js",
     "src/core/lang/Runnable.js",
     "src/core/lang/Thread.js",
     "src/core/lang/Timer.js",
+    "src/core/lang/Store.js",
     
     "src/util/FileChooser.js",
 
@@ -14,7 +16,6 @@
     "src/core/net/HttpDelete.js",
 
     "src/core/Context.js",
-    "src/core/Exception.js",
     "src/core/Resource.js",
     "src/core/PageManager.js",
     "src/core/Intent.js",

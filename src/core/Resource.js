@@ -36,12 +36,12 @@ class Resource{
     }
 
     static async importJs(url) {
-        await new Promise(function (resolve, reject) {
+        return await new Promise(function (resolve, reject) {
             // Verificamos antes si el script ya fue cargado
             var scripts = document.getElementsByTagName("script");
             for (var i = 0; i < scripts.length; i++) {
                 if (scripts[i].src && scripts[i].src.lastIndexOf(url)!==-1){
-                    resolve();
+                    resolve(scripts[i]);
                     return;
                 }
             }
@@ -56,7 +56,7 @@ class Resource{
             // There are several events for cross browser compatibility.
             //script.onreadystatechange = callback;
             function callback() {
-                resolve();
+                resolve(script);
             }
     
             function callbackError(error) {
@@ -71,12 +71,12 @@ class Resource{
     };
 
     static async importCss(url) {
-        await new Promise(function (resolve, reject) {
+        return await new Promise(function (resolve, reject) {
             // Verificamos antes si el script ya fue cargado
             var scripts = document.getElementsByTagName("link");
             for (var i = 0; i < scripts.length; i++) {
                 if (scripts[i].href && scripts[i].href.lastIndexOf(url) !== -1){
-                    resolve();
+                    resolve(scripts[i]);
                     return;
                 }
             }
@@ -92,7 +92,7 @@ class Resource{
             // There are several events for cross browser compatibility.
             //script.onreadystatechange = callback;
             function callback() {
-                resolve();
+                resolve(script);
             }
     
             function callbackError(error) {
@@ -108,9 +108,9 @@ class Resource{
 
     static async import(url){
         if(url.lastIndexOf(".js")!==-1)
-            await this.importJs(url);
+            return await this.importJs(url);
         else if(url.lastIndexOf(".css")!==-1)
-            await this.importCss(url);
+            return await this.importCss(url);
         else
             throw new Error(`Tipo de archivo [${url}] no soportado. utilice unicamente .js o .css`);
     }
@@ -119,7 +119,7 @@ class Resource{
         if (Array.isArray(urls) === false)
             throw "Lista de urls vacio para [loadAllScripts]";
         for(let url of urls){
-            await importJs(url);
+            await Resource.importJs(url);
         }
     };
     

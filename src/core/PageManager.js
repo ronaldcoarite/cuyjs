@@ -1,9 +1,159 @@
 class PageManager {
-    static async convertMeasureToPixels(measureStr){
-        
-
+    static async getUrlBrouser(){
+        let urlBrouser = window.location.href;
+        return urlBrouser;
     }
-    static async startAplicationSync(mainPageName) {
+
+    static async getTreeNavigation(){
+        let tree = Store.get('TREE',{
+            ROOT: {
+                extras:{},
+                navigation: {},
+                pageName: null
+            }
+        });
+        return tree;
+    }
+
+    static async getArrayNavegation(){
+        let urlBrouser = await PageManager.getUrlBrouser();
+
+        if(urlBrouser.lastIndexOf('#/') !== -1) {
+            let listPages = urlBrouser.substring(urlBrouser.lastIndexOf('#/')+2);
+            let posQuery = listPages.indexOf('?');
+            if(posQuery != -1)
+                listPages = listPages.substring(0,posQuery);
+            return {
+                pageNames: listPages.split('/'),
+                queryParams: {}
+            };
+        }
+        return {
+            pageNames: new Array(),
+            queryParams: {}
+        };
+    }
+
+    static async startApp(manifestConfig){
+        // Cargando tema
+        await Resource.loadTheme(manifestConfig.theme);
+
+        // Establecemos los valores correspondientes para los componentes HTML, BODY
+        await PageManager.configApp();
+
+        // Guardamos en sesion la configuración del objeto Manifesto
+        Store.set('MANIFEST',manifestConfig);
+
+        let navigationList = await PageManager.getArrayNavegation();
+
+        if(navigationList.pageNames.length > 0){ // Actualizar pagina establecida
+            if(navigationList.pageNames.length > 1){ // Existe una navegacion previa con varias paginas
+                let tree = await Store.get('TREE');
+                console.log("Navigation List: ",navigationList);
+                console.log("Tree        : ",tree);
+                console.log("Tree Root Page Name       : ",tree.ROOT.pageName);
+                let currentPageConfig = tree.ROOT;
+                let index = 0;
+                // let pageName = navigationList.listPages[index];
+                while(index < navigationList.pageNames.length){
+                    if(currentPageConfig.pageName === navigationList.pageNames[index]){
+                        if(index + 1 < navigationList.pageNames.length ){
+                            // Obtenemos el nombre de la pagina siguiente
+                            let pageNameNext = navigationList.pageNames[index+1];
+                            // Verificamos si la siguiente pagina existe en arbol de navegacion
+                            if(currentPageConfig.navigation[pageNameNext]){ // Existe la pagina en el arbol?
+                                currentPageConfig = currentPageConfig.navigation[pageNameNext];
+                                index++;
+                                continue;
+                            }
+                            else{
+                                console.log("currentPageConfig",currentPageConfig);
+                                alert("No se pudo encontrar la pagina: "+pageNameNext);
+                                return;
+                            }
+                        }
+                        else // Se encontro la ultima raiz del arbol que corresponde a la pagina actual
+                            break;
+                    }
+                    else{
+                        alert(`La pagina no es igual [${currentPageConfig.pageName}] que [${navigationList.pageNames[index]}], INDEX = [${index}]`);
+                        return;
+                    }
+                }
+                console.log("Pagina encontrada",currentPageConfig);
+    
+                // Iniciamos la pagina con los datos guardados en la session
+                let intent = new Intent(currentPageConfig.extras, currentPageConfig.pageName);
+                let pageInstance = await PageManager.startPageFromIntent(intent);
+                return;
+            }else{ // Se desea cargar una pagina configurada en el manifest
+                console.log("Solo se quiere cargar una pagina",navigationList.pageNames[0]);
+                let mainPageName = navigationList.pageNames[0];
+                let pageConfig = PageManager.findPageConfig(manifestConfig,mainPageName);
+
+                // Agregamos como pagina raiz
+                let treeNavigation = {
+                    ROOT: {
+                        extras: {},
+                        navigation: {},
+                        pageName: mainPageName,
+                        query: {}
+                    }
+                }
+
+                // Guardamos el nodo raiz en el arbol de navegación
+                Store.set('TREE',treeNavigation);
+
+                // Iniciamos la actividad principal
+                let intent = new Intent(null, mainPageName);
+                await PageManager.startPageFromIntent(intent);
+                return;
+            }
+        }
+        
+        // Validando manifest
+        let mainPageName = PageManager.findRootPageName(manifestConfig);
+
+        // Colocando la pagina en la URL
+        window.location.href = `#/${mainPageName}`;
+
+        // Agregamos como pagina raiz
+        let treeNavigation = {
+            ROOT: {
+                extras: {},
+                navigation: {},
+                pageName: mainPageName,
+                query: {}
+            }
+        }
+
+        // Guardamos el nodo raiz en el arbol de navegación
+        Store.set('TREE',treeNavigation);
+
+        // Iniciamos la actividad principal
+        let intent = new Intent(null, mainPageName);
+        await PageManager.startPageFromIntent(intent);
+    }
+
+    static findRootPageName(manifestConfig){
+        let pageConfig = manifestConfig.pages.find((pageConfig)=>pageConfig.category=='ROOT');
+        if(!pageConfig){
+            throw new Exception(`No se encontro nin una pagina principal. Categorice la pagina agregando el atributo [category=='ROOT'] en el Manifest`);
+        }
+        let posBarra = pageConfig.name.lastIndexOf('/');
+        let pageName = pageConfig.name.substring(posBarra+1,pageConfig.name.lastIndexOf('.js'));
+        return pageName;
+    }
+
+    static findPageConfig(manifestConfig,pageName){
+        let pageConfig = manifestConfig.pages.find((pageConfig)=>pageConfig.name.lastIndexOf(`/${pageName}.js`) !== -1);
+        if(!pageConfig){
+            throw new Exception(`No se encontro la página [${pageName}] en la configuración del Manifest`);
+        }
+        return pageConfig;
+    }
+
+    static async configApp() {
         // Eliminamos margenes y padding del contenedor principal (body,html)
         document.body.style.paddingBottom = '0px';
         document.body.style.paddingTop = '0px';
@@ -36,13 +186,17 @@ class PageManager {
                            .rotate {-webkit-animation:rotate-record .8s infinite linear;-moz-animation:rotate-record .8s infinite linear;}`;
 
         document.body.appendChild(sheet);
-
-        // Iniciamos la actividad principal
-        var intent = new Intent(null, mainPageName);
-        await PageManager.startPageSync(intent);
     }
 
-    static async startPageSync(intent) {
+    static async startPageFromIntent(intent) {
+        // Buscamos y verificamos si la pagina este presente en el Manifest
+        let manifestConfig = Store.get('MANIFEST');
+        // let pageConfig = manifestConfig.pages.find((pageConfig)=>pageConfig.className === intent.pageName);
+        let pageConfig = PageManager.findPageConfig(manifestConfig,intent.pageName);
+
+        // Importamos el script
+        await Resource.import(pageConfig.name);
+
         // Instanciamos la Pagina
         var page = null;
         try {
@@ -51,12 +205,12 @@ class PageManager {
         catch (o) {
             throw new Exception("No existe la pagina [" + intent.pageName + "]");
         }
-
-        await PageManager.loadPageSync(intent.context, page, intent);
+        await PageManager.loadPage(intent.context, page, intent);
+        return page;
     }
 
     // proProgress:{left:?,top:?,width,height,showBackground:true}
-    static async loadPageSync(previusPage, page, intent) {
+    static async loadPage(previusPage, page, intent) {
         page.previusPage = previusPage;
         // LLamamos el on create de la pagina
         await page.onCreate(intent);
@@ -86,16 +240,25 @@ class PageManager {
         await page.viewRoot.onMeasureSync(navigator.width,navigator.height);
         page.loadedFinized(); // Carga finalizada
         pageAnimation.hide();
+
+        // Guardamos la pagina actual en la URL
+        document.title = page.constructor.name;
+
+        // history.pushState({}, null, newUrlIS);
+
         await page.onStart(intent);
     }
+
     static removeContext(context) {
         var element = context.viewRoot.elemDom;
         element.parentNode.removeChild(element);
         context.onDestroy();
     }
+
     static finishPage(context) {
         this.removeContext(context);
     }
+
     static getWindowsDimension() {
         //        return {
         //                    width:document.body.clientWidth,

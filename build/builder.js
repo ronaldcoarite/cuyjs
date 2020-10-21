@@ -20,5 +20,5 @@ for(let file of arrayClass){
 }
 let fileCompresed = arrayCode.join('\n');
 fs.writeFileSync(`${__dirname.replace('build','dist')}/cuyjs.min.js`, fileCompresed);
-//fs.writeFileSync(`D:\\proyectos\\domo_server\\source\\IotServer\\IotServer-web\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
+fs.writeFileSync(`D:\\proyectos\\domo_server\\source\\IotServer\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
 fs.writeFileSync(`D:\\proyectos\\domo_server\\source\\DomolinWebSite\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
