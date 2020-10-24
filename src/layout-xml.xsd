@@ -172,26 +172,12 @@
                 <xs:attribute type="xs:integer" name="shadowDy" use="optional"/>
                 <xs:attribute type="xs:integer" name="shadowRadius" use="optional"/>
                 <xs:attribute type="xs:string" name="textColor" use="optional"/>
-                <xs:attribute type="xs:string" name="hint" use="optional"/>
                 <xs:attribute type="xs:string" name="textSize" use="optional"/>
-                <xs:attribute type="xs:integer" name="ems" use="optional"/>
-                <xs:attribute type="xs:integer" name="lines" use="optional"/>
-                <xs:attribute type="xs:integer" name="maxEms" use="optional"/>
-                <xs:attribute type="xs:integer" name="maxLines" use="optional"/>
-                <xs:attribute type="xs:integer" name="maxLength" use="optional"/>
-                
-                <xs:attribute type="xs:string" name="drawableLeft" use="optional"/>
-                <xs:attribute type="xs:string" name="drawableTop" use="optional"/>
-                <xs:attribute type="xs:string" name="drawableRight" use="optional"/>
-                <xs:attribute type="xs:string" name="drawableBottom" use="optional"/>
-                
                 <xs:attribute type="bool" name="singleLine" use="optional"/>
-                
                 <xs:attribute ref="ellipsize" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-    
     <xs:element name="EditText">
         <xs:complexType>
             <xs:complexContent mixed="false">

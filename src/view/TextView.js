@@ -60,12 +60,15 @@ class TextView extends View {
 
         this.textSize = nodeXml.getAttribute("textSize")||this.textSize;
     }
+    
     setSingleLine(single) {
         this.singleLine = single;
     }
+
     setTextColor(color) {
         this.textColor = color;
     }
+
     //@Override
     createDomElement () {
         super.createDomElement();
@@ -120,6 +123,7 @@ class TextView extends View {
             this.elemIcon.src = this.imageResource.src;
         }
     }
+
     async onMeasureSync(maxWidth, maxHeight) {
         await super.onMeasureSync(maxWidth,maxHeight);
         const marginDrawable = 4; // 4px
@@ -337,28 +341,33 @@ class TextView extends View {
         }
         await this.repaintSync();
     }
+
     async setDrawableLeftSync(drawable) {
         this.gravityIcon = LayoutInflater.LEFT;
         this.drawableLeft = drawable;
         let image = await Resource.loadImage(drawable);
         this.elemIcon.src = `data:image/png;base64,${image.toDataURL()}`;
     }
+
     async setDrawableTopSync(drawable) {
         this.gravityIcon = LayoutInflater.TOP;
         this.drawableTop = drawable;
         let image = await Resource.loadImage(drawable);
         this.elemIcon.src = `data:image/png;base64,${image.toDataURL()}`;
     }
+
     async setDrawableRightSync(drawable, onLoadedDrawable) {
         this.gravityIcon = LayoutInflater.RIGHT;
         this.drawableTop = drawable;
         let image = await Resource.loadImage(drawable);
         this.elemIcon.src = `data:image/png;base64,${image.toDataURL()}`;
     }
+
     async setTextSync(text) {
         this.text = text;
         this.loadResources();
     }
+
     getText() {
         return this.text;
     }

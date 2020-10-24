@@ -212,8 +212,8 @@ class View {
             this.margin.top = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_TOP));
         if(nodeXml.getAttribute("paddingLeft"))
             this.padding.left = parseInt(nodeXml.getAttribute("paddingLeft"));
-        if(nodeXml.getAttribute("paddingLight"))
-            this.padding.right = parseInt(nodeXml.getAttribute("paddingLight"));
+        if(nodeXml.getAttribute("paddingRight"))
+            this.padding.right = parseInt(nodeXml.getAttribute("paddingRight"));
 
         // ID DEL VIEW
         if (nodeXml.getAttribute(LayoutInflater.ATTR_ID) !== null)
