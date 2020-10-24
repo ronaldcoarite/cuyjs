@@ -49,9 +49,6 @@ class PageManager {
         if(navigationList.pageNames.length > 0){ // Actualizar pagina establecida
             if(navigationList.pageNames.length > 1){ // Existe una navegacion previa con varias paginas
                 let tree = await Store.get('TREE');
-                console.log("Navigation List: ",navigationList);
-                console.log("Tree        : ",tree);
-                console.log("Tree Root Page Name       : ",tree.ROOT.pageName);
                 let currentPageConfig = tree.ROOT;
                 let index = 0;
                 // let pageName = navigationList.listPages[index];
@@ -67,7 +64,6 @@ class PageManager {
                                 continue;
                             }
                             else{
-                                console.log("currentPageConfig",currentPageConfig);
                                 alert("No se pudo encontrar la pagina: "+pageNameNext);
                                 return;
                             }
@@ -80,14 +76,12 @@ class PageManager {
                         return;
                     }
                 }
-                console.log("Pagina encontrada",currentPageConfig);
     
                 // Iniciamos la pagina con los datos guardados en la session
                 let intent = new Intent(currentPageConfig.extras, currentPageConfig.pageName);
                 let pageInstance = await PageManager.startPageFromIntent(intent);
                 return;
             }else{ // Se desea cargar una pagina configurada en el manifest
-                console.log("Solo se quiere cargar una pagina",navigationList.pageNames[0]);
                 let mainPageName = navigationList.pageNames[0];
                 let pageConfig = PageManager.findPageConfig(manifestConfig,mainPageName);
 
