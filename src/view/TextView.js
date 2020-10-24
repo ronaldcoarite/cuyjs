@@ -60,7 +60,7 @@ class TextView extends View {
 
         this.textSize = nodeXml.getAttribute("textSize")||this.textSize;
     }
-    
+
     setSingleLine(single) {
         this.singleLine = single;
     }
