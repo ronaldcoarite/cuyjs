@@ -219,6 +219,12 @@
             <xs:extension base="TextView"/>
         </xs:complexContent>
     </xs:complexType>
+    <xs:element name="LinkButton" type="LinkButton"/>
+    <xs:complexType name="LinkButton">
+        <xs:complexContent mixed="false">
+            <xs:extension base="Button"/>
+        </xs:complexContent>
+    </xs:complexType>
     <!-- ViewGroup -->
     <xs:complexType name="ViewGroup">
         <xs:complexContent mixed="false">
