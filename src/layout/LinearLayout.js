@@ -34,13 +34,13 @@ class LinearLayout extends ViewGroup {
         if (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WEIGHT) !== null){
             let weight = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WEIGHT);
             var num = parseFloat(weight);
-            if (isNaN(num))
+            if (isNaN(num) === true)
                 throw new Exception(
-                    `El valor del atributo [${LayoutInflater.ATTR_LAYOUT_WEIGHT}] del view [${view.name}] no es un número flotante [${weight}]`);
+                    `El valor del atributo [${LayoutInflater.ATTR_LAYOUT_WEIGHT}] del view [${this.constructor.name}] no es un número flotante [${weight}]`);
 
-            if (num > 0.0 && num < 1.0)
+            if (!(num > 0.0 && num <= 1.0))
                 throw new Exception(
-                    `El valor del atributo [${LayoutInflater.ATTR_LAYOUT_WEIGHT}] del view [${view.name}] no es un número flotante valido [${weight}]. El valor debe estar entre [0.0 y 1.0]`);
+                    `El valor del atributo [${LayoutInflater.ATTR_LAYOUT_WEIGHT}] es [${weight}] del view [${this.constructor.name}] no esta del rango válido entre [0.0 y 1.0]`);
             view.layoutWeight = num;
         }
         return view;
@@ -48,14 +48,16 @@ class LinearLayout extends ViewGroup {
 
     //@Override
     async onMeasureSync(maxWidth, maxHeight){
-        await super.onMeasureSync(maxWidth, maxHeight);
+        // await super.onMeasureSync(maxWidth, maxHeight);
         let visibles = this.getViewVisibles();
+        // console.log("MAX HEIGHT",maxHeight,"MAX CONTECT ",this.getContentHeight(maxHeight));
         if(visibles.length === 0)
             return;
         if (this.orientation === LayoutInflater.LIN_ORIENTATION_VERTICAL)
-            await this.onMeasureVertical(visibles, this.elemDom.clientWidth - this.padding.left - this.padding.right, this.elemDom.clientHeight - this.padding.top - this.padding.bottom);
+            await this.onMeasureVertical(visibles,maxWidth,maxHeight);
         else
-            await this.onMeasureHorizontal(visibles, this.elemDom.clientWidth - this.padding.left - this.padding.right, this.elemDom.clientHeight - this.padding.top - this.padding.bottom);
+            await this.onMeasureHorizontal(visibles,maxWidth,maxHeight);
+        await this.repaintSync();
     }
 
     async onMeasureVertical(visibles, maxWidth, maxHeight) {
@@ -66,32 +68,32 @@ class LinearLayout extends ViewGroup {
         var arrayWeigh = new Array();
 
         // Establenciendo dimensión de los componentes que no tienen weight
-
         for(let view of visibles){
-            if (view.layoutWeight)
+            if (view.layoutWeight !== undefined && view.layoutWeight !== null && view.layoutWeight > 0){
                 arrayWeigh.push(view);
+            }
             else{
-                // if(view.height === LayoutInflater.MATCH_PARENT && visibles.length > 0)
-                await view.onMeasureSync(maxWidth,maxHeight); // Ajustar contenido a las dimensiones
-                sumHeigthWrap += view.elemDom.clientHeight;
-                let sumWidth = this.padding.left + view.margin.left + view.elemDom.clientWidth + view.margin.right + this.padding.right;
+                await view.onMeasureSync(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
+                sumHeigthWrap += (view.getHeight() + view.margin.top + view.margin.bottom);
+                let sumWidth = this.padding.left + view.margin.left + view.getWidth() + view.margin.right + this.padding.right;
                 if (sumWidth > mayWidth)
                     mayWidth = sumWidth;
-                sumHeight+=(view.margin.top + view.elemDom.clientHeight + view.margin.bottom);
+                sumHeight+=(view.margin.top + view.getHeight() + view.margin.bottom);
             }
         }
+
         // Estableciendo alto de los componentes que tiene weight
-        let altoWeigth = maxHeight - sumHeigthWrap;
+        let altoWeigth = maxHeight - sumHeigthWrap -this.padding.top- this.padding.bottom-this.margin.top-this.margin.bottom;
         for(let view of arrayWeigh){
-            await view.onMeasureSync(maxWidth,altoWeigth*view.layoutWeight);
-            let sumWidth = this.padding.left + view.margin.left + view.elemDom.clientWidth + view.margin.right + this.padding.right;
+            await view.onMeasureSync(this.getContentWidth(maxWidth,view) , altoWeigth*view.layoutWeight - view.margin.top - view.margin.bottom);
+            let sumWidth =  view.margin.left + view.getWidth() + view.margin.right;
             if (sumWidth > mayWidth)
-                mayWidth = sumWidth;
-            sumHeight+=(view.margin.top + view.elemDom.clientHeight + view.margin.bottom);
+            mayWidth = sumWidth;
+            sumHeight+=(view.margin.top + view.getHeight() + view.margin.bottom);
         }
 
         // Verificando tamano de 
-        let maxWidthElement = this.width === LayoutInflater.WRAP_CONTENT?mayWidth : maxWidth;
+        let maxWidthElement = this.getContentWidth(maxWidth) - this.margin.left - this.margin.right;
         
         // Dibujando las vistas
         var posTop = this.padding.top;
@@ -106,10 +108,10 @@ class LinearLayout extends ViewGroup {
                         view.elemDom.style.left = (this.padding.left + view.margin.left) + 'px';
                         break;
                     case LayoutInflater.RIGHT:
-                        view.elemDom.style.left = (maxWidthElement - view.elemDom.clientWidth - view.margin.right - this.padding.right) + 'px';
+                        view.elemDom.style.left = (maxWidthElement - view.getWidth() - view.margin.right - this.padding.right) + 'px';
                         break;
                     case LayoutInflater.CENTER_HORIZONTAL:
-                        view.elemDom.style.left = (maxWidthElement / 2 - view.elemDom.clientWidth / 2) + 'px';
+                        view.elemDom.style.left = (maxWidthElement / 2 - view.getWidth() / 2) + 'px';
                         break;
                     default:
                         throw new Exception(
@@ -118,29 +120,35 @@ class LinearLayout extends ViewGroup {
             }
             // Posición vertical
             view.elemDom.style.top = (posTop + view.margin.top) + 'px';
-            posTop = posTop + view.margin.top + view.elemDom.clientHeight + view.margin.bottom;
+            posTop = posTop + view.margin.top + view.getHeight() + view.margin.bottom;
         }
         sumHeight+=this.padding.bottom;
 
         // Ajustando contenido
         switch (this.height) {
             case LayoutInflater.MATCH_PARENT:
+                this.elemDom.style.height = `${maxHeight}px`;
                 break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.height = `${sumHeight}px`;
-                await this.repaintSync();
                 break;
             default:
+                let height = parseInt(this.height);
+                height = Math.max(height,this.maxHeigth);
+                this.elemDom.style.height = height + 'px';
                 break;
         }
         switch (this.width) {
             case LayoutInflater.MATCH_PARENT:
+                this.elemDom.style.width = `${maxWidth}px`;
                 break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.width = `${mayWidth}px`;
-                await this.repaintSync();
                 break;
             default:
+                let width = parseInt(this.width);
+                width = Math.max(width,this.maxWidth);
+                this.elemDom.style.width = width + 'px';
                 break;
         }
     }
@@ -154,30 +162,29 @@ class LinearLayout extends ViewGroup {
 
         // Establenciendo dimensión de los componentes que no tienen weight
         for(let view of visibles){
-            if (view.layoutWeight)
+            if (view.layoutWeight !== undefined && view.layoutWeight !== null && view.layoutWeight > 0)
                 arrayWeigh.push(view);
             else{
-                // if(view.height === LayoutInflater.MATCH_PARENT && visibles.length > 0)
-                await view.onMeasureSync(maxWidth,maxHeight); // Ajustar contenido a las dimensiones
-                sumWidthWrap += view.elemDom.clientWidth;
-                let sumHeight = this.padding.top + view.margin.top + view.elemDom.clientHeight + view.margin.bottom + this.padding.bottom;
+                await view.onMeasureSync(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
+                sumWidthWrap += (view.getWidth() + view.margin.left + view.margin.right);
+                let sumHeight = this.padding.top + view.margin.top + view.getHeight() + view.margin.bottom + this.padding.bottom;
                 if (sumHeight > mayHeight)
                     mayHeight = sumHeight;
-                sumWidth+=(view.margin.left + view.elemDom.clientWidth + view.margin.right);
+                sumWidth+=(view.margin.left + view.getWidth() + view.margin.right);
             }
         }
         // Estableciendo alto de los componentes que tiene weight
-        let anchoWeigth = maxWidth - sumWidthWrap;
+        let anchoWeigth = maxWidth - sumWidthWrap -this.padding.left - this.padding.right -this.margin.left - this.margin.right;
         for(let view of arrayWeigh){
-            await view.onMeasureSync(anchoWeigth*view.layoutWeight,maxHeight);
-            let sumHeight = this.padding.top + view.margin.top + view.elemDom.clientHeight + view.margin.bottom + this.padding.bottom;
+            await view.onMeasureSync(anchoWeigth*view.layoutWeight-view.margin.left-view.margin.right, this.getContentHeight(maxHeight,view));
+            let sumHeight =  view.margin.top + view.getHeight() + view.margin.bottom;
             if (sumHeight > mayHeight)
                 mayHeight = sumHeight;
-            sumWidth+=(view.margin.left + view.elemDom.clientWidth + view.margin.right);
+            sumWidth+=(view.margin.left + view.getWidth() + view.margin.right);
         }
 
         // Verificando tamano de 
-        let maxHeightElement = this.height === LayoutInflater.WRAP_CONTENT?mayHeight : maxHeight;
+        let maxHeightElement = this.getContentHeight(maxHeight)-this.margin.top-this.margin.bottom;
         
         // Dibujando las vistas
         var posLeft = this.padding.top;
@@ -192,10 +199,10 @@ class LinearLayout extends ViewGroup {
                         view.elemDom.style.top = (this.padding.top + view.margin.top) + 'px';
                         break;
                     case LayoutInflater.BOTTOM:
-                        view.elemDom.style.top = (maxHeightElement - view.elemDom.clientHeight - view.margin.top - this.padding.top) + 'px';
+                        view.elemDom.style.top = (maxHeightElement - view.getHeight() - view.margin.top - this.padding.top) + 'px';
                         break;
                     case LayoutInflater.CENTER_VERTICAL:
-                        view.elemDom.style.top = (maxHeightElement / 2 - view.elemDom.clientHeight / 2) + 'px';
+                        view.elemDom.style.top = (maxHeightElement / 2 - view.getHeight() / 2) + 'px';
                         break;
                     default:
                         throw new Exception(
@@ -204,29 +211,35 @@ class LinearLayout extends ViewGroup {
             }
             // Posición horizontal
             view.elemDom.style.left = (posLeft + view.margin.left) + 'px';
-            posLeft = posLeft + view.margin.left + view.elemDom.clientWidth + view.margin.right;
+            posLeft = posLeft + view.margin.left + view.getWidth() + view.margin.right;
         }
-        sumWidth += this.padding.right;
+        // sumWidth += this.padding.right;
 
         // Ajustando contenido
         switch (this.height) {
             case LayoutInflater.MATCH_PARENT:
+                this.elemDom.style.height = `${maxHeight}px`;
                 break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.height = `${mayHeight}px`;
-                await this.repaintSync();
                 break;
             default:
+                let height = parseInt(this.height);
+                height = Math.max(height,this.maxHeigth);
+                this.elemDom.style.height = height + 'px';
                 break;
         }
         switch (this.width) {
             case LayoutInflater.MATCH_PARENT:
+                this.elemDom.style.width = `${maxWidth}px`;
                 break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.width = `${sumWidth}px`;
-                await this.repaintSync();
                 break;
             default:
+                let width = parseInt(this.width);
+                width = Math.max(width,this.maxWidth);
+                this.elemDom.style.width = width + 'px';
                 break;
         }
     }

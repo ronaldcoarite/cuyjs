@@ -30,7 +30,7 @@ class ImageView extends View{
     
     // @Override
     async onMeasureSync(maxWidth, maxHeight) {
-        await super.onMeasureSync(maxWidth,maxHeight);
+        // await super.onMeasureSync(maxWidth,maxHeight);
         // Estableciendo dimensión de componente
         switch (this.width) {
             case LayoutInflater.MATCH_PARENT:

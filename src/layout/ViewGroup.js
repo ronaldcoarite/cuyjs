@@ -90,4 +90,32 @@ class ViewGroup extends View{
         for(let view of this.viewsChilds)
             await view.onMeasureSync(maxWidth, maxHeight);
     }
+    
+    getContentWidth(maxWidth,viewChild){
+        if(maxWidth <= 0)
+            return 0;
+        switch (this.width) {
+            case LayoutInflater.MATCH_PARENT:
+                return maxWidth - this.padding.left - this.padding.right - (viewChild?viewChild.margin.left:0) - (viewChild?viewChild.margin.right:0);
+            case LayoutInflater.WRAP_CONTENT:
+                return this.elemDom.clientWidth - this.padding.left - this.padding.right  - (viewChild?viewChild.margin.left:0) - (viewChild?viewChild.margin.right:0);
+            default: // Tamanio especifico 
+                let lenght = parseInt(this.width);
+                return lenght - this.padding.left - this.padding.right - (viewChild?viewChild.margin.left:0) - (viewChild?viewChild.margin.right:0);
+        }
+    }
+
+    getContentHeight(maxHeight,viewChild){
+        if(maxHeight <= 0)
+            return 0;
+        switch (this.height) {
+            case LayoutInflater.MATCH_PARENT:
+                return maxHeight - this.padding.top - this.padding.bottom - (viewChild?viewChild.margin.top:0) - (viewChild?viewChild.margin.bottom:0);
+            case LayoutInflater.WRAP_CONTENT:
+                return this.elemDom.clientWidth - this.padding.top - this.padding.bottom - (viewChild?viewChild.margin.top:0) - (viewChild?viewChild.margin.bottom:0);
+            default: // Tamanio especifico 
+                let lenght = parseInt(this.height);
+                return lenght - this.padding.top - this.padding.bottom - (viewChild?viewChild.margin.top:0) - (viewChild?viewChild.margin.bottom:0);
+        }
+    }
 }

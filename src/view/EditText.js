@@ -88,5 +88,9 @@ class EditText extends View{
         this.elemDom.style.resize = 'none';
         this.elemDom.value = this.text;
         this.elemDom.disabled = !this.enabled;
+        this.elemDom.style.paddingTop = '6px';
+        this.elemDom.style.paddingLeft = '6px';
+        this.elemDom.style.paddingBottom = '6px';
+        this.elemDom.style.paddingRight = '6px';
     }
 }

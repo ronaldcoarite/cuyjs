@@ -17,34 +17,15 @@ class FrameLayout extends ViewGroup {
     }
     //@Override
     async onMeasureSync(maxWidth, maxHeight){
-        await super.onMeasureSync(maxWidth, maxHeight);
         var ancho = this.getWidth();
         var alto = this.getHeight();
         var mayHeight = 0;
         var mayWidth = 0;
-        if (this.viewsChilds.length === 0) {
-            switch (this.height) {
-                case LayoutInflater.MATCH_PARENT: break;
-                case LayoutInflater.WRAP_CONTENT:
-                    this.elemDom.style.height = (this.padding.top + this.padding.bottom) + 'px';
-                    await this.repaintSync();
-                    break;
-                default: break;
-            }
-            switch (this.width) {
-                case LayoutInflater.MATCH_PARENT: break;
-                case LayoutInflater.WRAP_CONTENT:
-                    this.elemDom.style.width = (this.padding.left + this.padding.right) + 'px';
-                    await this.repaintSync();
-                    break;
-                    default: break;
-                }
-                return;
-        }
 
         let visibles = this.getViewVisibles();
 
         for(let view of visibles){
+            await view.onMeasureSync(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
             let horizonalGrav = false;
             let verticalGrav = false;
             if (view.layoutGravity !== null) {
@@ -89,7 +70,7 @@ class FrameLayout extends ViewGroup {
             if(!horizonalGrav)
                 view.elemDom.style.left = (this.padding.left + view.margin.left) + 'px';
 
-            await view.onMeasureSync(maxWidth,maxHeight);
+            await view.onMeasureSync(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
 
             var sum = parseInt(view.elemDom.style.top) + view.getHeight() + this.padding.bottom + view.margin.bottom;
             if (sum > mayHeight)
@@ -102,21 +83,32 @@ class FrameLayout extends ViewGroup {
             
         // FIN
         switch (this.height) {
-            case LayoutInflater.MATCH_PARENT: break;
+            case LayoutInflater.MATCH_PARENT:
+                this.elemDom.style.height = (maxHeight) + 'px';
+                break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.height = (mayHeight) + 'px';
-                await this.repaintSync();
                 break;
-            default: break;
+            default: 
+                let height = parseInt(this.height);
+                height = Math.max(height,this.maxHeigth);
+                this.elemDom.style.height = height + 'px';
+                break;
         }
 
         switch (this.width) {
-            case LayoutInflater.MATCH_PARENT: break;
+            case LayoutInflater.MATCH_PARENT:
+                this.elemDom.style.width = (maxWidth) + 'px';
+                break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.width = (mayWidth) + 'px';
-                await this.repaintSync();
                 break;
-            default: break;
+            default: 
+                let width = parseInt(this.width);
+                width = Math.max(width,this.maxWidth);
+                this.elemDom.style.width = width + 'px';
+                break;
         }
+        await this.repaintSync();
     }
 }

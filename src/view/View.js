@@ -326,6 +326,28 @@ class View {
         if(this.cssClassList.length > 0){
             this.cssClassList.split(',').forEach(classNameStyle => this.elemDom.classList.add(classNameStyle));
         }
+
+        // Background
+        switch (this.width) {
+            case LayoutInflater.MATCH_PARENT:
+                break;
+            case LayoutInflater.WRAP_CONTENT:
+                this.elemDom.style.width = 'auto';
+                break;
+            default:
+                this.elemDom.style.width = `${parseInt(this.width)}px`;
+                break;
+        }
+
+        switch (this.height) {
+            case LayoutInflater.MATCH_PARENT:
+                break;
+            case LayoutInflater.WRAP_CONTENT:
+                this.elemDom.style.height = 'auto';
+                break;
+            default:
+                this.elemDom.style.height = `${parseInt(this.height)}px`;
+        }
     }
 
     addCssClass(cssString){

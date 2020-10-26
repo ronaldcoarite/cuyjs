@@ -20,10 +20,7 @@ class TextView extends View {
         this.shadowRadius = 3;
 
     }
-    //@Override
-    getTypeElement(){
-        return 'TextView';
-    }
+
     //@Override
     parse(nodeXml){
         super.parse(nodeXml);
@@ -75,22 +72,22 @@ class TextView extends View {
 
         // Texto
         this.elemText = document.createElement('span');
-        this.elemText.style.margin = '0px';
         this.elemText.style.paddingTop = '0px';
         this.elemText.style.paddingLeft = '0px';
         this.elemText.style.paddingBottom = '0px';
         this.elemText.style.paddingRight = '0px';
         this.elemText.style.wordWrap = 'break-word'; // Ajustar texto a contenido
         this.elemText.style.position = 'absolute';
-
+        this.elemText.style.margin = "0px 0px 0px 0px";
+        
         // Icono
         this.elemIcon = document.createElement('img');
-        this.elemIcon.style.margin = '0px';
         this.elemIcon.style.paddingTop = '0px';
         this.elemIcon.style.paddingLeft = '0px';
         this.elemIcon.style.paddingBottom = '0px';
         this.elemIcon.style.paddingRight = '0px';
         this.elemIcon.style.position = 'absolute';
+        this.elemIcon.style.margin = "0px 0px 0px 0px";
 
         this.elemDom.appendChild(this.elemText);
         this.elemDom.appendChild(this.elemIcon);
@@ -125,8 +122,7 @@ class TextView extends View {
     }
 
     async onMeasureSync(maxWidth, maxHeight) {
-        await super.onMeasureSync(maxWidth,maxHeight);
-        const marginDrawable = 4; // 4px
+        const marginDrawable = this.elemIcon.clientWidth===0?0:4; // 4px
         switch(this.gravityIcon){
             case "left":
                 this.elemIcon.style.left = (this.padding.left) + 'px';
