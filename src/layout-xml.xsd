@@ -263,8 +263,11 @@
         <xs:complexType>
             <xs:complexContent mixed="false">
                 <xs:extension base="ViewGroup">
-                    <xs:attribute type="xs:integer" name="colums" use="required" default="1"/>
-                    <xs:attribute type="xs:integer" name="spacing" use="optional"/>
+                    <xs:attribute type="xs:integer" name="colums" use="required" default="2"/>
+                    <xs:attribute type="xs:integer" name="horizontalSpace" use="optional"/>
+                    <xs:attribute type="xs:integer" name="verticalSpace" use="optional"/>
+                    <xs:attribute type="xs:integer" name="minWidthView" use="optional"/>
+                    <xs:attribute type="xs:integer" name="minHeightView" use="optional"/>
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

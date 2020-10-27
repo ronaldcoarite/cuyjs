@@ -10,7 +10,6 @@ class Store {
     }
 
     static set(key,value){
-        console.log("Guardando..",value);
         sessionStorage.setItem(key,JSON.stringify({
             type: typeof value,
             value

@@ -15,10 +15,12 @@ class ViewGroup extends View{
             this.viewsChilds.push(child);
         }
     }
+
     parseViewChild(nodeXml) {
         let child = LayoutInflater.inflate(this.context, nodeXml);
         return child;
     }
+
     findViewById(idView) {
         if (idView === null && idView === undefined)
             return null;
@@ -34,6 +36,7 @@ class ViewGroup extends View{
         }
         return null;
     }
+
     findViewChildById(idView) {
         if (idView === null && idView === undefined)
             return null;
@@ -44,6 +47,7 @@ class ViewGroup extends View{
         }
         return null;
     }
+
     async addViewSync(viewChild) {
         if (viewChild === null || viewChild === undefined)
             throw new Exception("El view que desea agregar es nulo o no esta definido");
@@ -53,6 +57,7 @@ class ViewGroup extends View{
         this.elemDom.appendChild(viewChild.createDomElement());
         this.viewsChilds.push(viewChild);
     }
+
     getViewVisibles() {
         // agrupamos los GONE's y los INVISIBLE's
         let vistos = new Array();
@@ -63,12 +68,15 @@ class ViewGroup extends View{
         }
         return vistos;
     }
+
     getChildCount() {
         return this.viewsChilds.length;
     }
+
     getChildAt(i) {
         return this.viewsChilds[i];
     }
+    
     //@Override
     createDomElement() {
         super.createDomElement();

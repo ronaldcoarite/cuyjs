@@ -39,6 +39,7 @@
     "src/layout/LinearLayout.js",
     "src/layout/FrameLayout.js",
     "src/layout/RelativeLayout.js",
+    "src/layout/GridLayout.js",
 
     "src/page/Page.js",
     "src/page/animation/SpinnerAnimation.js"

@@ -19,6 +19,7 @@ class EditText extends View{
         this.text = null;
         this.enabled = true;
     }
+
     // @Override
     parse(nodeXml) {
         super.parse(nodeXml);
@@ -44,6 +45,7 @@ class EditText extends View{
         if (nodeXml.getAttribute("enabled") === "false")
             this.enabled = false;
     }
+
     // @Override
     getTypeElement(){
         return 'TextArea';
@@ -92,5 +94,13 @@ class EditText extends View{
         this.elemDom.style.paddingLeft = '6px';
         this.elemDom.style.paddingBottom = '6px';
         this.elemDom.style.paddingRight = '6px';
+    }
+
+    getWidth() {
+        return super.getWidth()+6*2;
+    }
+
+    getHeight() {
+        return super.getHeight()+6*2;
     }
 }

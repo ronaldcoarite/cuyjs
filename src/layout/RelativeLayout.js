@@ -2,10 +2,7 @@ class RelativeLayout extends ViewGroup{
     constructor(context) {
         super(context);
     }
-    //@Override
-    getTypeElement() {
-        return "RelativeLayout";
-    }
+
     //@Override
     parseViewChild(nodeXml) {
         var view = super.parseViewChild(nodeXml);

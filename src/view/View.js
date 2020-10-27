@@ -101,7 +101,7 @@ class View {
     
     setMargin(margin) {
         if (!margin) return;
-        var mg = parseInt(margin);
+        let mg = parseInt(margin);
         this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = mg;
     }
     setMarginTop(margin) {
