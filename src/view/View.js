@@ -32,18 +32,22 @@ class View {
     setVisibility(v) {
         this.visibility = v;
     }
+    
     setToolTip(text) {
         this.tooltip = text;
     }
+
     setMinWidth(w) {
         this.minWidth = w;
     }
     getContext() {
         return this.context;
     }
+
     setMinHeight(h) {
         this.minHeigth = h;
     }
+
     createDomElement() {
         var elem = document.createElement(this.getTypeElement());
         // Margenes por defector
@@ -104,10 +108,12 @@ class View {
         let mg = parseInt(margin);
         this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = mg;
     }
+    
     setMarginTop(margin) {
         if (!margin) return;
         this.margin.top = parseInt(margin);
     }
+
     setMarginLeft(margin) {
         if (!margin) return;
         this.margin.left = parseInt(margin);
@@ -116,25 +122,32 @@ class View {
         if (!margin) return;
         this.margin.right = parseInt(margin);
     }
+
     setMarginBottom(margin) {
         if (!margin) return;
         this.margin.bottom = parseInt(margin);
     }
+
     getBackground() {
         return this.background;
     }
+
     setBackground(background) {
         this.background = background;
     }
+
     setWidth(width) {
         this.width = width;
     }
+
     setHeight(height){
         this.height = height;
     }
+
     setLayoutGravity(gravity) {
         this.layoutGravity = gravity;
     }
+
     setOnClickListener(onCLick) {
         if (onCLick === null){
             this.onClick = null;
@@ -155,6 +168,7 @@ class View {
             this.onClick = onCLick;
         }
     }
+
     setMP(dr, ic, txt, tc) {
         var popupError = new PopupWindow(this.getContext());
         var message = new TextView(popupError);
@@ -173,18 +187,23 @@ class View {
             }, 3000);
         });
     }
+
     showAlertMsg(msg) {
         this.setMP("res/drawable/util/bg_alerta.9.png", "res/drawable/util/ic_alert.png", msg, "#653400");
     }
+
     showConfirmMsg(msg) {
         this.setMP("res/drawable/util/bg_confirm.9.png", "res/drawable/util/ic_confirm.png", msg, "#346700");
     }
+
     showErrorMsg(msg) {
         this.setMP("res/drawable/util/bg_error.9.png", "res/drawable/util/ic_error.png", msg, "#A90400");
     }
+
     showInfoMsg(msg) {
         this.setMP("res/drawable/util/bg_info.9.png", "res/drawable/util/ic_info.png", msg, "#4C95E7");
     }
+
     parse(nodeXml) {
         // CARGANDO ATRIBUTOS DEFINIDOS POR EL TEMA SI LO EXISTE
         Resource.loadThemeAttributes(this,nodeXml);

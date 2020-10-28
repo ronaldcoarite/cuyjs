@@ -2,10 +2,7 @@ class FrameLayout extends ViewGroup {
     constructor(context) {
         super(context);
     }
-    //Override
-    getTypeElement() {
-        return "FrameLayout";
-    }
+
     //Override
     parseViewChild(nodeXml) {
         let view = super.parseViewChild(nodeXml);
@@ -15,6 +12,7 @@ class FrameLayout extends ViewGroup {
             view.layoutGravity = 'left|top';
         return view;
     }
+
     //@Override
     async onMeasureSync(maxWidth, maxHeight){        
         let visibles = this.getViewVisibles();
@@ -23,10 +21,10 @@ class FrameLayout extends ViewGroup {
         let mayWidth = this.padding.left + this.padding.right;
         for(let view of visibles){
             await view.onMeasureSync(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
-            if((view.getWidth()+this.padding.left+this.padding.right) > mayWidth)
-                mayWidth = (view.getWidth()+this.padding.left+this.padding.right);
-            if((view.getHeight()+this.padding.top+this.padding.bottom) > mayHeight)
-                mayHeight = (view.getHeight()+this.padding.top+this.padding.bottom);
+            if((view.margin.left+this.padding.left+view.getWidth()+this.padding.right+view.margin.right) > mayWidth)
+                mayWidth = (view.margin.left+this.padding.left+view.getWidth()+this.padding.right+view.margin.right);
+            if((view.margin.top+this.padding.top+view.getHeight()+this.padding.bottom+view.margin.bottom) > mayHeight)
+                mayHeight = (view.margin.top+this.padding.top+view.getHeight()+this.padding.bottom+view.margin.bottom);
         }
         let maxWidthElement,maxHeightElement;
 

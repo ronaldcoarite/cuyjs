@@ -24,7 +24,7 @@ class Page extends Context{
             return this.viewRoot.findViewById(idView);
         }
         else
-            throw new Exception("El contenidor principal para la pagina no es heredado de ViewGroup");
+            throw new Exception(`El contenidor principal para la pagina [${this.constructor.name}] no es heredado de ViewGroup`);
     }
 
     setContentView(objView) {
@@ -63,9 +63,6 @@ class Page extends Context{
             throw new Exception("El intent es nulo o no esta definido");
         let tree = Store.get('TREE');
         let navigationList = await PageManager.getArrayNavegation();
-        console.log("TREE",tree);
-        console.log("Pagina",this.constructor.name);
-        console.log("PageNavigation",navigationList);
 
         window.location.href = `${window.location.href}/${intent.pageName}`;
         if(navigationList.pageNames.length === 0 ){
@@ -85,9 +82,7 @@ class Page extends Context{
         let currentPageConfig = tree.ROOT;
         let index = 0;
         // let pageName = navigationList.listPages[index];
-        console.log("Navigation list ",navigationList);
         while(index < navigationList.pageNames.length){
-            console.log("Compare",currentPageConfig.pageName,navigationList.pageNames[index]);
             if(currentPageConfig.pageName === navigationList.pageNames[index]){
                 if(index + 1 < navigationList.pageNames.length ){
                     // Obtenemos el nombre de la pagina siguiente
@@ -117,8 +112,6 @@ class Page extends Context{
             pageName: intent.pageName
         };
         Store.set('TREE',tree);
-        console.log("NUEVO ARBOL",tree);
-        console.log("NUEVO ARBOL GUARDADO",Store.get('TREE'));
     }
 
     setTitle(title) {

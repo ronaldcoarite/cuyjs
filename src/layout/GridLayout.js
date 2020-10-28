@@ -54,12 +54,10 @@ class GridLayout extends ViewGroup {
                 view.elemDom.style.top  = `${y}px`;
                 view.elemDom.style.left  = `${x}px`;
                 x+=maxAnchoView;
-                console.log("view.getHeight()",view.getHeight());
                 if(view.getHeight()>mayHeight)
                     mayHeight = view.getHeight();
                 index++;
             }
-            console.log("MAY HEIGHT",mayHeight);
             y=y+ mayHeight+this.verticalSpace;
         }
 

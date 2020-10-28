@@ -41,6 +41,7 @@
     "src/layout/RelativeLayout.js",
     "src/layout/GridLayout.js",
 
-    "src/page/Page.js",
-    "src/page/animation/SpinnerAnimation.js"
+    "src/ux/animation/SpinnerAnimation.js",
+    "src/ux/Page.js",
+    "src/ux/Dialog.js"
 ]

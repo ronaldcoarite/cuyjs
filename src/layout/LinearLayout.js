@@ -5,11 +5,6 @@ class LinearLayout extends ViewGroup {
     }
 
     //Override
-    getTypeElement() {
-        return "LinearLayout";
-    }
-
-    //Override
     parse(nodeXml) {
         if (nodeXml.getAttribute(LayoutInflater.ATTR_ORIENTATION) === LayoutInflater.LIN_ORIENTATION_VERTICAL)
             this.orientation = LayoutInflater.LIN_ORIENTATION_VERTICAL;
@@ -47,8 +42,6 @@ class LinearLayout extends ViewGroup {
     //@Override
     async onMeasureSync(maxWidth, maxHeight){
         let visibles = this.getViewVisibles();
-        if(visibles.length === 0)
-            return;
         if (this.orientation === LayoutInflater.LIN_ORIENTATION_VERTICAL)
             await this.onMeasureVertical(visibles,maxWidth,maxHeight);
         else
@@ -79,7 +72,7 @@ class LinearLayout extends ViewGroup {
         // Estableciendo alto de los componentes que tiene weight
         if(this.width === LayoutInflater.WRAP_CONTENT && arrayWeigh.length >0)
             throw new Exception(`Se especifico el atributo [layoutWeight] en uno de los hijos del [LinearLayout] pero el ancho se definio como [${LayoutInflater.WRAP_CONTENT}]. Especifique un tamaño fijo o ajustado al padre con [${LayoutInflater.MATCH_PARENT}]`);
-        let altoWeigth = this.getContentHeight(maxHeight) - sumHeigthWrap -this.padding.top- this.padding.bottom;
+        let altoWeigth = this.getContentHeight(maxHeight) - sumHeigthWrap;
         for(let view of arrayWeigh){
             await view.onMeasureSync(this.getContentWidth(maxWidth,view) , altoWeigth*view.layoutWeight - view.margin.top - view.margin.bottom);
             if((this.padding.left + view.margin.left + view.getWidth() + view.margin.right + this.padding.right)>mayWidth)
@@ -143,7 +136,6 @@ class LinearLayout extends ViewGroup {
         let arrayWeigh = new Array();
 
         // Establenciendo dimensión de los componentes que no tienen weight
-        let temp = false;
         for(let view of visibles){
             if (view.layoutWeight !== undefined && view.layoutWeight !== null && view.layoutWeight > 0)
                 arrayWeigh.push(view);
@@ -160,7 +152,7 @@ class LinearLayout extends ViewGroup {
         // Estableciendo alto de los componentes que tiene weight
         if(this.height === LayoutInflater.WRAP_CONTENT && arrayWeigh.length >0)
             throw new Exception(`Se especifico el atributo [layoutWeight] en uno de los hijos del [LinearLayout] pero el alto se definio como [${LayoutInflater.WRAP_CONTENT}]. Especifique un tamaño fijo o ajustado al padre con [${LayoutInflater.MATCH_PARENT}]`);
-        let anchoWeigth = this.getContentWidth(maxWidth) - sumWidthWrap -this.padding.left - this.padding.right;
+        let anchoWeigth = this.getContentWidth(maxWidth) - sumWidthWrap;
         for(let view of arrayWeigh){
             await view.onMeasureSync(anchoWeigth*view.layoutWeight - view.margin.left - view.margin.right, this.getContentHeight(maxHeight,view));
             if ( (this.padding.top + view.margin.top + view.getHeight() + view.margin.bottom + this.padding.bottom) > mayHeight)
