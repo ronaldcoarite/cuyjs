@@ -9,29 +9,29 @@ class GridLayout extends ViewGroup {
     }
 
     //@Override
-    parse(nodeXml) {
-        super.parse(nodeXml);
+    async parse(nodeXml) {
+        await super.parse(nodeXml);
         if (this.width === LayoutInflater.WRAP_CONTENT)
             throw new Exception(`No se permite el ancho dinamico de tipo [${LayoutInflater.WRAP_CONTENT}] para el atributo [layout_width] de la vista [GridLayout]`);
 
-        if (nodeXml.getAttribute("colums"))
-            this.colums = parseInt(nodeXml.getAttribute("colums"));
-        if (nodeXml.getAttribute("horizontalSpace"))
-            this.horizontalSpace = parseInt(nodeXml.getAttribute("horizontalSpace"));
-        if (nodeXml.getAttribute("verticalSpace"))
-            this.verticalSpace = parseInt(nodeXml.getAttribute("verticalSpace"));
-        if (nodeXml.getAttribute("minWidthView"))
-            this.minWidthView = parseInt(nodeXml.getAttribute("minWidthView"));
-        if (nodeXml.getAttribute("minHeightView"))
-            this.minHeightView = parseInt(nodeXml.getAttribute("minHeightView"));
+        if (this.getAttrFromNodeXml(nodeXml,"colums"))
+            this.colums = parseInt(this.getAttrFromNodeXml(nodeXml,"colums"));
+        if (this.getAttrFromNodeXml(nodeXml,"horizontalSpace"))
+            this.horizontalSpace = parseInt(this.getAttrFromNodeXml(nodeXml,"horizontalSpace"));
+        if (this.getAttrFromNodeXml(nodeXml,"verticalSpace"))
+            this.verticalSpace = parseInt(this.getAttrFromNodeXml(nodeXml,"verticalSpace"));
+        if (this.getAttrFromNodeXml(nodeXml,"minWidthView"))
+            this.minWidthView = parseInt(this.getAttrFromNodeXml(nodeXml,"minWidthView"));
+        if (this.getAttrFromNodeXml(nodeXml,"minHeightView"))
+            this.minHeightView = parseInt(this.getAttrFromNodeXml(nodeXml,"minHeightView"));
     }
 
     //@Override
-    parseViewChild(nodeXml) {
-        let view = super.parseViewChild(nodeXml);
-        // if (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WIDTH) === LayoutInflater.MATCH_PARENT)
+    async parseViewChild(nodeXml) {
+        let view = await super.parseViewChild(nodeXml);
+        // if (nodeXml,LayoutInflater.ATTR_LAYOUT_WIDTH) === LayoutInflater.MATCH_PARENT)
         //     throw `No puede establecer un ancho [${LayoutInflater.ATTR_LAYOUT_WIDTH}] de tipo [${LayoutInflater.MATCH_PARENT}] para la vista [${nodeXml.tagName}] en el contenedor [GridLayout]`;
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_HEIGHT) === LayoutInflater.MATCH_PARENT)
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_HEIGHT) === LayoutInflater.MATCH_PARENT)
             throw `No puede establecer un alto [${LayoutInflater.ATTR_LAYOUT_HEIGHT}] de tipo [${LayoutInflater.MATCH_PARENT}] para la vista [${nodeXml.tagName}] en el contenedor [GridLayout]`;
         return view;
     }

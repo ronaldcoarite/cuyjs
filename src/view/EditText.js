@@ -21,28 +21,28 @@ class EditText extends View{
     }
 
     // @Override
-    parse(nodeXml) {
-        super.parse(nodeXml);
-        if (nodeXml.getAttribute("ems") !== null) {
-            this.ems = parseInt(nodeXml.getAttribute("ems"));
+    async parse(nodeXml) {
+        await super.parse(nodeXml);
+        if (this.getAttrFromNodeXml(nodeXml,"ems") !== null) {
+            this.ems = parseInt(this.getAttrFromNodeXml(nodeXml,"ems"));
         }
-        if (nodeXml.getAttribute("lines") !== null) {
-            this.lines = parseInt(nodeXml.getAttribute("lines"));
+        if (this.getAttrFromNodeXml(nodeXml,"lines") !== null) {
+            this.lines = parseInt(this.getAttrFromNodeXml(nodeXml,"lines"));
         }
-        if (nodeXml.getAttribute("maxEms") !== null)
-            this.maxEms = parseInt(nodeXml.getAttribute("maxEms"));
-        if (nodeXml.getAttribute("maxLines") !== null)
-            this.maxLines = parseInt(nodeXml.getAttribute("maxLines"));
-        if (nodeXml.getAttribute("maxLines") !== null)
-            this.maxLines = parseInt(nodeXml.getAttribute("maxLines"));
-        this.hint = nodeXml.getAttribute("hint");
-        if (nodeXml.getAttribute("maxlength") !== null)
-            this.maxLength = parseInt(nodeXml.getAttribute("maxlength"));
-        if (nodeXml.getAttribute("text") !== null)
-            this.text = nodeXml.getAttribute("text");
-        if (nodeXml.getAttribute("singleLine") === "true")
+        if (this.getAttrFromNodeXml(nodeXml,"maxEms") !== null)
+            this.maxEms = parseInt(this.getAttrFromNodeXml(nodeXml,"maxEms"));
+        if (this.getAttrFromNodeXml(nodeXml,"maxLines") !== null)
+            this.maxLines = parseInt(this.getAttrFromNodeXml(nodeXml,"maxLines"));
+        if (this.getAttrFromNodeXml(nodeXml,"maxLines") !== null)
+            this.maxLines = parseInt(this.getAttrFromNodeXml(nodeXml,"maxLines"));
+        this.hint = this.getAttrFromNodeXml(nodeXml,"hint");
+        if (this.getAttrFromNodeXml(nodeXml,"maxlength") !== null)
+            this.maxLength = parseInt(this.getAttrFromNodeXml(nodeXml,"maxlength"));
+        if (this.getAttrFromNodeXml(nodeXml,"text") !== null)
+            this.text = this.getAttrFromNodeXml(nodeXml,"text");
+        if (this.getAttrFromNodeXml(nodeXml,"singleLine") === "true")
             this.lines = 1;
-        if (nodeXml.getAttribute("enabled") === "false")
+        if (this.getAttrFromNodeXml(nodeXml,"enabled") === "false")
             this.enabled = false;
     }
 

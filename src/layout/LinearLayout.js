@@ -5,27 +5,27 @@ class LinearLayout extends ViewGroup {
     }
 
     //Override
-    parse(nodeXml) {
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_ORIENTATION) === LayoutInflater.LIN_ORIENTATION_VERTICAL)
+    async parse(nodeXml) {
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ORIENTATION) === LayoutInflater.LIN_ORIENTATION_VERTICAL)
             this.orientation = LayoutInflater.LIN_ORIENTATION_VERTICAL;
-        else if (nodeXml.getAttribute(LayoutInflater.ATTR_ORIENTATION) === LayoutInflater.LIN_ORIENTATION_HORIZONTAL)
+        else if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ORIENTATION) === LayoutInflater.LIN_ORIENTATION_HORIZONTAL)
             this.orientation = LayoutInflater.LIN_ORIENTATION_HORIZONTAL;
         else
             throw new Exception(
                 `La orientación para LinearLayout debe ser unicamente [horizontal o vertical]. Establesca el atributo [${LayoutInflater.ATTR_ORIENTATION}] para definir la orientación de la vista`);
-        super.parse(nodeXml);
+        await super.parse(nodeXml);
     }
 
     //Override
-    parseViewChild(nodeXml) {
-        let view = super.parseViewChild(nodeXml);
-        view.layoutGravity = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_GRAVITY)||
+    async parseViewChild(nodeXml) {
+        let view = await super.parseViewChild(nodeXml);
+        view.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_GRAVITY)||
             (this.orientation===LayoutInflater.LIN_ORIENTATION_VERTICAL?
                 LayoutInflater.ATTR_LAYOUT_GRAVITY_LEFT:
                 LayoutInflater.ATTR_LAYOUT_GRAVITY_TOP);
 
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WEIGHT) !== null){
-            let weight = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WEIGHT);
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_WEIGHT) !== null){
+            let weight = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_WEIGHT);
             var num = parseFloat(weight);
             if (isNaN(num) === true)
                 throw new Exception(

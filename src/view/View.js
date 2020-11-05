@@ -10,7 +10,6 @@ class View {
         this.visibility = View.VISIBLE;
         this.margin = { top: 0, left: 0, right: 0, bottom: 0 };
         this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
-        // this.elemDom = this.createDomElement();
         this.parentView = null;
         this.maxWidth = 0;
         this.maxHeigth = 0;
@@ -27,6 +26,7 @@ class View {
         this.layoutGravity = (LayoutInflater.LEFT + '|' + LayoutInflater.TOP);
         this.audioClick = null;
         this.audioAdove = null;
+        this.theme = this.constructor.name;
     }
 
     setVisibility(v) {
@@ -48,7 +48,7 @@ class View {
         this.minHeigth = h;
     }
 
-    createDomElement() {
+    async createDomElement() {
         var elem = document.createElement(this.getTypeElement());
         // Margenes por defector
         elem.style.marginTop = '0px';
@@ -97,6 +97,10 @@ class View {
     getWidth() {
         // return this.width;
         return this.elemDom? this.elemDom.clientWidth: 0;
+    }
+
+    getTheme(){
+        return this.theme;
     }
 
     getHeight() {
@@ -160,7 +164,7 @@ class View {
             if(propertyNames.find(property=>property===onCLick)){
                 this.onClick = async function(){
                         // Object.getPrototypeOf(this.context)[onCLick];
-                    Reflect.apply(Reflect.get(this.context,onCLick), this.context,this);
+                    Reflect.apply(Reflect.get(this.context,onCLick), this.context,[this]);
                 }
             }else
                 throw new Exception(`No se pudo encontrar la funcion [${onCLick}] dentro del contexto [${this.context.constructor.name}]`);
@@ -169,107 +173,125 @@ class View {
         }
     }
 
-    setMP(dr, ic, txt, tc) {
-        var popupError = new PopupWindow(this.getContext());
-        var message = new TextView(popupError);
+    async setMP(dr, ic, txt, tc) {
+        var popup = new PopupWindow(this.getContext());
+        let message = new TextView(popup);
         message.setText(txt);
         if (ic !== null)
-            message.setDrawableLeft(ic);
+            await message.setDrawableLeft(ic);
         message.setBackground(dr);
         message.setSingleLine(true);
         message.setTextColor(tc);
 
-        popupError.setView(this);
-        popupError.setContentView(message);
-        popupError.show(function () {
-            setTimeout(function () {
-                popupError.cancel();
-            }, 3000);
-        });
+        popup.setView(this);
+        popup.setContentView(message);
+        popup.show();
+        setTimeout(function(){
+            popup.cancel();
+        },3000);
+        return popup;
     }
 
-    showAlertMsg(msg) {
-        this.setMP("res/drawable/util/bg_alerta.9.png", "res/drawable/util/ic_alert.png", msg, "#653400");
+    async showAlertMsg(msg) {
+        await this.setMP("lib/imgs/bg_msg_alerta.9.png", "lib/imgs/ic_msg_alert.png", msg, "#653400");
     }
 
-    showConfirmMsg(msg) {
-        this.setMP("res/drawable/util/bg_confirm.9.png", "res/drawable/util/ic_confirm.png", msg, "#346700");
+    async showConfirmMsg(msg) {
+        await this.setMP("lib/imgs/bg_msg_confirm.9.png", "lib/imgs/ic_msg_confirm.png", msg, "#346700");
     }
 
-    showErrorMsg(msg) {
-        this.setMP("res/drawable/util/bg_error.9.png", "res/drawable/util/ic_error.png", msg, "#A90400");
+    async showErrorMsg(msg) {
+        await this.setMP("lib/imgs/bg_msg_error.9.png", "lib/imgs/ic_msg_error.png", msg, "#A90400");
     }
 
-    showInfoMsg(msg) {
-        this.setMP("res/drawable/util/bg_info.9.png", "res/drawable/util/ic_info.png", msg, "#4C95E7");
+    async showInfoMsg(msg) {
+        await this.setMP("lib/imgs/bg_msg_info.9.png", "lib/imgs/ic_msg_info.png", msg, "#4C95E7");
     }
 
-    parse(nodeXml) {
+    getAttrFromNodeXml(nodeXml, attrName){
+        let attrValue  = nodeXml.getAttribute(attrName);
+        if(attrValue){
+            let matches = attrValue.matchAll(LayoutInflater.REGEX_VARS);
+            for (let ocurrencia of matches) {
+                let paramName = ocurrencia[1];
+                console.log("Param value",paramName);
+                let valueAttrCtx = eval(`this.context.${paramName}`);
+                console.log("valueAttrCtx",valueAttrCtx);
+            }
+        }
+        return attrValue;
+    }
+
+    async parse(nodeXml) {
+        // THEMA PARA LA VISTA
+        if (this.getAttrFromNodeXml(nodeXml,"theme") !== null)
+            this.theme = this.getAttrFromNodeXml(nodeXml,"theme");
+
         // CARGANDO ATRIBUTOS DEFINIDOS POR EL TEMA SI LO EXISTE
         Resource.loadThemeAttributes(this,nodeXml);
 
         // VISIBILITY DEL VIEW
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_VISIBILITY) !== null) 
-            this.visibility = nodeXml.getAttribute(LayoutInflater.ATTR_VISIBILITY);
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_VISIBILITY) !== null) 
+            this.visibility = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_VISIBILITY);
 
         // PADDING DEL VIEW
-        var padding = nodeXml.getAttribute(LayoutInflater.ATTR_PADDING);
+        var padding = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_PADDING);
         if (padding !== null) {
             let pad = parseInt(padding);
             this.padding.top = this.padding.left = this.padding.right = this.padding.bottom = pad;
         }
         // MARGEN DEL COMPONENTE
-        if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN)!=null)
-            this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN));
-        if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_BOTTOM)!=null)
-            this.margin.bottom = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_BOTTOM));
-        if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_LEFT)!=null)
-            this.margin.left = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_LEFT));
-        if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_RIGHT)!=null)
-            this.margin.right = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_RIGHT));
-        if(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_TOP)!=null)
-            this.margin.top = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_MARGIN_TOP));
-        if(nodeXml.getAttribute("paddingLeft"))
-            this.padding.left = parseInt(nodeXml.getAttribute("paddingLeft"));
-        if(nodeXml.getAttribute("paddingRight"))
-            this.padding.right = parseInt(nodeXml.getAttribute("paddingRight"));
+        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN)!=null)
+            this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN));
+        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_BOTTOM)!=null)
+            this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_BOTTOM));
+        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_LEFT)!=null)
+            this.margin.left = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_LEFT));
+        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_RIGHT)!=null)
+            this.margin.right = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_RIGHT));
+        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_TOP)!=null)
+            this.margin.top = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_TOP));
+        if(this.getAttrFromNodeXml(nodeXml,"paddingLeft"))
+            this.padding.left = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingLeft"));
+        if(this.getAttrFromNodeXml(nodeXml,"paddingRight"))
+            this.padding.right = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingRight"));
 
         // ID DEL VIEW
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_ID) !== null)
-            this.id = nodeXml.getAttribute(LayoutInflater.ATTR_ID);
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ID) !== null)
+            this.id = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ID);
 
         // LAYOUT GRAVITY DEL VIEW
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_GRAVITY) !== null)
-            this.layoutGravity = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_GRAVITY);
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_GRAVITY) !== null)
+            this.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_GRAVITY);
         // WIDTH DEL VIEW
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WIDTH) !== null)
-            this.width = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_WIDTH);
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_WIDTH) !== null)
+            this.width = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_WIDTH);
         // HEIGHT DEL VIEW
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_HEIGHT) !== null)
-            this.height = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_HEIGHT);
-        this.tooltip = nodeXml.getAttribute('tooltip');
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_HEIGHT) !== null)
+            this.height = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_HEIGHT);
+        this.tooltip = this.getAttrFromNodeXml(nodeXml,'tooltip');
 
         // BACKGROUDN DEL VIEW
-        this.background = nodeXml.getAttribute(LayoutInflater.ATTR_BACKGROUND);
-        this.onClickDefinition = nodeXml.getAttribute(LayoutInflater.ATTR_ON_CLICK);
+        this.background = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_BACKGROUND);
+        this.onClickDefinition = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ON_CLICK);
 
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_MIN_HEIGHT) !== null)
-            this.minHeigth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_HEIGHT))||10;
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MIN_HEIGHT) !== null)
+            this.minHeigth = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MIN_HEIGHT))||10;
 
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH) !== null)
-            this.minWidth = parseInt(nodeXml.getAttribute(LayoutInflater.ATTR_MIN_WIDTH))||10;
-        if (nodeXml.getAttribute("cssClassList") !== null && nodeXml.getAttribute("cssClassList").length>0){
-            // this.cssClassList = `${nodeXml.getAttribute("cssClassList")}`;
-            this.cssClassList = `${this.cssClassList},${nodeXml.getAttribute("cssClassList")}`;
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MIN_WIDTH) !== null)
+            this.minWidth = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MIN_WIDTH))||10;
+        if (this.getAttrFromNodeXml(nodeXml,"cssClassList") !== null && this.getAttrFromNodeXml(nodeXml,"cssClassList").length>0){
+            // this.cssClassList = `${nodeXml,"cssClassList")}`;
+            this.cssClassList = `${this.cssClassList},${this.getAttrFromNodeXml(nodeXml,"cssClassList")}`;
         }
 
         // AUDIO PARA EL CLICK
-        if (nodeXml.getAttribute("audioClick") !== null)
-            this.audioClick = new Audio(nodeXml.getAttribute("audioClick"));
+        if (this.getAttrFromNodeXml(nodeXml,"audioClick") !== null)
+            this.audioClick = new Audio(this.getAttrFromNodeXml(nodeXml,"audioClick"));
 
         // AUDIO PARA ENCIMA DE CLICK
-        if (nodeXml.getAttribute("audioAdove") !== null){
-            this.audioAdove = new Audio(nodeXml.getAttribute("audioAdove"));
+        if (this.getAttrFromNodeXml(nodeXml,"audioAdove") !== null){
+            this.audioAdove = new Audio(this.getAttrFromNodeXml(nodeXml,"audioAdove"));
         }
     }
 
@@ -314,14 +336,14 @@ class View {
         // Cargando OnClick
         if (typeof this.onClickDefinition === 'string') {
             // Buscamos el nombre de metodo en el contexto
-            var propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+            let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
             if(propertyNames.find(property=>property===this.onClickDefinition)){
                 this.onClick = async function(){
                     // alert("Funcion asyncrona llamada correctamente");
-                    Reflect.apply(Reflect.get(this.context,this.onClickDefinition), this.context,this);
+                    Reflect.apply(Reflect.get(this.context,this.onClickDefinition), this.context,[this]);
                 }
             }else
-                throw new Exception(`No se pudo encontrar la funcion [${this.this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
+                throw new Exception(`No se pudo encontrar la funcion [${this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
         }
 
         // OnClick

@@ -1,24 +1,5 @@
 /* global Dialog, LayoutInflater, Class */
 
-PickImage = Dialog.extend({
-    onCreate:function(){
-        this.setContentView("res/layout/seleccionar_imagen.xml");
-    },
-    onStart:function(){
-        
-    },
-    onCanceled:function(){
-        
-    },
-    onClickDescartar:function(){
-        this.cancel();
-    },
-    onClickContinuar:function(){
-        this.cancel();
-        var nuevaEntidad2 = new DialogNuevaEntidad2();
-        nuevaEntidad2.show();
-    }
-});
 Toast={
     LENGTH_SHORT:1000,
     LENGTH_LONG:3400,

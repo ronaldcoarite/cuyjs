@@ -30,14 +30,6 @@
             </xs:restriction>
         </xs:simpleType>
     </xs:attribute>
-    <xs:attribute name="inputType">
-        <xs:simpleType>
-            <xs:restriction base="xs:string">
-                <xs:enumeration value="text"/>
-                <xs:enumeration value="password"/>
-            </xs:restriction>
-        </xs:simpleType>
-    </xs:attribute>
     <xs:simpleType name="bool">
         <xs:restriction base="xs:string">
             <xs:enumeration value="true"/>
@@ -120,6 +112,7 @@
         <xs:attribute type="xs:string" name="background" use="optional"/>
         <xs:attribute type="xs:string" name="onClick" use="optional"/>
         <xs:attribute type="xs:string" name="cssClassList" use="optional"/>
+        <xs:attribute type="xs:string" name="theme" use="optional"/>
         
         <xs:attribute ref="layout_gravity" use="optional"/>
         <xs:attribute ref="tooltip" use="optional"/>
@@ -187,13 +180,22 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+    <xs:element name="Password">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="View">
+                    <xs:attribute type="xs:string" name="text" use="optional"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
     
     <xs:element name="ImageView" type="ImageView" />
     <xs:complexType name="ImageView">
         <xs:complexContent mixed="false">
             <xs:extension base="View">
                 <xs:attribute ref="scaleType" use="optional"/>
-                <xs:attribute type="xs:string" name="src" use="optional"/>                
+                <xs:attribute type="xs:string" name="src" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

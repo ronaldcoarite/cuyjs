@@ -34,14 +34,18 @@
     "src/view/EditText.js",
     "src/view/ImageView.js",
     "src/view/ImageButton.js",
+    "src/view/Password.js",
+    "src/view/Camera.js",
 
     "src/layout/ViewGroup.js",
     "src/layout/LinearLayout.js",
     "src/layout/FrameLayout.js",
     "src/layout/RelativeLayout.js",
     "src/layout/GridLayout.js",
+    "src/layout/Component.js",
 
     "src/ux/animation/SpinnerAnimation.js",
     "src/ux/Page.js",
-    "src/ux/Dialog.js"
+    "src/ux/Dialog.js",
+    "src/ux/PopupWindow.js"
 ]

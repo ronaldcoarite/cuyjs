@@ -24,7 +24,7 @@ class Resource{
 
     static async loadThemeAttributes(view,nodeXml) {
         // Buscamos si existe el componente
-        let wantedView = this.listThemes.find(styleItem => styleItem.parent===view.constructor.name);
+        let wantedView = this.listThemes.find(styleItem => styleItem.parent===view.getTheme());
         if(wantedView){
             let attributes = wantedView.attributes;
             for (let [key, value] of Object.entries(attributes)) {

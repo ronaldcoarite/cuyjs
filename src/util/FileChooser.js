@@ -1,7 +1,12 @@
 class FileChooser{
-    static async showSelectFile(type) {
+    static async showSelectFile(types) {
         return await new Promise(function (resolve, reject) {
-            var domoInput = document.getElementById("files");
+            var domoInput = document.createElement("input");
+            domoInput.setAttribute("type", "file");
+            domoInput.style.visibility = "hidden";
+            domoInput.accept = types;
+
+            document.body.appendChild(domoInput);
             domoInput.click();
             domoInput.onchange = function () {
                 var reader = new FileReader();
@@ -13,15 +18,19 @@ class FileChooser{
                     let posBase = contents.indexOf(',');
                     contents = posBase === -1 ? contents : contents.substr(posBase + 1);
                     //                    var doc = parser.parseFromString(contents, "application/xml");
+                    domoInput.remove(); 
+                    let fileNameSelected = domoInput.files[0].name;
                     resolve({
-                        fileName: domoInput.files[0].name,
-                        data: contents,
+                        fileName: fileNameSelected,
+                        fileExt: fileNameSelected.substring(fileNameSelected.lastIndexOf('.')+1),
+                        dataInBase64: contents,
                         size: domoInput.files[0].size,
                         lastModified: domoInput.files[0].lastModified
                     });
                     //                    cbSelected(doc.documentElement);
                 };
                 reader.onerror = function (error) {
+                    domoInput.remove();
                     reject(error);
                 },
                     //                reader.readAsBinaryString(domoInput.files[0],"UTF-8");

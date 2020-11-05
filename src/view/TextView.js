@@ -22,40 +22,40 @@ class TextView extends View {
     }
 
     //@Override
-    parse(nodeXml){
-        super.parse(nodeXml);
+    async parse(nodeXml){
+        await super.parse(nodeXml);
         
-        this.text = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TEXT);
-        this.textColor = nodeXml.getAttribute("textColor");
-        if (nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_LEFT) !== null) {
+        this.text = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_TEXT);
+        this.textColor = this.getAttrFromNodeXml(nodeXml,"textColor");
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_LEFT) !== null) {
             this.gravityIcon = LayoutInflater.LEFT;
-            this.drawableResource = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_LEFT);
+            this.drawableResource = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_LEFT);
         }
-        else if (nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_RIGHT) !== null) {
+        else if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_RIGHT) !== null) {
             this.gravityIcon = LayoutInflater.RIGHT;
-            this.drawableResource =  nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_RIGHT);
+            this.drawableResource = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_RIGHT);
         }
-        else if (nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_TOP) !== null) {
+        else if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_TOP) !== null) {
             this.gravityIcon = LayoutInflater.TOP;
-            this.drawableResource =  nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_TOP);
+            this.drawableResource =  this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_TOP);
         }
-        else if (nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM) !== null) {
+        else if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_BOTTOM) !== null) {
             this.gravityIcon = LayoutInflater.BOTTOM;
-            this.drawableResource = nodeXml.getAttribute(LayoutInflater.ATTR_DRAWABLE_BOTTOM);
+            this.drawableResource = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_BOTTOM);
         }
         else{
             this.gravityIcon = LayoutInflater.LEFT;
             this.drawableResource = null;
         }
-        this.singleLine = nodeXml.getAttribute("singleLine")==="true"?true:false;
-        this.textStyle = nodeXml.getAttribute("textStyle");
+        this.singleLine = this.getAttrFromNodeXml(nodeXml,"singleLine")==="true"?true:false;
+        this.textStyle = this.getAttrFromNodeXml(nodeXml,"textStyle");
 
-        this.shadowColor = nodeXml.getAttribute("shadowColor");
-        this.shadowDx = parseInt(nodeXml.getAttribute("shadowDx"))||this.shadowDx;
-        this.shadowDy = parseInt(nodeXml.getAttribute("shadowDy"))||this.shadowDy;
-        this.shadowRadius = parseInt(nodeXml.getAttribute("shadowRadius"))||this.shadowRadius;
+        this.shadowColor = this.getAttrFromNodeXml(nodeXml,"shadowColor");
+        this.shadowDx = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowDx"))||this.shadowDx;
+        this.shadowDy = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowDy"))||this.shadowDy;
+        this.shadowRadius = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowRadius"))||this.shadowRadius;
 
-        this.textSize = nodeXml.getAttribute("textSize")||this.textSize;
+        this.textSize = this.getAttrFromNodeXml(nodeXml,"textSize")||this.textSize;
     }
 
     setSingleLine(single) {
@@ -66,9 +66,15 @@ class TextView extends View {
         this.textColor = color;
     }
 
+    setText(text){
+        this.text = text;
+        if(this.elemDom)
+            this.elemText.innerHTML = this.text;
+    }
+
     //@Override
-    createDomElement () {
-        super.createDomElement();
+    async createDomElement () {
+        await super.createDomElement();
 
         // Texto
         this.elemText = document.createElement('span');
@@ -338,30 +344,26 @@ class TextView extends View {
         await this.repaintSync();
     }
 
-    async setDrawableLeftSync(drawable) {
-        this.gravityIcon = LayoutInflater.LEFT;
-        this.drawableLeft = drawable;
-        let image = await Resource.loadImage(drawable);
-        this.elemIcon.src = `data:image/png;base64,${image.toDataURL()}`;
+    async setDrawableIcon(drawable,position){
+        this.gravityIcon = position;
+        this.drawableResource = drawable;
+        if(this.elemDom){
+            let image = await Resource.loadImage(drawable);
+            this.elemIcon.src = image.src;
+        }
     }
 
-    async setDrawableTopSync(drawable) {
-        this.gravityIcon = LayoutInflater.TOP;
-        this.drawableTop = drawable;
-        let image = await Resource.loadImage(drawable);
-        this.elemIcon.src = `data:image/png;base64,${image.toDataURL()}`;
+    async setDrawableLeft(drawable) {
+        await this.setDrawableIcon(drawable,LayoutInflater.LEFT);
     }
 
-    async setDrawableRightSync(drawable, onLoadedDrawable) {
-        this.gravityIcon = LayoutInflater.RIGHT;
-        this.drawableTop = drawable;
-        let image = await Resource.loadImage(drawable);
-        this.elemIcon.src = `data:image/png;base64,${image.toDataURL()}`;
+
+    async setDrawableTop(drawable) {
+        await this.setDrawableIcon(drawable,LayoutInflater.TOP);
     }
 
-    async setTextSync(text) {
-        this.text = text;
-        this.loadResources();
+    async setDrawableRight(drawable) {
+        await this.setDrawableIcon(drawable,LayoutInflater.RIGHT);
     }
 
     getText() {

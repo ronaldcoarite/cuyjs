@@ -64,18 +64,20 @@ class Page extends Context{
         let tree = Store.get('TREE');
         let navigationList = await PageManager.getArrayNavegation();
 
-        window.location.href = `${window.location.href}/${intent.pageName}`;
         if(navigationList.pageNames.length === 0 ){
             alert("Error pagina no registrada");
             return;
         }
-        if(this.constructor.name !== navigationList.pageNames[0]){
-            alert("La pagina raiz no es la misma que la pagina actual");
-            return;
-        }
+        // console.log("Navigation",navigationList);
+        // if(this.constructor.name !== navigationList.pageNames[0]){
+        //     alert("La pagina raiz no es la misma que la pagina actual");
+        //     return;
+        // }
         
         // Cargando la pagina
         let newPage = await PageManager.startPageFromIntent(intent);
+
+        window.location.href = `${window.location.href}/${intent.pageName}`;
         
         // Guardando en el historial la navegación de la nueva pagina
 

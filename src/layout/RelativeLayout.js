@@ -4,21 +4,21 @@ class RelativeLayout extends ViewGroup{
     }
 
     //@Override
-    parseViewChild(nodeXml) {
-        var view = super.parseViewChild(nodeXml);
-        view.alignParentTop = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ALIGNPARENTTOP) === "true");
-        view.alignParentRight = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ALIGNPARENTRIGHT) === "true");
-        view.alignParentBottom = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ALIGNPARENTBOTTOM) === "true");
-        view.alignParentLeft = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ALIGNPARENTLEFT) === "true");
+    async parseViewChild(nodeXml) {
+        var view = await super.parseViewChild(nodeXml);
+        view.alignParentTop = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_ALIGNPARENTTOP) === "true");
+        view.alignParentRight = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_ALIGNPARENTRIGHT) === "true");
+        view.alignParentBottom = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_ALIGNPARENTBOTTOM) === "true");
+        view.alignParentLeft = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_ALIGNPARENTLEFT) === "true");
         
-        view.centerHorizontal = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_CENTERHORIZONTAL) === "true");
-        view.centerVertical = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_CENTERVERTICAL) === "true");
-        view.centerInParent = (nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_CENTERINPARENT) === "true");
+        view.centerHorizontal = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_CENTERHORIZONTAL) === "true");
+        view.centerVertical = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_CENTERVERTICAL) === "true");
+        view.centerInParent = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_CENTERINPARENT) === "true");
         
-        view.above = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_ABOVE);
-        view.below = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_BELOW);
-        view.toRightOf = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TORIGHTOF);
-        view.toLeftOf = nodeXml.getAttribute(LayoutInflater.ATTR_LAYOUT_TOLEFTOF);
+        view.above = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_ABOVE);
+        view.below = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_BELOW);
+        view.toRightOf = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_TORIGHTOF);
+        view.toLeftOf = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_TOLEFTOF);
         return view;
     }
 
@@ -69,21 +69,21 @@ class RelativeLayout extends ViewGroup{
             // Ubicación respecto a otros elementos
             // ATTR_LAYOUT_ABOVE:"layout_above",//id
             if (view.above) {
-                var viewAbove = this.findViewChildById(view.above);
+                var viewAbove = this.findViewById(view.above);
                 if (!viewAbove)
                     throw new Exception(`No se encuentra el view hijo con id [${view.above}] citado en la vista [${view.name}], para el contenedor [${this.name}]`);
                 view.elemDom.style.top = (parseInt(viewAbove.elemDom.style.top) - viewAbove.margin.top - view.elemDom.clientHeight - view.margin.bottom) + 'px';
             }
             // ATTR_LAYOUT_BELOW:"layout_below",//id
             if (view.below) {
-                var viewBelow = this.findViewChildById(view.below);
+                var viewBelow = this.findViewById(view.below);
                 if (!viewBelow)
                     throw new Exception(`No se encuentra el view hijo con id [${view.below}] citado en la vista [${view.name}], para el contenedor [${this.name}]`);
                 view.elemDom.style.top = (parseInt(viewBelow.elemDom.style.top) + viewBelow.elemDom.clientHeight + viewBelow.margin.bottom + view.margin.top) + 'px';
             }
             // ATTR_LAYOUT_TORIGHTOF:"layout_toRightOf",//id
             if (view.toLeftOf) {
-                var viewToLeft = this.findViewChildById(view.toLeftOf);
+                var viewToLeft = this.findViewById(view.toLeftOf);
                 if (!viewToLeft)
                     throw new Exception(`No se encuentra el view hijo con id [${view.toLeftOf}] citado en la vista [${view.name}], para el contenedor [${this.name}]`);
                 if (view.alignParentLeft === true) {

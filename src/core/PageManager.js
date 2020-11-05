@@ -223,10 +223,10 @@ class PageManager {
             throw new Exception(`La pagina [${page.constructor.name}] no tiene contenido definido. Asigne un contenido con page.setContentView`);
         if(page.urlView){ // La pagina cargara los elementos a partir de una URL
             let rootXml = await Resource.loadLayoutSync(page.urlView);
-            page.viewRoot = LayoutInflater.inflate(page,rootXml);
+            page.viewRoot = await LayoutInflater.inflate(page,rootXml);
         }
 
-        document.body.appendChild(page.viewRoot.createDomElement());
+        document.body.appendChild(await page.viewRoot.createDomElement());
         // page.startLoaded(); // Iniciando carga
 
         var navigator = this.getWindowsDimension();

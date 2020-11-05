@@ -91,12 +91,14 @@ class LayoutInflater{
     static INVISIBLE= "invisible";
     static GONE= "gone";
 
+    static REGEX_VARS = /\{\{([a-z_][a-z_.\d]*)\}\}+/g;
+
     /**
      * Instancia la vista y realizar el parseo a travez del la raiz del documento XML pasado como parametro
      * @param {*} context  EL contexto de la pagina
      * @param {*} firstElement El primer elemento de tipo XML para crear la vista
      */
-    static parse(context, firstElement) {
+    static async parse(context, firstElement) {
         var view = null;
         try {
             var view = eval("new " + firstElement.tagName + "(context)");
@@ -105,12 +107,12 @@ class LayoutInflater{
             console.log(o);
             throw new Exception("No existe la vista [" + firstElement.tagName + "]");
         }
-        view.parse(firstElement);
+        await view.parse(firstElement);
         return view;
     }
 
-    static inflate(context,xmlRoot) {
-        var view = this.parse(context, xmlRoot);
+    static async inflate(context,xmlRoot) {
+        let view = await this.parse(context, xmlRoot);
         return view;
     }
 }
