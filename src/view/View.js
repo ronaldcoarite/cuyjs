@@ -23,7 +23,7 @@ class View {
         this.onClick = null;
         this.onClickDefinition = null;
         this.tooltip = null;
-        this.layoutGravity = (LayoutInflater.LEFT + '|' + LayoutInflater.TOP);
+        this.layoutGravity = null;
         this.audioClick = null;
         this.audioAdove = null;
         this.theme = this.constructor.name;
@@ -81,19 +81,7 @@ class View {
         var copy = Object.assign({}, this);
         copy.elemDom = this.elemDom.cloneNode(true);
     }
-    // checkMinSize: function () {
-    //     var sw = false;
-    //     if (this.getWidth() <= this.minWidth) {
-    //         this.elemDom.style.width = this.minWidth + 'px';
-    //         sw = true;
-    //     }
-    //     if (this.getHeight() <= this.minHeigth) {
-    //         this.elemDom.style.height = this.minHeigth + 'px';
-    //         sw = true;
-    //     }
-    //     if (sw === true)
-    //         this.invalidate();
-    // },
+    
     getWidth() {
         // return this.width;
         return this.elemDom? this.elemDom.clientWidth: 0;
@@ -211,13 +199,12 @@ class View {
     getAttrFromNodeXml(nodeXml, attrName){
         let attrValue  = nodeXml.getAttribute(attrName);
         if(attrValue){
-            let matches = attrValue.matchAll(LayoutInflater.REGEX_VARS);
-            for (let ocurrencia of matches) {
-                let paramName = ocurrencia[1];
-                console.log("Param value",paramName);
-                let valueAttrCtx = eval(`this.context.${paramName}`);
-                console.log("valueAttrCtx",valueAttrCtx);
-            }
+            attrValue = attrValue.replace(LayoutInflater.REGEX_VARS,(cmp,paramName)=>{
+                if(paramName.indexOf('context.')!==-1)
+                    return eval(`this.${paramName}`);
+                else
+                    return eval(paramName);
+            });
         }
         return attrValue;
     }
@@ -405,12 +392,39 @@ class View {
             this.elemDom.classList.remove(cssString);
     }
 
-    async repaintSync() {
+    async repaint() {
         await this.backgroundPainter.paint();
+    }
+
+    isSizeStatic(){
+        switch (this.width) {
+            case LayoutInflater.MATCH_PARENT: break;
+            case LayoutInflater.WRAP_CONTENT: break;
+            default: return true;
+        }
+
+        switch (this.height) {
+            case LayoutInflater.MATCH_PARENT: break;
+            case LayoutInflater.WRAP_CONTENT: break;
+            default: return true;
+        }
+        return false;
+    }
+
+    async onReMeasure(){
+        let viewRootStatic = this;
+        while(viewRootStatic !== null){
+            if(viewRootStatic.isSizeStatic())
+                break;
+            if(viewRootStatic.parentView === null)
+                break;
+            viewRootStatic = viewRootStatic.parentView;
+        }
+        await viewRootStatic.onMeasure(viewRootStatic.getWidth(),viewRootStatic.getHeight());
     }
     
     // this.parentView.elemDom.appendChild(this.elemDom);
-    async onMeasureSync(maxWidth, maxHeigth) {
+    async onMeasure(maxWidth, maxHeigth) {
         if(!this.elemDom) return; // No realizada nada si no fué agregado a la vista
 
 

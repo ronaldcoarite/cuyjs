@@ -1,10 +1,14 @@
 class PageManager {
-    static async getUrlBrouser(){
+    static getUrlBrouser(){
         let urlBrouser = window.location.href;
         return urlBrouser;
     }
 
-    static async getTreeNavigation(){
+    static setUrlBrouser(pageNames,queryParams){
+        window.location.href = `#/${pageNames.join('/')}`;
+    }
+
+    static getTreeNavigation(){
         let tree = Store.get('TREE',{
             ROOT: {
                 extras:{},
@@ -15,8 +19,8 @@ class PageManager {
         return tree;
     }
 
-    static async getArrayNavegation(){
-        let urlBrouser = await PageManager.getUrlBrouser();
+    static getArrayNavegation(){
+        let urlBrouser = PageManager.getUrlBrouser();
 
         if(urlBrouser.lastIndexOf('#/') !== -1) {
             let listPages = urlBrouser.substring(urlBrouser.lastIndexOf('#/')+2);
@@ -43,42 +47,13 @@ class PageManager {
 
         // Guardamos en sesion la configuración del objeto Manifesto
         Store.set('MANIFEST',manifestConfig);
-
-        let navigationList = await PageManager.getArrayNavegation();
-
+        let navigationList = PageManager.getArrayNavegation();
+        
         if(navigationList.pageNames.length > 0){ // Actualizar pagina establecida
             if(navigationList.pageNames.length > 1){ // Existe una navegacion previa con varias paginas
-                let tree = await Store.get('TREE');
-                let currentPageConfig = tree.ROOT;
-                let index = 0;
-                // let pageName = navigationList.listPages[index];
-                while(index < navigationList.pageNames.length){
-                    if(currentPageConfig.pageName === navigationList.pageNames[index]){
-                        if(index + 1 < navigationList.pageNames.length ){
-                            // Obtenemos el nombre de la pagina siguiente
-                            let pageNameNext = navigationList.pageNames[index+1];
-                            // Verificamos si la siguiente pagina existe en arbol de navegacion
-                            if(currentPageConfig.navigation[pageNameNext]){ // Existe la pagina en el arbol?
-                                currentPageConfig = currentPageConfig.navigation[pageNameNext];
-                                index++;
-                                continue;
-                            }
-                            else{
-                                alert("No se pudo encontrar la pagina: "+pageNameNext);
-                                return;
-                            }
-                        }
-                        else // Se encontro la ultima raiz del arbol que corresponde a la pagina actual
-                            break;
-                    }
-                    else{
-                        alert(`La pagina no es igual [${currentPageConfig.pageName}] que [${navigationList.pageNames[index]}], INDEX = [${index}]`);
-                        return;
-                    }
-                }
-    
+                let resultNode = PageManager.getTreeNodeFromUrl();
                 // Iniciamos la pagina con los datos guardados en la session
-                let intent = new Intent(currentPageConfig.extras, currentPageConfig.pageName);
+                let intent = new Intent(resultNode.currentPageNode.extras, resultNode.currentPageNode.pageName);
                 let pageInstance = await PageManager.startPageFromIntent(intent);
                 return;
             }else{ // Se desea cargar una pagina configurada en el manifest
@@ -231,7 +206,7 @@ class PageManager {
 
         var navigator = this.getWindowsDimension();
         await page.viewRoot.loadResources();
-        await page.viewRoot.onMeasureSync(navigator.width,navigator.height);
+        await page.viewRoot.onMeasure(navigator.width,navigator.height);
         page.loadedFinized(); // Carga finalizada
         pageAnimation.hide();
 
@@ -243,14 +218,62 @@ class PageManager {
         await page.onStart(intent);
     }
 
-    static removeContext(context) {
-        var element = context.viewRoot.elemDom;
-        element.parentNode.removeChild(element);
-        context.onDestroy();
+    static getTreeNodeFromUrl(){
+        let tree = Store.get('TREE');
+        let navigationList = PageManager.getArrayNavegation();
+
+        // console.log("Navigation",navigationList);
+        // if(this.constructor.name !== navigationList.pageNames[0]){
+        //     alert("La pagina raiz no es la misma que la pagina actual");
+        //     return;
+        // }
+        
+        // Guardando en el historial la navegación de la nueva pagina
+        let currentPageConfig = tree.ROOT;
+        let parentPageNode = null;
+
+        let index = 0;
+        while(index < navigationList.pageNames.length){
+            if(currentPageConfig.pageName === navigationList.pageNames[index]){
+                if(index + 1 < navigationList.pageNames.length ){
+                    // Obtenemos el nombre de la pagina siguiente
+                    let pageNameNext = navigationList.pageNames[index+1];
+                    // Verificamos si la siguiente pagina existe en arbol de navegacion
+                    if(currentPageConfig.navigation[pageNameNext]){ // Existe la pagina en el arbol?
+                        parentPageNode = currentPageConfig;
+                        currentPageConfig = currentPageConfig.navigation[pageNameNext];
+                        index++;
+                        continue;
+                    }
+                    else{
+                        alert("No se pudo encontrar la pagina: "+pageNameNext);
+                        return;
+                    }
+                }
+                else // Se encontro la ultima raiz del arbol que corresponde a la pagina actual
+                    break;
+            }
+            else{
+                alert("Errorrrrrrrrrrrrrr: "+pageName+" INDEX = "+index);
+                return;
+            }
+        }
+        return {
+            parentNode: parentPageNode,
+            currentPageNode: currentPageConfig,
+            tree,
+            navigationList
+        };
     }
 
-    static finishPage(context) {
-        this.removeContext(context);
+    static async finishPage(context) {
+        // Eliminamos el componente
+        let element = context.viewRoot.elemDom;
+        element.parentNode.removeChild(element);
+
+        // Eliminamos del historial
+
+        await context.onDestroy();
     }
 
     static getWindowsDimension() {

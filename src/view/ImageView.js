@@ -31,7 +31,7 @@ class ImageView extends View{
     }
     
     // @Override
-    async onMeasureSync(maxWidth, maxHeight) {
+    async onMeasure(maxWidth, maxHeight) {
         if(this.image){
             // Estableciendo dimensión de componente
             switch (this.width) {

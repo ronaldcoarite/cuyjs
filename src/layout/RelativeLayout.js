@@ -23,14 +23,14 @@ class RelativeLayout extends ViewGroup{
     }
 
     //@Override
-    async onMeasureSync(maxWidth, maxHeight){
-        await super.onMeasureSync(maxWidth, maxHeight);
+    async onMeasure(maxWidth, maxHeight){
+        await super.onMeasure(maxWidth, maxHeight);
         let visibles = this.getViewVisibles();
         var mayHeight = 0;
         var mayWidth = 0;
         // Dibujando todos los componentes sin posicionarlos para obtener sus dimensiones candidato
         for(let view of visibles){
-            await view.onMeasureSync(
+            await view.onMeasure(
                 maxWidth- this.padding.left - this.padding.right,
                 maxHeight-this.padding.top - this.padding.bottom);
             let sumWidth = this.padding.left + view.margin.left + view.elemDom.clientWidth + view.margin.right + this.padding.right;
@@ -43,7 +43,7 @@ class RelativeLayout extends ViewGroup{
 
         // Iteramos nuevamente para posicionar los elementos a partir de su dimesion y respecto a sus referencias
         for(let view of visibles){
-            await view.onMeasureSync(
+            await view.onMeasure(
                 maxWidth- this.padding.left - this.padding.right,
                 maxHeight-this.padding.top - this.padding.bottom);
 
@@ -87,7 +87,7 @@ class RelativeLayout extends ViewGroup{
                 if (!viewToLeft)
                     throw new Exception(`No se encuentra el view hijo con id [${view.toLeftOf}] citado en la vista [${view.name}], para el contenedor [${this.name}]`);
                 if (view.alignParentLeft === true) {
-                    await view.onMeasureSync(
+                    await view.onMeasure(
                         parseInt(viewToLeft.elemDom.style.left) - view.margin.left - view.margin.right,
                         this.elemDom.clientHeight - this.padding.top - this.padding.bottom);
                         // Posiblemente pintar de nuevo la vista de fondo
@@ -129,7 +129,7 @@ class RelativeLayout extends ViewGroup{
             case LayoutInflater.MATCH_PARENT: break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.height = `${mayHeight}px`;
-                await this.repaintSync();
+                await this.repaint();
                 break;
             default: break;
         }
@@ -137,7 +137,7 @@ class RelativeLayout extends ViewGroup{
             case LayoutInflater.MATCH_PARENT: break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.width = `${mayWidth}px`;
-                await this.repaintSync();
+                await this.repaint();
                 break;
             default: break;
         }

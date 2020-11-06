@@ -42,9 +42,11 @@ class ViewGroup extends View{
             throw new Exception("El view que desea agregar es nulo o no esta definido");
         if(!viewChild instanceof View)
             throw new Exception(`El objeto [${viewChild}] a agregar no es una instancia de View`);
+        this.viewsChilds.push(viewChild);
         viewChild.parentView = this;
+        this.elemDom.appendChild(await viewChild.createDomElement());
         await viewChild.loadResources();
-        this.elemDom.appendChild(await view.createDomElement());
+        await this.onReMeasure();
     }
 
     getViewVisibles() {
@@ -82,10 +84,10 @@ class ViewGroup extends View{
     }
     
     //@Override
-    async onMeasureSync(maxWidth, maxHeight){
-        await super.onMeasureSync(maxWidth, maxHeight);
+    async onMeasure(maxWidth, maxHeight){
+        await super.onMeasure(maxWidth, maxHeight);
         for(let view of this.viewsChilds)
-            await view.onMeasureSync(maxWidth, maxHeight);
+            await view.onMeasure(maxWidth, maxHeight);
     }
     
     getContentWidth(maxWidth,viewChild){

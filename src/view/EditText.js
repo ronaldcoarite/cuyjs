@@ -18,6 +18,7 @@ class EditText extends View{
         this.readonly = false;
         this.text = null;
         this.enabled = true;
+        this.textSize = '13px';
     }
 
     // @Override
@@ -44,6 +45,7 @@ class EditText extends View{
             this.lines = 1;
         if (this.getAttrFromNodeXml(nodeXml,"enabled") === "false")
             this.enabled = false;
+        this.textSize = this.getAttrFromNodeXml(nodeXml,"textSize")||this.textSize;
     }
 
     // @Override
@@ -94,12 +96,14 @@ class EditText extends View{
         this.elemDom.style.paddingLeft = '6px';
         this.elemDom.style.paddingBottom = '6px';
         this.elemDom.style.paddingRight = '6px';
+        this.elemDom.style.fontSize = this.textSize;
     }
 
     getWidth() {
         return super.getWidth()+6*2;
     }
 
+    //@Override
     getHeight() {
         return super.getHeight()+6*2;
     }

@@ -96,7 +96,7 @@ class Dialog{
         
                 let windowsDimension = PageManager.getWindowsDimension();
                 await this_.viewRoot.loadResources();
-                await this_.viewRoot.onMeasureSync(windowsDimension.width,windowsDimension.height);
+                await this_.viewRoot.onMeasure(windowsDimension.width,windowsDimension.height);
 
                 // Centramos el dialogo
                 this.setPosition(windowsDimension);

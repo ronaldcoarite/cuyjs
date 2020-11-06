@@ -91,7 +91,7 @@ class LayoutInflater{
     static INVISIBLE= "invisible";
     static GONE= "gone";
 
-    static REGEX_VARS = /\{\{([a-z_][a-z_.\d]*)\}\}+/g;
+    static REGEX_VARS = /\{\{([a-z_A-Z][a-zA-z_.\d]*)\}\}+/g;
 
     /**
      * Instancia la vista y realizar el parseo a travez del la raiz del documento XML pasado como parametro

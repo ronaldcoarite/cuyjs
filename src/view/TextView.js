@@ -9,7 +9,7 @@ class TextView extends View {
         this.elemText= null;
         this.elemIcon= null;
         this.drawableResource= null;
-        this.gravityIcon= "none";
+        this.gravityIcon= "left";
         this.singleLine= false;
         this.ellipsize= "none";
         this.imageResource = null;
@@ -127,7 +127,7 @@ class TextView extends View {
         }
     }
 
-    async onMeasureSync(maxWidth, maxHeight) {
+    async onMeasure(maxWidth, maxHeight) {
         const marginDrawable = this.elemIcon.clientWidth===0?0:4; // 4px
         switch(this.gravityIcon){
             case "left":
@@ -341,7 +341,7 @@ class TextView extends View {
             default:
                 throw new Exception(`Tipo de alineación [${this.gravityIcon}] no soportada`);
         }
-        await this.repaintSync();
+        await this.repaint();
     }
 
     async setDrawableIcon(drawable,position){

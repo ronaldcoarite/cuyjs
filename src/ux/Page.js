@@ -61,71 +61,38 @@ class Page extends Context{
     async startPage(intent) {
         if (intent === undefined || intent === null)
             throw new Exception("El intent es nulo o no esta definido");
-        let tree = Store.get('TREE');
-        let navigationList = await PageManager.getArrayNavegation();
-
-        if(navigationList.pageNames.length === 0 ){
-            alert("Error pagina no registrada");
-            return;
-        }
-        // console.log("Navigation",navigationList);
-        // if(this.constructor.name !== navigationList.pageNames[0]){
-        //     alert("La pagina raiz no es la misma que la pagina actual");
-        //     return;
-        // }
-        
+        // Obtenemos el nodo de la pagina actual
+        let resultNode = PageManager.getTreeNodeFromUrl();
         // Cargando la pagina
         let newPage = await PageManager.startPageFromIntent(intent);
-
-        window.location.href = `${window.location.href}/${intent.pageName}`;
-        
-        // Guardando en el historial la navegación de la nueva pagina
-
-        let currentPageConfig = tree.ROOT;
-        let index = 0;
-        // let pageName = navigationList.listPages[index];
-        while(index < navigationList.pageNames.length){
-            if(currentPageConfig.pageName === navigationList.pageNames[index]){
-                if(index + 1 < navigationList.pageNames.length ){
-                    // Obtenemos el nombre de la pagina siguiente
-                    let pageNameNext = navigationList.pageNames[index+1];
-                    // Verificamos si la siguiente pagina existe en arbol de navegacion
-                    if(currentPageConfig.navigation[pageNameNext]){ // Existe la pagina en el arbol?
-                        currentPageConfig = currentPageConfig.navigation[pageNameNext];
-                        index++;
-                        continue;
-                    }
-                    else{
-                        alert("No se pudo encontrar la pagina: "+pageNameNext);
-                        return;
-                    }
-                }
-                else // Se encontro la ultima raiz del arbol que corresponde a la pagina actual
-                    break;
-            }
-            else{
-                alert("Errorrrrrrrrrrrrrr: "+this.constructor.name+" INDEX = "+index);
-                return;
-            }
-        }
-        currentPageConfig.navigation[intent.pageName]= {
+        // Agregamos a la URL la nueva pagina
+        resultNode.navigationList.pageNames.push(intent.pageName);
+        PageManager.setUrlBrouser(resultNode.navigationList.pageNames);
+        // Agregamos al arbol la pagina
+        resultNode.currentPageNode.navigation[intent.pageName]= {
             extras: {},
             navigation: {},
             pageName: intent.pageName
         };
-        Store.set('TREE',tree);
+
+        // Guardamos el arbol
+        Store.set('TREE',resultNode.tree);
     }
 
     setTitle(title) {
         document.title = title;
     }
 
-    finish() {
-        PageManager.finishPage(this);
-        if (this.previusPage !== null) {
-            if (this.requestCode > 0)
-                this.previusPage.onPageResult(this.requestCode, this.resultCode, this.resultData);
-        }
+    async finish() {
+        await PageManager.finishPage(this);
+        let resultNode = PageManager.getTreeNodeFromUrl();
+        // Removemos del historial la pagina actual
+        delete resultNode.parentNode.navigation[resultNode.pageName];
+        // Guardamos el arbol
+        Store.set('TREE',resultNode.tree);
+        // Actualizamos la URL del navegador
+        resultNode.navigationList.pageNames.pop();
+        PageManager.setUrlBrouser(resultNode.navigationList.pageNames, resultNode.parentNode.queryParams);
     }
 
     startPageForResult(intent, requestCode) {

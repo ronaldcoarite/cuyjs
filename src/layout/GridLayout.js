@@ -37,7 +37,7 @@ class GridLayout extends ViewGroup {
     }
 
     //@Override
-    async onMeasureSync(maxWidth, maxHeigth){
+    async onMeasure(maxWidth, maxHeigth){
         let visibles = this.getViewVisibles();
         let maxAnchoView = this.getContentWidth(maxWidth) / this.colums;
 
@@ -50,7 +50,7 @@ class GridLayout extends ViewGroup {
             mayHeight = 0;
             for(let j=1; j <=this.colums && index < visibles.length; j++) {
                 let view = visibles[index];
-                await view.onMeasureSync(maxAnchoView , maxHeigth);
+                await view.onMeasure(maxAnchoView , maxHeigth);
                 view.elemDom.style.top  = `${y}px`;
                 view.elemDom.style.left  = `${x}px`;
                 x+=maxAnchoView;
@@ -78,6 +78,6 @@ class GridLayout extends ViewGroup {
 
         this.elemDom.style.height = `${maxHeightElement}px`;
         this.elemDom.style.width = `${maxWidthElement}px`;
-        await this.repaintSync();
+        await this.repaint();
     }
 }

@@ -1,11 +1,9 @@
-ScrollView = ViewGroup.extend({
-    init: function (context) {
+class ScrollView extends View{
+    constructor (context) {
         this._super(context);
-    },
-    getTypeElement: function () {
-        return "ScrollView";
-    },
-    onMeasure: function (maxWidth, maxHeight, loadListener) {
+    }
+
+    async onMeasure(maxWidth, maxHeight) {
         var this_ = this;
         var childs = this.getViewVisibles();
         if (childs.length === 0)
@@ -75,4 +73,4 @@ ScrollView = ViewGroup.extend({
         };
         this._super(maxWidth, maxHeight, tempListener);
     }
-});
+};

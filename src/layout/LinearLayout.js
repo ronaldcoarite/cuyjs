@@ -19,10 +19,7 @@ class LinearLayout extends ViewGroup {
     //Override
     async parseViewChild(nodeXml) {
         let view = await super.parseViewChild(nodeXml);
-        view.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_GRAVITY)||
-            (this.orientation===LayoutInflater.LIN_ORIENTATION_VERTICAL?
-                LayoutInflater.ATTR_LAYOUT_GRAVITY_LEFT:
-                LayoutInflater.ATTR_LAYOUT_GRAVITY_TOP);
+        view.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_GRAVITY);
 
         if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_WEIGHT) !== null){
             let weight = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_WEIGHT);
@@ -40,13 +37,13 @@ class LinearLayout extends ViewGroup {
     }
 
     //@Override
-    async onMeasureSync(maxWidth, maxHeight){
+    async onMeasure(maxWidth, maxHeight){
         let visibles = this.getViewVisibles();
         if (this.orientation === LayoutInflater.LIN_ORIENTATION_VERTICAL)
             await this.onMeasureVertical(visibles,maxWidth,maxHeight);
         else
             await this.onMeasureHorizontal(visibles,maxWidth,maxHeight);
-        await this.repaintSync();
+        await this.repaint();
     }
 
     async onMeasureVertical(visibles, maxWidth, maxHeight) {
@@ -61,7 +58,7 @@ class LinearLayout extends ViewGroup {
             if (view.layoutWeight !== undefined && view.layoutWeight !== null && view.layoutWeight > 0)
                 arrayWeigh.push(view);
             else{
-                await view.onMeasureSync(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
+                await view.onMeasure(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
                 sumHeigthWrap += (view.margin.top + view.getHeight() + view.margin.bottom);
                 if((this.padding.left + view.margin.left + view.getWidth() + view.margin.right + this.padding.right) > mayWidth)
                     mayWidth = (this.padding.left + view.margin.left + view.getWidth() + view.margin.right + this.padding.right);
@@ -70,11 +67,11 @@ class LinearLayout extends ViewGroup {
         }
 
         // Estableciendo alto de los componentes que tiene weight
-        if(this.width === LayoutInflater.WRAP_CONTENT && arrayWeigh.length >0)
-            throw new Exception(`Se especifico el atributo [layoutWeight] en uno de los hijos del [LinearLayout] pero el ancho se definio como [${LayoutInflater.WRAP_CONTENT}]. Especifique un tamaño fijo o ajustado al padre con [${LayoutInflater.MATCH_PARENT}]`);
+        if(this.height === LayoutInflater.WRAP_CONTENT && arrayWeigh.length >0)
+            throw new Exception(`Se especifico el atributo [layoutWeight] en uno de los hijos del [LinearLayout] con orientación [${this.orientation}] pero el ancho se definio como [${LayoutInflater.WRAP_CONTENT}]. Especifique un tamaño fijo o ajustado al padre con [${LayoutInflater.MATCH_PARENT}]`);
         let altoWeigth = this.getContentHeight(maxHeight) - sumHeigthWrap;
         for(let view of arrayWeigh){
-            await view.onMeasureSync(this.getContentWidth(maxWidth,view) , altoWeigth*view.layoutWeight - view.margin.top - view.margin.bottom);
+            await view.onMeasure(this.getContentWidth(maxWidth,view) , altoWeigth*view.layoutWeight - view.margin.top - view.margin.bottom);
             if((this.padding.left + view.margin.left + view.getWidth() + view.margin.right + this.padding.right)>mayWidth)
                 mayWidth = (this.padding.left + view.margin.left + view.getWidth() + view.margin.right + this.padding.right);
             sumHeight+=(view.margin.top + view.getHeight() + view.margin.bottom);
@@ -140,7 +137,7 @@ class LinearLayout extends ViewGroup {
             if (view.layoutWeight !== undefined && view.layoutWeight !== null && view.layoutWeight > 0)
                 arrayWeigh.push(view);
             else{
-                await view.onMeasureSync(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
+                await view.onMeasure(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
                 sumWidthWrap += (view.margin.left + view.getWidth() + view.margin.right);
                 if ((this.padding.top + view.margin.top + view.getHeight() + view.margin.bottom + this.padding.bottom) > mayHeight)
                     mayHeight = (this.padding.top + view.margin.top + view.getHeight() + view.margin.bottom + this.padding.bottom);
@@ -150,11 +147,11 @@ class LinearLayout extends ViewGroup {
         let sumWidth = this.padding.left + sumWidthWrap;
 
         // Estableciendo alto de los componentes que tiene weight
-        if(this.height === LayoutInflater.WRAP_CONTENT && arrayWeigh.length >0)
-            throw new Exception(`Se especifico el atributo [layoutWeight] en uno de los hijos del [LinearLayout] pero el alto se definio como [${LayoutInflater.WRAP_CONTENT}]. Especifique un tamaño fijo o ajustado al padre con [${LayoutInflater.MATCH_PARENT}]`);
+        if(this.width === LayoutInflater.WRAP_CONTENT && arrayWeigh.length >0)
+            throw new Exception(`Se especifico el atributo [layoutWeight] en uno de los hijos del [LinearLayout] con orientación [${this.orientation}] pero el alto se definio como [${LayoutInflater.WRAP_CONTENT}]. Especifique un tamaño fijo o ajustado al padre con [${LayoutInflater.MATCH_PARENT}]`);
         let anchoWeigth = this.getContentWidth(maxWidth) - sumWidthWrap;
         for(let view of arrayWeigh){
-            await view.onMeasureSync(anchoWeigth*view.layoutWeight - view.margin.left - view.margin.right, this.getContentHeight(maxHeight,view));
+            await view.onMeasure(anchoWeigth*view.layoutWeight - view.margin.left - view.margin.right, this.getContentHeight(maxHeight,view));
             if ( (this.padding.top + view.margin.top + view.getHeight() + view.margin.bottom + this.padding.bottom) > mayHeight)
                 mayHeight = (this.padding.top + view.margin.top + view.getHeight() + view.margin.bottom + this.padding.bottom);
             sumWidth+=(view.margin.left + view.getWidth() + view.margin.right);
