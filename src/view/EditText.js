@@ -35,8 +35,6 @@ class EditText extends View{
             this.maxEms = parseInt(this.getAttrFromNodeXml(nodeXml,"maxEms"));
         if (this.getAttrFromNodeXml(nodeXml,"maxLines") !== null)
             this.maxLines = parseInt(this.getAttrFromNodeXml(nodeXml,"maxLines"));
-        if (this.getAttrFromNodeXml(nodeXml,"maxLines") !== null)
-            this.maxLines = parseInt(this.getAttrFromNodeXml(nodeXml,"maxLines"));
         this.hint = this.getAttrFromNodeXml(nodeXml,"hint");
         if (this.getAttrFromNodeXml(nodeXml,"maxlength") !== null)
             this.maxLength = parseInt(this.getAttrFromNodeXml(nodeXml,"maxlength"));
