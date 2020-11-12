@@ -27,6 +27,8 @@ class View {
         this.audioClick = null;
         this.audioAdove = null;
         this.theme = this.constructor.name;
+        this.requiredInForm = false;
+        this.requiredMessage = null;
     }
 
     setVisibility(v) {
@@ -46,6 +48,14 @@ class View {
 
     setMinHeight(h) {
         this.minHeigth = h;
+    }
+
+    findViewById(idView) {
+        if (idView === null && idView === undefined)
+            return null;
+        if(this.id === idView)
+            return this;
+        return null;
     }
 
     async createDomElement() {
@@ -277,9 +287,11 @@ class View {
             this.audioClick = new Audio(this.getAttrFromNodeXml(nodeXml,"audioClick"));
 
         // AUDIO PARA ENCIMA DE CLICK
-        if (this.getAttrFromNodeXml(nodeXml,"audioAdove") !== null){
+        if (this.getAttrFromNodeXml(nodeXml,"audioAdove") !== null)
             this.audioAdove = new Audio(this.getAttrFromNodeXml(nodeXml,"audioAdove"));
-        }
+            
+        this.requiredInForm = this.getAttrFromNodeXml(nodeXml,"requiredInForm") || false;
+        this.requiredMessage = this.getAttrFromNodeXml(nodeXml,"requiredMessage");
     }
 
     async loadResources() {

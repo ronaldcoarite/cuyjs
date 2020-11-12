@@ -1,30 +1,7 @@
-class Component extends View {
+class Form extends View {
     constructor(context){
         super(context);
-        this.layoutUrl = null;
-        this.context = this;
-    }
-
-    // @Override
-    async parse(nodeXml) {
-        await super.parse(nodeXml);
-        let layoutUrl = this.getAttrFromNodeXml(nodeXml,'layoutUrl')||this.layoutUrl;
-        await this.setContentView(layoutUrl);
-    }
-
-    async setContentView(layoutUrl){
-        this.layoutUrl = layoutUrl;
-        let rootXmlNode = await Resource.loadLayoutSync(this.layoutUrl);
-        this.viewRoot = await LayoutInflater.inflate(this,rootXmlNode);
-        this.viewRoot.parentView = this;
-    }
-
-    setData(data){
-        this.data = data;
-    }
-
-    getContextView(){
-        return this;
+        this.viewRoot = null;
     }
 
     // @Override
@@ -35,6 +12,26 @@ class Component extends View {
         return this.viewRoot.findViewById(idView);
     }
 
+    // @Override
+    async parse(nodeXml) {
+        await super.parse(nodeXml);
+        if(nodeXml.children.length > 1 || nodeXml.children.length === 0)
+            throw new Exception(`El layout [${this.constructor.name}] tiene [${nodeXml.children.length}] vistas y solo es permitido 1 vista.`);
+
+        let nodeChild = nodeXml.children[0];
+        let child = await this.parseViewChild(nodeChild);
+        if(!(child instanceof ViewGroup))
+            throw new Exception(`La vista [${child.constructor.name}] no es una extención [ViewGroup].`);
+        child.parentView = this;
+        this.viewRoot = child;
+    }
+
+    async parseViewChild(nodeXml) {
+        let child = await LayoutInflater.inflate(this.context, nodeXml);
+        return child;
+    }
+
+    //@Override
     async createDomElement() {
         await super.createDomElement();
         this.elemDom.appendChild(await this.viewRoot.createDomElement());
@@ -75,5 +72,9 @@ class Component extends View {
         this.elemDom.style.width = `${maxWidthElement}px`;
         
         await this.repaint();
+    }
+
+    validate(){
+        
     }
 };

@@ -19,6 +19,7 @@ class EditText extends View{
         this.text = null;
         this.enabled = true;
         this.textSize = '13px';
+        this.textChangeListener = null;
     }
 
     // @Override
@@ -106,5 +107,12 @@ class EditText extends View{
     //@Override
     getHeight() {
         return super.getHeight()+6*2;
+    }
+
+    setTextChangeListener(textChangeListener){
+        this.textChangeListener = textChangeListener;
+        this.elemDom.addEventListener('input', (e) => {
+            this.textChangeListener.onChange(this.getText());
+        })
     }
 }

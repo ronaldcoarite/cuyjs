@@ -16,7 +16,10 @@
             <xs:element ref="LinearLayout" />
             <xs:element ref="GridLayout" />
             <xs:element ref="ScrollView" />
-            <xs:element ref="ProgressBar" />
+            <xs:element ref="Camera" />
+            <xs:element ref="Component" />
+            <xs:element ref="LinkButton" />
+            <xs:element ref="Form" />
         </xs:choice>
     </xs:group>
     <!-- atributos-->
@@ -98,11 +101,6 @@
         <xs:annotation>
             <xs:documentation>Elemento general de vista</xs:documentation>
         </xs:annotation>
-        <!--
-        <xs:key name="id2">
-            <xs:selector xpath="View"/>
-            <xs:field xpath="@id"/>
-        </xs:key>-->
     </xs:element>
     <xs:complexType name="View">
         <!-- Atributos del view-->
@@ -140,6 +138,9 @@
         <xs:attribute type="bool" name="layout_centerHorizontal" use="optional"/>
         <xs:attribute type="bool" name="layout_centerVertical" use="optional"/>
         <xs:attribute type="bool" name="layout_centerInParent" use="optional"/>
+
+        <xs:attribute type="bool" name="requiredInForm" use="optional"/>
+        <xs:attribute type="xs:string" name="requiredMessage" use="optional"/>
         
         <xs:attribute type="xs:string" name="layout_above" use="optional"/>
         <xs:attribute type="xs:string" name="layout_below" use="optional"/>
@@ -171,6 +172,9 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+
+    <!-- EditText -->
+    <xs:element name="EditText" type="EditText" />
     <xs:element name="EditText">
         <xs:complexType>
             <xs:complexContent mixed="false">
@@ -180,6 +184,9 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+
+    <!-- Password -->
+    <xs:element name="Password" type="Password" />
     <xs:element name="Password">
         <xs:complexType>
             <xs:complexContent mixed="false">
@@ -189,7 +196,20 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
-    
+
+    <!-- Form -->
+    <xs:element name="Form" type="Form" />
+    <xs:element name="Form">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="View">
+                    <xs:attribute type="xs:string" name="text" use="optional"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ImageView -->
     <xs:element name="ImageView" type="ImageView" />
     <xs:complexType name="ImageView">
         <xs:complexContent mixed="false">
@@ -199,6 +219,9 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    
+    <!-- ImageButton -->
+    <xs:element name="ImageButton" type="ImageButton" />
     <xs:element name="ImageButton">
         <xs:complexType>
             <xs:complexContent mixed="false">
@@ -207,6 +230,9 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+    
+    <!-- ProgressBar -->
+    <xs:element name="ProgressBar" type="ProgressBar" />
     <xs:element name="ProgressBar">
         <xs:complexType>
             <xs:complexContent mixed="false">
@@ -215,12 +241,16 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+    
+    <!-- Button -->
     <xs:element name="Button" type="Button"/>
     <xs:complexType name="Button">
         <xs:complexContent mixed="false">
             <xs:extension base="TextView"/>
         </xs:complexContent>
     </xs:complexType>
+    
+    <!-- LinkButton -->
     <xs:element name="LinkButton" type="LinkButton"/>
     <xs:complexType name="LinkButton">
         <xs:complexContent mixed="false">
@@ -228,6 +258,7 @@
         </xs:complexContent>
     </xs:complexType>
     <!-- ViewGroup -->
+    <xs:element name="ViewGroup" type="ViewGroup"/>
     <xs:complexType name="ViewGroup">
         <xs:complexContent mixed="false">
             <xs:extension base="View">
@@ -235,9 +266,9 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-    <xs:element name="ViewGroup" type="ViewGroup"/>
     
     <!-- ScrollView -->
+    <xs:element name="ScrollView" type="ScrollView"/>
     <xs:element name="ScrollView">
         <xs:complexType>
             <xs:complexContent mixed="false">
@@ -245,6 +276,9 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+    
+    <!-- FrameLayout -->
+    <xs:element name="FrameLayout" type="FrameLayout"/>
     <xs:element name="FrameLayout">
         <xs:complexType>
             <xs:complexContent mixed="false">
@@ -252,6 +286,9 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+    
+    <!-- LinearLayout -->
+    <xs:element name="LinearLayout" type="LinearLayout"/>
     <xs:element name="LinearLayout">
         <xs:complexType>
             <xs:complexContent mixed="false">
@@ -261,6 +298,9 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+    
+    <!-- GridLayout -->
+    <xs:element name="GridLayout" type="GridLayout"/>
     <xs:element name="GridLayout">
         <xs:complexType>
             <xs:complexContent mixed="false">
@@ -274,11 +314,47 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+    
     <!-- RelativeLayout -->
+    <xs:element name="RelativeLayout" type="RelativeLayout"/>
     <xs:element name="RelativeLayout">
         <xs:complexType>
             <xs:complexContent mixed="false">
                 <xs:extension base="ViewGroup"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Form -->
+    <xs:element name="Form" type="Form" />
+    <xs:element name="Form">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="View">
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Camera -->
+    <xs:element name="Camera" type="Camera" />
+    <xs:element name="Camera">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="View">
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Component -->
+    <xs:element name="Component" type="Component" />
+    <xs:element name="Component">
+        <xs:complexType>
+            <xs:complexContent mixed="false">
+                <xs:extension base="View">
+                    <xs:attribute type="xs:string" name="layoutUrl" use="optional"/>
+                </xs:extension>
             </xs:complexContent>
         </xs:complexType>
     </xs:element>

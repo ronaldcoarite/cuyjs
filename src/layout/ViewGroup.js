@@ -4,10 +4,10 @@ class ViewGroup extends View{
         this.viewsChilds = new Array();
         //this.elemDom.style.overflow = 'hidden';
     }
+    
     // @Override
     async parse(nodeXml) {
         await super.parse(nodeXml);
-        //console.log("Nro hijos de "+nodeXml.tagName+" = "+nodeXml.children.length);
         for (let index = 0; index < nodeXml.children.length; index++){
             let nodeChild = nodeXml.children[index];
             let child = await this.parseViewChild(nodeChild);
@@ -21,20 +21,27 @@ class ViewGroup extends View{
         return child;
     }
 
+    // @Override
     findViewById(idView) {
-        if (idView === null && idView === undefined)
-            return null;
+        let view = super.findViewById(idView);
+        if (view)
+            return view;
         for (let i = 0; i < this.viewsChilds.length; i++) {
-            let view = this.viewsChilds[i];
-            if (view.id === idView)
-                return view;
-            if (view instanceof ViewGroup) {
-                var viewTemp = view.findViewById(idView);
-                if (viewTemp !== null)
-                    return viewTemp;
-            }
+            view = this.viewsChilds[i];
+            let tempView = view.findViewById(idView);
+            if(tempView)
+                return tempView;
         }
         return null;
+    }
+
+    async removeView(viewChild){
+        let index = this.viewsChilds.indexOf(viewChild);
+        if (index === -1)
+            throw new Exception(`No se encontro el view en la vista [${this.constructor.name}]`);
+        this.viewsChilds.splice(index, 1);
+        viewChild.elemDom.remove();
+        await this.onReMeasure();
     }
 
     async addView(viewChild) {
@@ -66,6 +73,10 @@ class ViewGroup extends View{
 
     getChildAt(i) {
         return this.viewsChilds[i];
+    }
+
+    getChilds(){
+        return this.viewsChilds;
     }
     
     //@Override
