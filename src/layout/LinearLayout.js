@@ -126,7 +126,6 @@ class LinearLayout extends ViewGroup {
     }
 
     async onMeasureHorizontal(visibles, maxWidth, maxHeight) {
-        
         let mayHeight = this.padding.top + this.padding.bottom;
 
         let sumWidthWrap = 0;
@@ -134,8 +133,9 @@ class LinearLayout extends ViewGroup {
 
         // Establenciendo dimensión de los componentes que no tienen weight
         for(let view of visibles){
-            if (view.layoutWeight !== undefined && view.layoutWeight !== null && view.layoutWeight > 0)
+            if (view.layoutWeight !== undefined && view.layoutWeight !== null && view.layoutWeight > 0){
                 arrayWeigh.push(view);
+            }
             else{
                 await view.onMeasure(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
                 sumWidthWrap += (view.margin.left + view.getWidth() + view.margin.right);

@@ -8,9 +8,13 @@ class ImageView extends View{
         this.scaleType = LayoutInflater.FIT_XY;
     }
 
-    // @Override
-    getTypeElement(){
-        return 'img';
+    //@Override
+    async createHtmlElement () {
+        super.createHtmlElement();
+        // Icono
+        this.elemIcon = this.createHtmlElemFromType('img');
+        this.elemDom.appendChild(this.elemIcon);
+        return this.elemDom;
     }
 
     // @Override
@@ -26,7 +30,7 @@ class ImageView extends View{
         await super.loadResources();
         if(this.src){
             this.image = await Resource.loadImage(this.src);
-            this.elemDom.src = this.image.src;
+            this.elemIcon.src = this.image.src;
         }
     }
     
@@ -34,46 +38,54 @@ class ImageView extends View{
     async onMeasure(maxWidth, maxHeight) {
         if(this.image){
             // Estableciendo dimensión de componente
+            this.elemIcon.style.top = this.padding.top + 'px';
+            this.elemIcon.style.left = this.padding.left + 'px';
+
             switch (this.width) {
                 case LayoutInflater.MATCH_PARENT:
-                    this.elemDom.style.width = Math.max(maxWidth-this.padding.left - this.padding.right,this.image.clientWidth + this.padding.left + this.padding.right);
+                    this.elemDom.style.width = maxWidth +'px';
+                    this.elemIcon.style.width = (maxWidth-this.padding.left - this.padding.right)+'px';
                     break;
                 case LayoutInflater.WRAP_CONTENT:
-                    this.elemDom.style.width = Math.min(maxWidth-this.padding.left - this.padding.right,this.image.clientWidth + this.padding.left + this.padding.right);
+                    this.elemIcon.style.width = (this.image.clientWidth)+'px';
+                    this.elemDom.style.width = (this.padding.left + this.image.clientWidth + this.padding.right)+'px';
                     break;
                 default: // tamaño establecido por el usuario
                     let width = parseInt(this.width);
-                    this.elemDom.style.width = (width -this.padding.left - this.image.clientWidth - this.padding.right) + 'px';
+                    this.elemIcon.style.width = (width - this.padding.left - this.padding.right)+'px';
+                    this.elemDom.style.width = width+'px';
                     break;
             }
     
             switch (this.height) {
                 case LayoutInflater.MATCH_PARENT:
-                    this.elemDom.style.height = Math.max(maxHeight-this.padding.top - this.padding.bottom , this.image.clientHeight + this.padding.top + this.padding.bottom);
+                    this.elemDom.style.height = maxHeight +'px';
+                    this.elemIcon.style.height = (maxHeight-this.padding.top - this.padding.bottom)+'px';
                     break;
                 case LayoutInflater.WRAP_CONTENT:
-                    this.elemDom.style.height = Math.min(maxHeight-this.padding.top - this.padding.bottom,this.image.clientHeight + this.padding.top + this.padding.bottom);
+                    this.elemIcon.style.height = (this.image.clientHeight)+'px';
+                    this.elemDom.style.height = (this.padding.top + this.image.clientHeight + this.padding.bottom)+'px';
                     break;
                 default: // tamaño establecido por el usuario
                     let height = parseInt(this.height);
-                    this.elemDom.style.height = (height -this.padding.top - this.image.clientHeight - this.padding.bottom) + 'px';
+                    this.elemIcon.style.height = (height - this.padding.top - this.padding.bottom)+'px';
+                    this.elemDom.style.height = height+'px';
                     break;
             }
     
             // Ajustando Imagen
             switch (this.scaleType){ //contain
-                case LayoutInflater.FIT_CENTER: this.elemDom.style.objectFit = 'none'; break;
-                case LayoutInflater.FIT_START: this.elemDom.style.objectFit = 'cover'; break;
-                case LayoutInflater.FIT_CENTER_CROP: this.elemDom.style.objectFit = 'scale-down'; break;
-                case LayoutInflater.FIT_CENTER_INSIDE: this.elemDom.style.objectFit = 'contain'; break;
-                case LayoutInflater.FIT_END: this.elemDom.style.objectFit = 'scale-down'; break;
-                case LayoutInflater.FIT_XY: this.elemDom.style.objectFit = 'fill'; break;
+                case LayoutInflater.FIT_CENTER: this.elemIcon.style.objectFit = 'none'; break;
+                case LayoutInflater.FIT_START: this.elemIcon.style.objectFit = 'cover'; break;
+                case LayoutInflater.FIT_CENTER_CROP: this.elemIcon.style.objectFit = 'scale-down'; break;
+                case LayoutInflater.FIT_CENTER_INSIDE: this.elemIcon.style.objectFit = 'contain'; break;
+                case LayoutInflater.FIT_END: this.elemIcon.style.objectFit = 'scale-down'; break;
+                case LayoutInflater.FIT_XY: this.elemIcon.style.objectFit = 'fill'; break;
             }
-
         }else{ // El ImageView no tiene imagen
             switch (this.width) {
                 case LayoutInflater.MATCH_PARENT:
-                    this.elemDom.style.width = maxWidth-this.padding.left - this.padding.right;
+                    this.elemDom.style.width = maxWidth;
                     break;
                 case LayoutInflater.WRAP_CONTENT:
                     this.elemDom.style.width = this.padding.left + this.padding.right;
@@ -85,7 +97,7 @@ class ImageView extends View{
     
             switch (this.height) {
                 case LayoutInflater.MATCH_PARENT:
-                    this.elemDom.style.height = maxHeight-this.padding.top - this.padding.bottom;
+                    this.elemDom.style.height = maxHeight;
                     break;
                 case LayoutInflater.WRAP_CONTENT:
                     this.elemDom.style.height = this.padding.top + this.padding.bottom;
@@ -95,6 +107,7 @@ class ImageView extends View{
                     break;
             }
         }
+        await this.repaint();
     }
 
     async setImageResource(pathImage) {
@@ -102,20 +115,20 @@ class ImageView extends View{
         if(pathImage){
             if(Resource.isBase64Resource(pathImage)){
                 this.image = null;
-                this.elemDom.src = pathImage;
+                this.elemIcon.src = pathImage;
             }
             else{
                 this.image = await Resource.loadImage(this.src);
-                this.elemDom.src = this.image.src;
+                this.elemIcon.src = this.image.src;
             }
         }
         else{
-            this.elemDom.src = '';
+            this.elemIcon.src = '';
             this.image = null;
         }
     }
 
     getDomImageResource(){
-        return this.elemDom.src;
+        return this.elemIcon.src;
     }
 }

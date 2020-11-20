@@ -5,9 +5,6 @@ class TextView extends View {
         this.textColor= null;
         this.textCssStyle = null;
         this.textSize = 12;
-
-        this.elemText= null;
-        this.elemIcon= null;
         this.drawableResource= null;
         this.gravityIcon= "left";
         this.singleLine= false;
@@ -66,39 +63,25 @@ class TextView extends View {
         this.textColor = color;
     }
 
-    setText(text){
+    async setText(text){
         this.text = text;
         if(this.elemDom)
             this.elemText.innerHTML = this.text;
+        this.onReMeasure();
     }
 
     //@Override
-    async createDomElement () {
-        await super.createDomElement();
-
-        // Texto
-        this.elemText = document.createElement('span');
-        this.elemText.style.paddingTop = '0px';
-        this.elemText.style.paddingLeft = '0px';
-        this.elemText.style.paddingBottom = '0px';
-        this.elemText.style.paddingRight = '0px';
+    createHtmlElement() {
+        super.createHtmlElement();
+        this.elemText = this.createHtmlElemFromType('span');
         this.elemText.style.wordWrap = 'break-word'; // Ajustar texto a contenido
-        this.elemText.style.position = 'absolute';
-        this.elemText.style.margin = "0px 0px 0px 0px";
-        
-        // Icono
-        this.elemIcon = document.createElement('img');
-        this.elemIcon.style.paddingTop = '0px';
-        this.elemIcon.style.paddingLeft = '0px';
-        this.elemIcon.style.paddingBottom = '0px';
-        this.elemIcon.style.paddingRight = '0px';
-        this.elemIcon.style.position = 'absolute';
-        this.elemIcon.style.margin = "0px 0px 0px 0px";
+        this.elemIcon = this.createHtmlElemFromType('img');
 
         this.elemDom.appendChild(this.elemText);
         this.elemDom.appendChild(this.elemIcon);
         return this.elemDom;
     }
+
     // @Override
     async loadResources() {
         await super.loadResources();

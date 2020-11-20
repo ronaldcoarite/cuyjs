@@ -157,7 +157,7 @@ class Resource{
                 resolve(image);
             }
             if(Resource.isBase64Resource(urlOrTextBase64)){
-                image.src = `data:image/png;base64,${urlOrTextBase64}`;
+                image.src = urlOrTextBase64;
             }
             else{
                 image.src =urlOrTextBase64;

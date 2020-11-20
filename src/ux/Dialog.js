@@ -91,7 +91,7 @@ class Dialog{
                     this_.viewRoot = await LayoutInflater.inflate(this_,rootXml);
                 }
 
-                document.body.appendChild(await this_.viewRoot.createDomElement());
+                document.body.appendChild(this_.viewRoot.elemDom);
                 // page.startLoaded(); // Iniciando carga
         
                 let windowsDimension = PageManager.getWindowsDimension();

@@ -16,6 +16,10 @@ class PopupWindow extends Dialog{
         this.view = view;
     }
 
+    getView(){
+        return this.view;
+    }
+
     // @Override
     setPosition(windowsDimension){
         // super.setPosition(windowsDimension);

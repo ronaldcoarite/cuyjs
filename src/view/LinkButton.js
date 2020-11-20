@@ -4,10 +4,9 @@ class LinkButton extends Button{
     }
 
     //@Override
-    async createDomElement () {
-        await super.createDomElement();
-        this.elemDom.classList.add("LinkButton");
-        this.elemDom.style.border = "none"
+    createHtmlElement() {
+        super.createHtmlElement();
+        this.elemDom.style.border = "none";
         return this.elemDom;
     }
 };

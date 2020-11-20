@@ -1,4 +1,4 @@
-class Component extends View {
+class Component extends Container {
     constructor(context){
         super(context);
         this.layoutUrl = null;
@@ -15,8 +15,8 @@ class Component extends View {
     async setContentView(layoutUrl){
         this.layoutUrl = layoutUrl;
         let rootXmlNode = await Resource.loadLayoutSync(this.layoutUrl);
-        this.viewRoot = await LayoutInflater.inflate(this,rootXmlNode);
-        this.viewRoot.parentView = this;
+        let viewInflate =  await LayoutInflater.inflate(this,rootXmlNode);
+        this.setFirstChild(viewInflate);
     }
 
     setData(data){
@@ -26,26 +26,6 @@ class Component extends View {
     getContextView(){
         return this;
     }
-
-    // @Override
-    findViewById(idView) {
-        let view = super.findViewById(idView);
-        if(view)
-            return view;
-        return this.viewRoot.findViewById(idView);
-    }
-
-    async createDomElement() {
-        await super.createDomElement();
-        this.elemDom.appendChild(await this.viewRoot.createDomElement());
-        return this.elemDom;
-    }
-
-    //@Override
-    async loadResources() {
-        await super.loadResources();
-        await this.viewRoot.loadResources();
-    }
     
     //@Override
     async onMeasure(maxWidth, maxHeigth) {
@@ -54,20 +34,20 @@ class Component extends View {
         if(this.height !== LayoutInflater.MATCH_PARENT && this.height !== LayoutInflater.WRAP_CONTENT)
             maxHeigth = parseFloat(this.height);
 
-        await this.viewRoot.onMeasure(
+        await this.getFirstChild().onMeasure(
             maxWidth - this.padding.left - this.padding.right,
             maxHeigth - this.padding.top - this.padding.bottom);
  
         let maxWidthElement, maxHeightElement;
         switch (this.height) {
             case LayoutInflater.MATCH_PARENT: maxHeightElement = maxHeigth; break;
-            case LayoutInflater.WRAP_CONTENT: maxHeightElement = this.padding.top + this.viewRoot.getHeight() + this.padding.bottom; break;
+            case LayoutInflater.WRAP_CONTENT: maxHeightElement = this.padding.top + this.getFirstChild().getHeight() + this.padding.bottom; break;
             default: maxHeightElement = maxHeigth;
         }
 
         switch (this.width) {
             case LayoutInflater.MATCH_PARENT: maxWidthElement = maxWidth; break;
-            case LayoutInflater.WRAP_CONTENT: maxWidthElement = this.padding.left + this.viewRoot.getWidth() + this.padding.right; break;
+            case LayoutInflater.WRAP_CONTENT: maxWidthElement = this.padding.left + this.getFirstChild().getWidth() + this.padding.right; break;
             default: maxWidthElement = maxWidth;
         }
 

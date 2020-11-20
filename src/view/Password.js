@@ -27,18 +27,17 @@ class Password extends View{
     getTypeElement(){
         return 'input';
     }
+    
     getText() {
         return this.elemDom.value;
     }
+
     setText(txt) {
         this.elemDom.value = txt;
     }
+
     setEnabled(sw) {
         this.elemDom.disabled = !sw;
-    }
-    setError(msg) {
-        this._super(msg);
-        this.elemDom.focus();
     }
 
     // @Override

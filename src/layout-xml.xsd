@@ -20,6 +20,8 @@
             <xs:element ref="Component" />
             <xs:element ref="LinkButton" />
             <xs:element ref="Form" />
+            <xs:element ref="RadioButton" />
+            <xs:element ref="RadioGroup" />
         </xs:choice>
     </xs:group>
     <!-- atributos-->
@@ -305,6 +307,16 @@
         </xs:complexContent>
     </xs:complexType>
     
+    <!-- RadioGroup -->
+    <xs:element name="RadioGroup" type="RadioGroup"/>
+    <xs:complexType name="RadioGroup">
+        <xs:complexContent mixed="false">
+            <xs:extension base="LinearLayout">
+                <xs:attribute type="xs:string" name="groupName" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
     <!-- GridLayout -->
     <xs:element name="GridLayout" type="GridLayout"/>
     <xs:complexType name="GridLayout">
@@ -333,6 +345,18 @@
         <xs:complexContent mixed="false">
             <xs:extension base="View">
                 
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- RadioButton -->
+    <xs:element name="RadioButton" type="RadioButton" />
+    <xs:complexType name="RadioButton">
+        <xs:complexContent mixed="false">
+            <xs:extension base="View">
+                <xs:attribute type="xs:string" name="text" use="optional"/>
+                <xs:attribute type="xs:string" name="onClick" use="optional"/>
+                <xs:attribute type="xs:string" name="radioGroup" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

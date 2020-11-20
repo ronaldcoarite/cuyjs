@@ -36,9 +36,12 @@
     "src/view/ImageButton.js",
     "src/view/Password.js",
     "src/view/Camera.js",
+    "src/view/RadioButton.js",
+    "src/view/Spinner.js",
 
     "src/view/event/TextChangeListener.js",
 
+    "src/layout/Container.js",
     "src/layout/ViewGroup.js",
     "src/layout/LinearLayout.js",
     "src/layout/FrameLayout.js",
@@ -46,6 +49,7 @@
     "src/layout/GridLayout.js",
     "src/layout/Component.js",
     "src/layout/Form.js",
+    "src/layout/RadioGroup.js",
 
     "src/ux/animation/SpinnerAnimation.js",
     "src/ux/Page.js",

@@ -101,10 +101,9 @@ class LayoutInflater{
     static async parse(context, firstElement) {
         var view = null;
         try {
-            var view = eval("new " + firstElement.tagName + "(context)");
+            view = eval("new " + firstElement.tagName + "(context)");
         }
         catch (o) {
-            console.log(o);
             throw new Exception("No existe la vista [" + firstElement.tagName + "]");
         }
         await view.parse(firstElement);

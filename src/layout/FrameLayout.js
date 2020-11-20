@@ -3,11 +3,17 @@ class FrameLayout extends ViewGroup {
         super(context);
     }
 
-    //Override
+    //@Override
     async parseViewChild(nodeXml) {
         let view = await super.parseViewChild(nodeXml);
         view.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_GRAVITY)||'left|top';
         return view;
+    }
+
+    // @Override
+    async addView(viewChild) {
+        viewChild.layoutGravity = viewChild.layoutGravity || 'left|top';
+        await super.addView(viewChild);
     }
 
     //@Override

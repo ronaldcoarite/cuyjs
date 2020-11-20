@@ -201,7 +201,7 @@ class PageManager {
             page.viewRoot = await LayoutInflater.inflate(page,rootXml);
         }
 
-        document.body.appendChild(await page.viewRoot.createDomElement());
+        document.body.appendChild(page.viewRoot.elemDom);
         // page.startLoaded(); // Iniciando carga
 
         var navigator = this.getWindowsDimension();

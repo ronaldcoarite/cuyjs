@@ -1,7 +1,6 @@
-class Form extends View {
+class Form extends Container {
     constructor(context){
         super(context);
-        this.viewRoot = null;
     }
 
     // @Override
@@ -9,7 +8,12 @@ class Form extends View {
         let view = super.findViewById(idView);
         if(view)
             return view;
-        return this.viewRoot.findViewById(idView);
+        return this.getFirstChild().findViewById(idView);
+    }
+
+    // @Override
+    getTypeElement(){
+        return 'form';
     }
 
     // @Override
@@ -20,28 +24,16 @@ class Form extends View {
 
         let nodeChild = nodeXml.children[0];
         let child = await this.parseViewChild(nodeChild);
-        if(!(child instanceof ViewGroup))
-            throw new Exception(`La vista [${child.constructor.name}] no es una extención [ViewGroup].`);
+        if(!(child instanceof Container))
+            throw new Exception(`La vista [${child.constructor.name}] no es una extención [Container].`);
         child.parentView = this;
-        this.viewRoot = child;
+        this.viewsChilds.push(child);
+        this.elemDom.appendChild(child.elemDom);
     }
 
     async parseViewChild(nodeXml) {
         let child = await LayoutInflater.inflate(this.context, nodeXml);
         return child;
-    }
-
-    //@Override
-    async createDomElement() {
-        await super.createDomElement();
-        this.elemDom.appendChild(await this.viewRoot.createDomElement());
-        return this.elemDom;
-    }
-
-    //@Override
-    async loadResources() {
-        await super.loadResources();
-        await this.viewRoot.loadResources();
     }
     
     //@Override
@@ -51,20 +43,20 @@ class Form extends View {
         if(this.height !== LayoutInflater.MATCH_PARENT && this.height !== LayoutInflater.WRAP_CONTENT)
             maxHeigth = parseFloat(this.height);
 
-        await this.viewRoot.onMeasure(
+        await this.getFirstChild().onMeasure(
             maxWidth - this.padding.left - this.padding.right,
             maxHeigth - this.padding.top - this.padding.bottom);
  
         let maxWidthElement, maxHeightElement;
         switch (this.height) {
             case LayoutInflater.MATCH_PARENT: maxHeightElement = maxHeigth; break;
-            case LayoutInflater.WRAP_CONTENT: maxHeightElement = this.padding.top + this.viewRoot.getHeight() + this.padding.bottom; break;
+            case LayoutInflater.WRAP_CONTENT: maxHeightElement = this.padding.top + this.getFirstChild().getHeight() + this.padding.bottom; break;
             default: maxHeightElement = maxHeigth;
         }
 
         switch (this.width) {
             case LayoutInflater.MATCH_PARENT: maxWidthElement = maxWidth; break;
-            case LayoutInflater.WRAP_CONTENT: maxWidthElement = this.padding.left + this.viewRoot.getWidth() + this.padding.right; break;
+            case LayoutInflater.WRAP_CONTENT: maxWidthElement = this.padding.left + this.getFirstChild().getWidth() + this.padding.right; break;
             default: maxWidthElement = maxWidth;
         }
 
@@ -75,6 +67,6 @@ class Form extends View {
     }
 
     validate(){
-        
+
     }
 };

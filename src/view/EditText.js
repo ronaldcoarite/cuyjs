@@ -111,6 +111,6 @@ class EditText extends View{
         this.textChangeListener = textChangeListener;
         this.elemDom.addEventListener('input', (e) => {
             this.textChangeListener.onChange(this.getText());
-        })
+        });
     }
 }

@@ -10,7 +10,7 @@ class Toast{
         txtMessage.setBackground("lib/imgs/bg_toast.9.png");
         txtMessage.setText(message);
         txtMessage.setSingleLine(true);
-        txtMessage.setTextColor('#FFFFFF');
+        txtMessage.setTextColor('#EC9D52');
         dialog.setContentView(txtMessage);
 
         dialog.show();

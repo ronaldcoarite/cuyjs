@@ -29,6 +29,8 @@ class View {
         this.theme = this.constructor.name;
         this.requiredInForm = false;
         this.requiredMessage = null;
+
+        this.createHtmlElement();
     }
 
     setVisibility(v) {
@@ -58,25 +60,28 @@ class View {
         return null;
     }
 
-    async createDomElement() {
-        var elem = document.createElement(this.getTypeElement());
+    createHtmlElemFromType(type) {
+        let htmlElement = document.createElement(type);
         // Margenes por defector
-        elem.style.marginTop = '0px';
-        elem.style.marginLeft = '0px';
-        elem.style.marginBottom = '0px';
-        elem.style.marginRight = '0px';
+        htmlElement.style.marginTop = '0px';
+        htmlElement.style.marginLeft = '0px';
+        htmlElement.style.marginBottom = '0px';
+        htmlElement.style.marginRight = '0px';
 
         // Padding por defecto
-        elem.style.paddingTop = '0px';
-        elem.style.paddingLeft = '0px';
-        elem.style.paddingBottom = '0px';
-        elem.style.paddingRight = '0px';
+        htmlElement.style.paddingTop = '0px';
+        htmlElement.style.paddingLeft = '0px';
+        htmlElement.style.paddingBottom = '0px';
+        htmlElement.style.paddingRight = '0px';
 
-        elem.style.position = 'absolute';
-        this.elemDom = elem;
-        if(this.id)
-            this.elemDom.id = this.id;
-        return elem;
+        htmlElement.style.position = 'absolute';
+        return htmlElement;
+    }
+
+
+    createHtmlElement() {
+        this.elemDom = this.createHtmlElemFromType(this.getTypeElement());
+        return this.elemDom;
     }
 
     getTypeElement() {
@@ -88,7 +93,7 @@ class View {
     }
 
     clone() {
-        var copy = Object.assign({}, this);
+        let copy = Object.assign({}, this);
         copy.elemDom = this.elemDom.cloneNode(true);
     }
     
@@ -405,7 +410,8 @@ class View {
     }
 
     async repaint() {
-        await this.backgroundPainter.paint();
+        if(this.backgroundPainter)
+            await this.backgroundPainter.paint();
     }
 
     isSizeStatic(){
@@ -470,5 +476,12 @@ class View {
         }
 
         await this.backgroundPainter.paint();
+    }
+
+    async remove(){
+        if(!this.parentView)
+            return;
+        if(this.parentView instanceof Container)
+            this.parentView.removeView(this);
     }
 }
