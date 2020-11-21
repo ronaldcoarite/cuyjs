@@ -22,7 +22,7 @@ class TextView extends View {
     async parse(nodeXml){
         await super.parse(nodeXml);
         
-        this.text = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_TEXT);
+        this.text = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_TEXT);
         this.textColor = this.getAttrFromNodeXml(nodeXml,"textColor");
         if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_LEFT) !== null) {
             this.gravityIcon = LayoutInflater.LEFT;
@@ -112,6 +112,11 @@ class TextView extends View {
 
     async onMeasure(maxWidth, maxHeight) {
         const marginDrawable = this.elemIcon.clientWidth===0?0:4; // 4px
+        // Redimensionando el tamaño del icono al mismo tamaño del texto
+        if(this.drawableResource){
+            this.elemIcon.style.width = `${this.elemText.clientHeight}px`;
+            this.elemIcon.style.height = `${this.elemText.clientHeight}px`;
+        }
         switch(this.gravityIcon){
             case "left":
                 this.elemIcon.style.left = (this.padding.left) + 'px';

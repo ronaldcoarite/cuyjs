@@ -1,4 +1,4 @@
-class SpinnerItem extends TextView{
+class Option extends TextView{
     constructor(context){
         super(context);
     }

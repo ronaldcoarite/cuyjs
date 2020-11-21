@@ -2,22 +2,22 @@
 <FrameLayout
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
     xsi:noNamespaceSchemaLocation='https://raw.githubusercontent.com/ronaldcoarite/cuyjs/master/src/layout-xml.xsd'
-    layout_width="match_parent"
-    layout_height="match_parent"
+    width="match_parent"
+    height="match_parent"
     background="casa_futuro.jpg">
     <LinearLayout
-        layout_gravity="center"
+        gravity="center"
         orientation="vertical"
         background="#88162e"
         padding="10px">
         <ImageView
-            layout_height="80px"
-            layout_width="90px"
+            height="80px"
+            width="90px"
             src="logo.jpg"
-            layout_gravity="center_horizontal"/>
+            gravity="center_horizontal"/>
         <TextView
-            layout_marginLeft="5px"
-            layout_marginTop="5px"
+            marginLeft="5px"
+            marginTop="5px"
             singleLine="true"
             text="Automatización y control para tu Hogar"
             textColor="#FFFFFF"
@@ -38,12 +38,12 @@
             text="Ingresar"
             textColor="#FFFFFF"
             drawableLeft="home.png"
-            layout_gravity="center_horizontal"/>
+            gravity="center_horizontal"/>
     </LinearLayout>
     <TextView
-        layout_marginRight="5px"
-        layout_marginBottom="3px"
-        layout_gravity="right|bottom"
+        marginRight="5px"
+        marginBottom="3px"
+        gravity="right|bottom"
         singleLine="true"
         text="www.domolin.com"
         textColor="#FFFFFF"/>

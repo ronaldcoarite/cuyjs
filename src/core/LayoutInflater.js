@@ -1,23 +1,23 @@
 class LayoutInflater{
     // Atributos generales para los layouts
-    static ATTR_LAYOUT_WIDTH = "layout_width";
-    static ATTR_LAYOUT_HEIGHT= "layout_height";
+    static ATTR_WIDTH = "width";
+    static ATTR_HEIGHT= "height";
     static ATTR_ID= "id";
-    static ATTR_LAYOUT_GRAVITY= "layout_gravity";
+    static ATTR_GRAVITY= "gravity";
 
-    static ATTR_LAYOUT_GRAVITY_LEFT = "left";
-    static ATTR_LAYOUT_GRAVITY_RIGHT = "right";
-    static ATTR_LAYOUT_GRAVITY_TOP = "top";
-    static ATTR_LAYOUT_GRAVITY_BOTTOM = "bottom";
-    static ATTR_LAYOUT_GRAVITY_CENTER = "center";
-    static ATTR_LAYOUT_GRAVITY_CENTER_H = "center_horizontal";
-    static ATTR_LAYOUT_GRAVITY_CENTER_V = "center_vertical";
+    static ATTR_GRAVITY_LEFT = "left";
+    static ATTR_GRAVITY_RIGHT = "right";
+    static ATTR_GRAVITY_TOP = "top";
+    static ATTR_GRAVITY_BOTTOM = "bottom";
+    static ATTR_GRAVITY_CENTER = "center";
+    static ATTR_GRAVITY_CENTER_H = "center_horizontal";
+    static ATTR_GRAVITY_CENTER_V = "center_vertical";
 
-    static ATTR_LAYOUT_MARGIN= "layout_margin";
-    static ATTR_LAYOUT_MARGIN_TOP= "layout_marginTop";
-    static ATTR_LAYOUT_MARGIN_LEFT= "layout_marginLeft";
-    static ATTR_LAYOUT_MARGIN_RIGHT= "layout_marginRight";
-    static ATTR_LAYOUT_MARGIN_BOTTOM= "layout_marginBottom";
+    static ATTR_MARGIN= "margin";
+    static ATTR_MARGIN_TOP= "marginTop";
+    static ATTR_MARGIN_LEFT= "marginLeft";
+    static ATTR_MARGIN_RIGHT= "marginRight";
+    static ATTR_MARGIN_BOTTOM= "marginBottom";
 
     static ATTR_PADDING= "padding";
     static ATTR_PADDING_TOP= "paddingTop";
@@ -29,29 +29,29 @@ class LayoutInflater{
     static ATTR_BACKGROUND= "background";
     static ATTR_ORIENTATION= "orientation";
     // Utilizado solo en LinearLayout
-    static ATTR_LAYOUT_WEIGHT= "layout_weight";
+    static ATTR_WEIGHT= "weight";
 
     // Atributos de RelativeLayout
-    static ATTR_LAYOUT_ALIGNPARENTLEFT= "layout_alignParentLeft";// true;false
-    static ATTR_LAYOUT_ALIGNPARENTTOP= "layout_alignParentTop";//true;false
-    static ATTR_LAYOUT_ALIGNPARENTRIGHT= "layout_alignParentRight";//true;false
-    static ATTR_LAYOUT_ALIGNPARENTBOTTOM= "layout_alignParentBottom";//true;false
+    static ATTR_ALIGNPARENTLEFT= "alignParentLeft";// true;false
+    static ATTR_ALIGNPARENTTOP= "alignParentTop";//true;false
+    static ATTR_ALIGNPARENTRIGHT= "alignParentRight";//true;false
+    static ATTR_ALIGNPARENTBOTTOM= "alignParentBottom";//true;false
 
-    static ATTR_LAYOUT_CENTERHORIZONTAL= "layout_centerHorizontal";//true;false
-    static ATTR_LAYOUT_CENTERVERTICAL= "layout_centerVertical";//true;false
-    static ATTR_LAYOUT_CENTERINPARENT= "layout_centerInParent";//true;false
+    static ATTR_CENTERHORIZONTAL= "centerHorizontal";//true;false
+    static ATTR_CENTERVERTICAL= "centerVertical";//true;false
+    static ATTR_CENTERINPARENT= "centerInParent";//true;false
 
-    static ATTR_LAYOUT_ABOVE= "layout_above";//id
-    static ATTR_LAYOUT_BELOW= "layout_below";//id
+    static ATTR_ABOVE= "above";//id
+    static ATTR_BELOW= "below";//id
 
-    static ATTR_LAYOUT_TORIGHTOF= "layout_toRightOf";//id
-    static ATTR_LAYOUT_TOLEFTOF= "layout_toLeftOf";//id
+    static ATTR_TORIGHTOF= "toRightOf";//id
+    static ATTR_TOLEFTOF= "toLeftOf";//id
 
     static ATTR_MIN_WIDTH= "minWidth";
     static ATTR_MIN_HEIGHT= "minHeight";
 
     // TextView
-    static ATTR_LAYOUT_TEXT= "text";
+    static ATTR_TEXT= "text";
     static ATTR_DRAWABLE_LEFT= "drawableLeft";
     static ATTR_DRAWABLE_TOP= "drawableTop";
     static ATTR_DRAWABLE_BOTTOM= "drawableBottom";

@@ -41,14 +41,14 @@
             <xs:enumeration value="false"/>
         </xs:restriction>
     </xs:simpleType>
-    <xs:simpleType name="layout_behavior">
+    <xs:simpleType name="behavior">
         <xs:restriction base="xs:string">
             <xs:enumeration value="wrap_content"/>
             <xs:enumeration value="match_parent"/>
         </xs:restriction>
     </xs:simpleType>
-    <xs:simpleType name="layout_dimension">
-        <xs:union memberTypes="layout_behavior">
+    <xs:simpleType name="dimension">
+        <xs:union memberTypes="behavior">
           <xs:simpleType>
             <xs:restriction base="xs:token">
                 <xs:pattern value="(\d*\.?\d+)\s?(px|dp|%|cm+)"/>
@@ -62,7 +62,7 @@
             <xs:enumeration value="italic"/>
         </xs:restriction>
     </xs:simpleType>
-    <xs:attribute name="layout_gravity">
+    <xs:attribute name="gravity">
         <xs:simpleType>
             <xs:restriction base="xs:string">
                 <xs:enumeration value="left"/>
@@ -116,22 +116,22 @@
     <xs:complexType name="View">
         <!-- Atributos del view-->
         <xs:attribute type="xs:string" name="id" use="optional"/>
-        <xs:attribute type="layout_dimension" name="layout_width" default="wrap_content"/>
-        <xs:attribute type="layout_dimension" name="layout_height" default="wrap_content"/>
+        <xs:attribute type="dimension" name="width" default="wrap_content"/>
+        <xs:attribute type="dimension" name="height" default="wrap_content"/>
         <xs:attribute type="xs:string" name="background" use="optional"/>
         <xs:attribute type="xs:string" name="onClick" use="optional"/>
         <xs:attribute type="xs:string" name="cssClassList" use="optional"/>
         <xs:attribute type="xs:string" name="theme" use="optional"/>
         
-        <xs:attribute ref="layout_gravity" use="optional"/>
+        <xs:attribute ref="gravity" use="optional"/>
         <xs:attribute ref="tooltip" use="optional"/>
         <xs:attribute ref="visibility" use="optional"/>
         
-        <xs:attribute type="xs:string" name="layout_margin" use="optional"/>
-        <xs:attribute type="xs:string" name="layout_marginTop" use="optional"/>
-        <xs:attribute type="xs:string" name="layout_marginLeft" use="optional"/>
-        <xs:attribute type="xs:string" name="layout_marginRight" use="optional"/>
-        <xs:attribute type="xs:string" name="layout_marginBottom" use="optional"/>
+        <xs:attribute type="xs:string" name="margin" use="optional"/>
+        <xs:attribute type="xs:string" name="marginTop" use="optional"/>
+        <xs:attribute type="xs:string" name="marginLeft" use="optional"/>
+        <xs:attribute type="xs:string" name="marginRight" use="optional"/>
+        <xs:attribute type="xs:string" name="marginBottom" use="optional"/>
         
         <xs:attribute type="xs:string" name="padding" use="optional"/>
         <xs:attribute type="xs:string" name="paddingTop" use="optional"/>
@@ -139,23 +139,23 @@
         <xs:attribute type="xs:string" name="paddingRight" use="optional"/>
         <xs:attribute type="xs:string" name="paddingBottom" use="optional"/>
         
-        <xs:attribute type="xs:string" name="layout_weight" use="optional"/>
+        <xs:attribute type="xs:string" name="weight" use="optional"/>
         
-        <xs:attribute type="bool" name="layout_alignParentLeft" use="optional"/>
-        <xs:attribute type="bool" name="layout_alignParentTop" use="optional"/>
-        <xs:attribute type="bool" name="layout_alignParentRight" use="optional"/>
-        <xs:attribute type="bool" name="layout_alignParentBottom" use="optional"/>
-        <xs:attribute type="bool" name="layout_centerHorizontal" use="optional"/>
-        <xs:attribute type="bool" name="layout_centerVertical" use="optional"/>
-        <xs:attribute type="bool" name="layout_centerInParent" use="optional"/>
+        <xs:attribute type="bool" name="alignParentLeft" use="optional"/>
+        <xs:attribute type="bool" name="alignParentTop" use="optional"/>
+        <xs:attribute type="bool" name="alignParentRight" use="optional"/>
+        <xs:attribute type="bool" name="alignParentBottom" use="optional"/>
+        <xs:attribute type="bool" name="centerHorizontal" use="optional"/>
+        <xs:attribute type="bool" name="centerVertical" use="optional"/>
+        <xs:attribute type="bool" name="centerInParent" use="optional"/>
 
         <xs:attribute type="bool" name="requiredInForm" use="optional"/>
         <xs:attribute type="xs:string" name="requiredMessage" use="optional"/>
         
-        <xs:attribute type="xs:string" name="layout_above" use="optional"/>
-        <xs:attribute type="xs:string" name="layout_below" use="optional"/>
-        <xs:attribute type="xs:string" name="layout_toRightOf" use="optional"/>
-        <xs:attribute type="xs:string" name="layout_toLeftOf" use="optional"/>
+        <xs:attribute type="xs:string" name="above" use="optional"/>
+        <xs:attribute type="xs:string" name="below" use="optional"/>
+        <xs:attribute type="xs:string" name="toRightOf" use="optional"/>
+        <xs:attribute type="xs:string" name="toLeftOf" use="optional"/>
         
         <xs:attribute type="xs:string" name="style" use="optional"/>
         

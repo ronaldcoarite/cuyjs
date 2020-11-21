@@ -38,6 +38,7 @@
     "src/view/Camera.js",
     "src/view/RadioButton.js",
     "src/view/Spinner.js",
+    "src/view/Option.js",
 
     "src/view/event/TextChangeListener.js",
 

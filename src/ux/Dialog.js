@@ -8,6 +8,8 @@ class Dialog{
 
         this.viewRoot = null;
         this.urlView = null;
+
+        this.visible = false;
     }
 
     setContentView(view) {
@@ -40,6 +42,10 @@ class Dialog{
 
     async onStart(){
 
+    }
+
+    isVisible(){
+        return this.visible;
     }
 
     async show(){
@@ -103,6 +109,7 @@ class Dialog{
                 if(pageAnimation)
                     pageAnimation.hide();
                 this_.onStart();
+                this.visible = true;
             })();
         });
     }
@@ -119,6 +126,7 @@ class Dialog{
             this.elemBackground.parentNode.removeChild(this.elemBackground);
         if(this.resolvePromise)
             this.resolvePromise(params);
+        this.visible = false;
     }
 
     getContext(){

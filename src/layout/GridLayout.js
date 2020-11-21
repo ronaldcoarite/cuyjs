@@ -12,7 +12,7 @@ class GridLayout extends ViewGroup {
     async parse(nodeXml) {
         await super.parse(nodeXml);
         if (this.width === LayoutInflater.WRAP_CONTENT)
-            throw new Exception(`No se permite el ancho dinamico de tipo [${LayoutInflater.WRAP_CONTENT}] para el atributo [layout_width] de la vista [GridLayout]`);
+            throw new Exception(`No se permite el ancho dinamico de tipo [${LayoutInflater.WRAP_CONTENT}] para el atributo [width] de la vista [GridLayout]`);
 
         if (this.getAttrFromNodeXml(nodeXml,"colums"))
             this.colums = parseInt(this.getAttrFromNodeXml(nodeXml,"colums"));
@@ -29,10 +29,10 @@ class GridLayout extends ViewGroup {
     //@Override
     async parseViewChild(nodeXml) {
         let view = await super.parseViewChild(nodeXml);
-        // if (nodeXml,LayoutInflater.ATTR_LAYOUT_WIDTH) === LayoutInflater.MATCH_PARENT)
-        //     throw `No puede establecer un ancho [${LayoutInflater.ATTR_LAYOUT_WIDTH}] de tipo [${LayoutInflater.MATCH_PARENT}] para la vista [${nodeXml.tagName}] en el contenedor [GridLayout]`;
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_HEIGHT) === LayoutInflater.MATCH_PARENT)
-            throw `No puede establecer un alto [${LayoutInflater.ATTR_LAYOUT_HEIGHT}] de tipo [${LayoutInflater.MATCH_PARENT}] para la vista [${nodeXml.tagName}] en el contenedor [GridLayout]`;
+        // if (nodeXml,LayoutInflater.ATTR_WIDTH) === LayoutInflater.MATCH_PARENT)
+        //     throw `No puede establecer un ancho [${LayoutInflater.ATTR_WIDTH}] de tipo [${LayoutInflater.MATCH_PARENT}] para la vista [${nodeXml.tagName}] en el contenedor [GridLayout]`;
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_HEIGHT) === LayoutInflater.MATCH_PARENT)
+            throw `No puede establecer un alto [${LayoutInflater.ATTR_HEIGHT}] de tipo [${LayoutInflater.MATCH_PARENT}] para la vista [${nodeXml.tagName}] en el contenedor [GridLayout]`;
         return view;
     }
 

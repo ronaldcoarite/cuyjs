@@ -43,8 +43,8 @@ A continuación el layout correspondiente para la vista archivo *test.xml*
 <LinearLayout
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
     xsi:noNamespaceSchemaLocation='src/layout-xml.xsd'
-    layout_width="700px"
-    layout_height="wrap_content"
+    width="700px"
+    height="wrap_content"
     background="res/drawable/general/bg_dialog.9.png"
     padding="10px"
     orientation="vertical"

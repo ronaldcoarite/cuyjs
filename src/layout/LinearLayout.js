@@ -19,18 +19,18 @@ class LinearLayout extends ViewGroup {
     //Override
     async parseViewChild(nodeXml) {
         let view = await super.parseViewChild(nodeXml);
-        view.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_GRAVITY);
+        view.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_GRAVITY);
 
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_WEIGHT) !== null){
-            let weight = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_WEIGHT);
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_WEIGHT) !== null){
+            let weight = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_WEIGHT);
             var num = parseFloat(weight);
             if (isNaN(num) === true)
                 throw new Exception(
-                    `El valor del atributo [${LayoutInflater.ATTR_LAYOUT_WEIGHT}] del view [${this.constructor.name}] no es un número flotante [${weight}]`);
+                    `El valor del atributo [${LayoutInflater.ATTR_WEIGHT}] del view [${this.constructor.name}] no es un número flotante [${weight}]`);
 
             if (!(num > 0.0 && num <= 1.0))
                 throw new Exception(
-                    `El valor del atributo [${LayoutInflater.ATTR_LAYOUT_WEIGHT}] es [${weight}] del view [${this.constructor.name}] no esta del rango válido entre [0.0 y 1.0]`);
+                    `El valor del atributo [${LayoutInflater.ATTR_WEIGHT}] es [${weight}] del view [${this.constructor.name}] no esta del rango válido entre [0.0 y 1.0]`);
             view.layoutWeight = num;
         }
         return view;

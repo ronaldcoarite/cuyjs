@@ -243,16 +243,16 @@ class View {
             this.padding.top = this.padding.left = this.padding.right = this.padding.bottom = pad;
         }
         // MARGEN DEL COMPONENTE
-        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN)!=null)
-            this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN));
-        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_BOTTOM)!=null)
-            this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_BOTTOM));
-        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_LEFT)!=null)
-            this.margin.left = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_LEFT));
-        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_RIGHT)!=null)
-            this.margin.right = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_RIGHT));
-        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_TOP)!=null)
-            this.margin.top = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_MARGIN_TOP));
+        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN)!=null)
+            this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN));
+        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_BOTTOM)!=null)
+            this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_BOTTOM));
+        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_LEFT)!=null)
+            this.margin.left = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_LEFT));
+        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_RIGHT)!=null)
+            this.margin.right = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_RIGHT));
+        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_TOP)!=null)
+            this.margin.top = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_TOP));
         if(this.getAttrFromNodeXml(nodeXml,"paddingLeft"))
             this.padding.left = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingLeft"));
         if(this.getAttrFromNodeXml(nodeXml,"paddingRight"))
@@ -263,14 +263,14 @@ class View {
             this.id = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ID);
 
         // LAYOUT GRAVITY DEL VIEW
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_GRAVITY) !== null)
-            this.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_GRAVITY);
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_GRAVITY) !== null)
+            this.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_GRAVITY);
         // WIDTH DEL VIEW
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_WIDTH) !== null)
-            this.width = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_WIDTH);
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_WIDTH) !== null)
+            this.width = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_WIDTH);
         // HEIGHT DEL VIEW
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_HEIGHT) !== null)
-            this.height = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_HEIGHT);
+        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_HEIGHT) !== null)
+            this.height = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_HEIGHT);
         this.tooltip = this.getAttrFromNodeXml(nodeXml,'tooltip');
 
         // BACKGROUDN DEL VIEW

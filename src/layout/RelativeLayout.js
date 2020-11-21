@@ -6,19 +6,19 @@ class RelativeLayout extends ViewGroup{
     //@Override
     async parseViewChild(nodeXml) {
         var view = await super.parseViewChild(nodeXml);
-        view.alignParentTop = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_ALIGNPARENTTOP) === "true");
-        view.alignParentRight = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_ALIGNPARENTRIGHT) === "true");
-        view.alignParentBottom = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_ALIGNPARENTBOTTOM) === "true");
-        view.alignParentLeft = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_ALIGNPARENTLEFT) === "true");
+        view.alignParentTop = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ALIGNPARENTTOP) === "true");
+        view.alignParentRight = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ALIGNPARENTRIGHT) === "true");
+        view.alignParentBottom = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ALIGNPARENTBOTTOM) === "true");
+        view.alignParentLeft = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ALIGNPARENTLEFT) === "true");
         
-        view.centerHorizontal = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_CENTERHORIZONTAL) === "true");
-        view.centerVertical = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_CENTERVERTICAL) === "true");
-        view.centerInParent = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_CENTERINPARENT) === "true");
+        view.centerHorizontal = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_CENTERHORIZONTAL) === "true");
+        view.centerVertical = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_CENTERVERTICAL) === "true");
+        view.centerInParent = (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_CENTERINPARENT) === "true");
         
-        view.above = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_ABOVE);
-        view.below = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_BELOW);
-        view.toRightOf = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_TORIGHTOF);
-        view.toLeftOf = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_LAYOUT_TOLEFTOF);
+        view.above = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ABOVE);
+        view.below = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_BELOW);
+        view.toRightOf = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_TORIGHTOF);
+        view.toLeftOf = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_TOLEFTOF);
         return view;
     }
 
@@ -67,21 +67,21 @@ class RelativeLayout extends ViewGroup{
             }
 
             // Ubicación respecto a otros elementos
-            // ATTR_LAYOUT_ABOVE:"layout_above",//id
+            // ATTR_ABOVE:"above",//id
             if (view.above) {
                 var viewAbove = this.findViewById(view.above);
                 if (!viewAbove)
                     throw new Exception(`No se encuentra el view hijo con id [${view.above}] citado en la vista [${view.name}], para el contenedor [${this.name}]`);
                 view.elemDom.style.top = (parseInt(viewAbove.elemDom.style.top) - viewAbove.margin.top - view.elemDom.clientHeight - view.margin.bottom) + 'px';
             }
-            // ATTR_LAYOUT_BELOW:"layout_below",//id
+            // ATTR_BELOW:"below",//id
             if (view.below) {
                 var viewBelow = this.findViewById(view.below);
                 if (!viewBelow)
                     throw new Exception(`No se encuentra el view hijo con id [${view.below}] citado en la vista [${view.name}], para el contenedor [${this.name}]`);
                 view.elemDom.style.top = (parseInt(viewBelow.elemDom.style.top) + viewBelow.elemDom.clientHeight + viewBelow.margin.bottom + view.margin.top) + 'px';
             }
-            // ATTR_LAYOUT_TORIGHTOF:"layout_toRightOf",//id
+            // ATTR_TORIGHTOF:"toRightOf",//id
             if (view.toLeftOf) {
                 var viewToLeft = this.findViewById(view.toLeftOf);
                 if (!viewToLeft)
@@ -99,7 +99,7 @@ class RelativeLayout extends ViewGroup{
                     view.elemDom.style.left = (parseInt(viewToLeft.elemDom.style.left) - view.elemDom.clientWidth - view.margin.right) + 'px';
                 }
             }
-            // ATTR_LAYOUT_TOLEFTOF:"layout_toLeftOf",//id
+            // ATTR_TOLEFTOF:"toLeftOf",//id
             if (view.toRightOf) {
                 var viewToRight = this.findViewById(view.toRightOf);
                 if (viewToRight === null)
