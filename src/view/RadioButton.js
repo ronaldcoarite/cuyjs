@@ -1,17 +1,19 @@
 class RadioButton extends View{
     constructor (context) {
         super(context);
-        this.text = null;
-        this.onClick = null;
-        this.radioGroup = null;
+        this.text = Resource.getAttrOfTheme(this.constructor.name, 'text');
+        this.onClick = Resource.getAttrOfTheme(this.constructor.name, 'onClick');
+        this.radioGroup = Resource.getAttrOfTheme(this.constructor.name, 'radioGroup');
+
+        
     }
 
     // @Override
     async parse(nodeXml) {
         await super.parse(nodeXml);
-        this.text = this.getAttrFromNodeXml(nodeXml,"text");
-        this.onClick = this.getAttrFromNodeXml(nodeXml,"onClick");
-        this.radioGroup = this.getAttrFromNodeXml(nodeXml,"radioGroup");
+        this.text = this.getAttrFromNodeXml(nodeXml,"text") || this.text;
+        this.onClick = this.getAttrFromNodeXml(nodeXml,"onClick") || this.onClick;
+        this.radioGroup = this.getAttrFromNodeXml(nodeXml,"radioGroup") || this.radioGroup;
     }
 
     // @Override

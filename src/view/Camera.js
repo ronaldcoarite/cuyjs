@@ -2,8 +2,8 @@
 class Camera extends View{
     constructor(context){
         super(context);
-        this.captureAudio=false;
-        this.captureVideo=true;
+        this.captureAudio = false;
+        this.captureVideo = true;
     }
 
     // @Override

@@ -11,26 +11,28 @@ class View {
         this.margin = { top: 0, left: 0, right: 0, bottom: 0 };
         this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
         this.parentView = null;
-        this.maxWidth = 0;
-        this.maxHeigth = 0;
-        this.minHeigth = 0;
-        this.minHeigth = 0;
-        this.width = LayoutInflater.WRAP_CONTENT;
-        this.height = LayoutInflater.WRAP_CONTENT;
-        this.id = null;
-        this.background = null;
-        this.cssClassList=this.constructor.name;
+        this.maxWidth = Resource.getAttrOfTheme(this.constructor.name, 'maxWidth', 0);
+        this.maxHeigth = Resource.getAttrOfTheme(this.constructor.name, 'maxHeigth', 0);
+        this.width = Resource.getAttrOfTheme(this.constructor.name, 'width', LayoutInflater.WRAP_CONTENT);
+        this.height = Resource.getAttrOfTheme(this.constructor.name, 'height', LayoutInflater.WRAP_CONTENT);
+        this.id = Resource.getAttrOfTheme(this.constructor.name, 'id');
+        this.background = Resource.getAttrOfTheme(this.constructor.name, 'background');
+        this.cssClassList = Resource.getAttrOfTheme(this.constructor.name, 'cssClassList',this.constructor.name);
         this.onClick = null;
         this.onClickDefinition = null;
-        this.tooltip = null;
+        this.tooltip = Resource.getAttrOfTheme(this.constructor.name, 'tooltip');
         this.layoutGravity = null;
-        this.audioClick = null;
-        this.audioAdove = null;
-        this.theme = this.constructor.name;
+        this.audioClick = Resource.getAttrOfTheme(this.constructor.name, 'audioClick');
+        this.audioAdove = Resource.getAttrOfTheme(this.constructor.name, 'audioAdove');
         this.requiredInForm = false;
         this.requiredMessage = null;
 
         this.createHtmlElement();
+        this.elemDom.style.visibility = "hidden";
+    }
+
+    getAllAttrs(){
+        return Object.keys(this);
     }
 
     setVisibility(v) {
@@ -102,10 +104,6 @@ class View {
         return this.elemDom? this.elemDom.clientWidth: 0;
     }
 
-    getTheme(){
-        return this.theme;
-    }
-
     getHeight() {
         return this.elemDom? this.elemDom.clientHeight: 0;
     }
@@ -151,28 +149,48 @@ class View {
         this.height = height;
     }
 
-    setLayoutGravity(gravity) {
-        this.layoutGravity = gravity;
+    setLayoutGravity(layoutGravity) {
+        this.layoutGravity = layoutGravity;
     }
 
-    setOnClickListener(onCLick) {
-        if (onCLick === null){
-            this.onClick = null;
-            return;
-        }
-
-        if (typeof onCLick === 'string') {
+    setOnClickListener(onCLick,contextParam) {
+        this.onClick = null;
+        this.onClickDefinition = onCLick;
+        this.onClickContext = contextParam;
+        if (typeof this.onClickDefinition === 'string') {
             // Buscamos el nombre de metodo en el contexto
-            var propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
-            if(propertyNames.find(property=>property===onCLick)){
+            let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+            if(propertyNames.find(property=>property===this.onClickDefinition)){
                 this.onClick = async function(){
-                        // Object.getPrototypeOf(this.context)[onCLick];
-                    Reflect.apply(Reflect.get(this.context,onCLick), this.context,[this]);
+                    Reflect.apply(Reflect.get(this.context,this.onClickDefinition), this.context,[this]);
                 }
             }else
-                throw new Exception(`No se pudo encontrar la funcion [${onCLick}] dentro del contexto [${this.context.constructor.name}]`);
-        }else if (typeof onCLick === 'function') {
-            this.onClick = onCLick;
+                throw new Exception(`No se pudo encontrar la funcion [${this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
+        }
+        else if (typeof this.onClickDefinition === 'function') {
+            let funName = this.onClickDefinition.name;
+            // Verificamos si la funcion se encuentra dentro de la vista
+            let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
+            if(propertyNames.find(property=>property===funName)){
+                this.onClick = async function(){
+                    Reflect.apply(this.onClickDefinition, this,[this]);
+                }
+            }else{
+                this.onClick = async function(){
+                    Reflect.apply(this.onClickDefinition, this.onClickContext ||this.context,[this]);
+                }
+            }
+        }
+        else 
+            throw new Exception(`El objeto [${onCLick}] no es valido para establecer el Listener de onClick`);
+
+        // OnClick
+        if(this.onClick){
+            this.elemDom.onclick=()=>{
+                if(this.audioClickMedia)
+                    this.audioClickMedia.play();
+                this.onClick(this);
+            };
         }
     }
 
@@ -224,20 +242,25 @@ class View {
         return attrValue;
     }
 
+    async setTheme(themeName){
+        let theme = Store.get('theme');
+        if(theme[themeName]){
+            Object.entries(theme[themeName]).forEach(([key, value]) => {
+                this[key] = value;
+            });
+        }
+    }
+
     async parse(nodeXml) {
         // THEMA PARA LA VISTA
-        if (this.getAttrFromNodeXml(nodeXml,"theme") !== null)
-            this.theme = this.getAttrFromNodeXml(nodeXml,"theme");
-
-        // CARGANDO ATRIBUTOS DEFINIDOS POR EL TEMA SI LO EXISTE
-        Resource.loadThemeAttributes(this,nodeXml);
+        if (this.getAttrFromNodeXml(nodeXml,"theme"))
+            this.setTheme(this.getAttrFromNodeXml(nodeXml,"theme"));
 
         // VISIBILITY DEL VIEW
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_VISIBILITY) !== null) 
-            this.visibility = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_VISIBILITY);
+        this.visibility = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_VISIBILITY) || this.visibility;
 
         // PADDING DEL VIEW
-        var padding = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_PADDING);
+        let padding = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_PADDING);
         if (padding !== null) {
             let pad = parseInt(padding);
             this.padding.top = this.padding.left = this.padding.right = this.padding.bottom = pad;
@@ -259,49 +282,39 @@ class View {
             this.padding.right = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingRight"));
 
         // ID DEL VIEW
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ID) !== null)
-            this.id = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ID);
+        this.id = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ID) || this.id;
 
         // LAYOUT GRAVITY DEL VIEW
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_GRAVITY) !== null)
-            this.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_GRAVITY);
+        this.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_GRAVITY) || this.layoutGravity;
+
         // WIDTH DEL VIEW
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_WIDTH) !== null)
-            this.width = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_WIDTH);
+        this.width = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_WIDTH) || this.width;
         // HEIGHT DEL VIEW
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_HEIGHT) !== null)
-            this.height = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_HEIGHT);
-        this.tooltip = this.getAttrFromNodeXml(nodeXml,'tooltip');
+        this.height = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_HEIGHT) || this.height;
+
+        this.tooltip = this.getAttrFromNodeXml(nodeXml,'tooltip') || this.tooltip;
 
         // BACKGROUDN DEL VIEW
-        this.background = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_BACKGROUND);
-        this.onClickDefinition = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ON_CLICK);
+        this.background = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_BACKGROUND) || this.background;
+        this.onClickDefinition = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ON_CLICK) || this.onClickDefinition;
 
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MIN_HEIGHT) !== null)
-            this.minHeigth = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MIN_HEIGHT))||10;
+        this.minHeigth = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MIN_HEIGHT)) || this.minHeigth;
+        this.minWidth = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MIN_WIDTH)) || this.minWidth;
 
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MIN_WIDTH) !== null)
-            this.minWidth = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MIN_WIDTH))||10;
-        if (this.getAttrFromNodeXml(nodeXml,"cssClassList") !== null && this.getAttrFromNodeXml(nodeXml,"cssClassList").length>0){
+        if (this.getAttrFromNodeXml(nodeXml,"cssClassList")){
             // this.cssClassList = `${nodeXml,"cssClassList")}`;
             this.cssClassList = `${this.cssClassList},${this.getAttrFromNodeXml(nodeXml,"cssClassList")}`;
         }
 
         // AUDIO PARA EL CLICK
-        if (this.getAttrFromNodeXml(nodeXml,"audioClick") !== null)
-            this.audioClick = new Audio(this.getAttrFromNodeXml(nodeXml,"audioClick"));
-
-        // AUDIO PARA ENCIMA DE CLICK
-        if (this.getAttrFromNodeXml(nodeXml,"audioAdove") !== null)
-            this.audioAdove = new Audio(this.getAttrFromNodeXml(nodeXml,"audioAdove"));
+        this.audioClick = this.getAttrFromNodeXml(nodeXml,"audioClick") || this.audioClick;
+        this.audioAdove = this.getAttrFromNodeXml(nodeXml,"audioAdove") || this.audioAdove;
             
         this.requiredInForm = this.getAttrFromNodeXml(nodeXml,"requiredInForm") || false;
         this.requiredMessage = this.getAttrFromNodeXml(nodeXml,"requiredMessage");
     }
 
     async loadResources() {
-        if(!this.elemDom) // Verificamos que el elemento este agregado a la vista y que exista
-            return;
         if(this.background){
             // Se verifica que tipo de fondo
             if(this.background instanceof BaseBackground)
@@ -318,7 +331,7 @@ class View {
                 throw new Exception(`No se pudo identificar el tipo de fondo [${this.background}]`);
         }else
             this.backgroundPainter = new EmplyBackground(this,this.elemDom);
-            
+
         await this.backgroundPainter.load();
 
         // Tooltip de Vista
@@ -338,29 +351,18 @@ class View {
         }
 
         // Cargando OnClick
-        if (typeof this.onClickDefinition === 'string') {
-            // Buscamos el nombre de metodo en el contexto
-            let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
-            if(propertyNames.find(property=>property===this.onClickDefinition)){
-                this.onClick = async function(){
-                    // alert("Funcion asyncrona llamada correctamente");
-                    Reflect.apply(Reflect.get(this.context,this.onClickDefinition), this.context,[this]);
-                }
-            }else
-                throw new Exception(`No se pudo encontrar la funcion [${this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
+        if(this.onClickDefinition){
+            this.setOnClickListener(this.onClickDefinition);
         }
 
-        // OnClick
-        if(this.onClick)
-            this.elemDom.onclick=()=>{
-                if(this.audioClick !== null)
-                    this.audioClick.play();
-                this.onClick(this);
-            };
+        if(this.audioClick)
+            this.audioClickMedia = new Audio(this.audioClick);
+        if(this.audioAdove)
+            this.audioAdoveMedia = new Audio(this.audioAdove);
         // Sobre el componente
-        if(this.audioAdove!==null){
+        if(this.audioAdoveMedia){
             this.elemDom.onmouseenter=()=>{
-                this.audioAdove.play();
+                this.audioAdoveMedia.play();
             };
             // this.elemDom.onmouseout=()=>{
                 // this.audioAdove.pause();
@@ -474,8 +476,8 @@ class View {
                 this.elemDom.style.height = height + 'px';
                 break;
         }
-
-        await this.backgroundPainter.paint();
+        if(this.backgroundPainter)
+            await this.backgroundPainter.paint();
     }
 
     async remove(){
@@ -483,5 +485,10 @@ class View {
             return;
         if(this.parentView instanceof Container)
             this.parentView.removeView(this);
+    }
+
+    cloneDomElem(){
+        let dom = this.elemDom.cloneNode(true);
+        return dom;
     }
 }

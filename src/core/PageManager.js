@@ -4,6 +4,15 @@ class PageManager {
         return urlBrouser;
     }
 
+    static getQueryParams(){
+        let urlParams = new URLSearchParams(location.search);
+        let params = {};
+        for (let [key, value] of urlParams) {
+            params[key] = value;
+        }
+        return params;
+    }
+
     static setUrlBrouser(pageNames,queryParams){
         window.location.href = `#/${pageNames.join('/')}`;
     }
@@ -19,6 +28,8 @@ class PageManager {
         return tree;
     }
 
+
+    // pageNames
     static getArrayNavegation(){
         let urlBrouser = PageManager.getUrlBrouser();
 
@@ -27,15 +38,9 @@ class PageManager {
             let posQuery = listPages.indexOf('?');
             if(posQuery != -1)
                 listPages = listPages.substring(0,posQuery);
-            return {
-                pageNames: listPages.split('/'),
-                queryParams: {}
-            };
+            return listPages.split('/');
         }
-        return {
-            pageNames: new Array(),
-            queryParams: {}
-        };
+        return new Array();
     }
 
     static async startApp(manifestConfig){
@@ -48,16 +53,20 @@ class PageManager {
         // Guardamos en sesion la configuración del objeto Manifesto
         Store.set('MANIFEST',manifestConfig);
         let navigationList = PageManager.getArrayNavegation();
+
+        console.log("NAVIGATION: ",navigationList);
         
-        if(navigationList.pageNames.length > 0){ // Actualizar pagina establecida
-            if(navigationList.pageNames.length > 1){ // Existe una navegacion previa con varias paginas
+        if(navigationList.length > 0){ // Actualizar pagina establecida
+            if(navigationList.length > 1){ // Existe una navegacion previa con varias paginas
                 let resultNode = PageManager.getTreeNodeFromUrl();
                 // Iniciamos la pagina con los datos guardados en la session
-                let intent = new Intent(resultNode.currentPageNode.extras, resultNode.currentPageNode.pageName);
+                let intent = new Intent(null, resultNode.currentPageNode.pageName);
+                intent.setExtras(resultNode.currentPageNode.extras);
                 let pageInstance = await PageManager.startPageFromIntent(intent);
                 return;
             }else{ // Se desea cargar una pagina configurada en el manifest
-                let mainPageName = navigationList.pageNames[0];
+                console.log("TTTTTTTT");
+                let mainPageName = navigationList[0];
                 let pageConfig = PageManager.findPageConfig(manifestConfig,mainPageName);
 
                 // Agregamos como pagina raiz
@@ -66,7 +75,7 @@ class PageManager {
                         extras: {},
                         navigation: {},
                         pageName: mainPageName,
-                        query: {}
+                        query: PageManager.getQueryParams()
                     }
                 }
 
@@ -75,6 +84,8 @@ class PageManager {
 
                 // Iniciamos la actividad principal
                 let intent = new Intent(null, mainPageName);
+                intent.setQuery(treeNavigation.ROOT.query);
+
                 await PageManager.startPageFromIntent(intent);
                 return;
             }
@@ -204,7 +215,7 @@ class PageManager {
         document.body.appendChild(page.viewRoot.elemDom);
         // page.startLoaded(); // Iniciando carga
 
-        var navigator = this.getWindowsDimension();
+        let navigator = this.getWindowsDimension();
         await page.viewRoot.loadResources();
         await page.viewRoot.onMeasure(navigator.width,navigator.height);
         page.loadedFinized(); // Carga finalizada
@@ -214,6 +225,8 @@ class PageManager {
         document.title = page.constructor.name;
 
         // history.pushState({}, null, newUrlIS);
+        // Mostrando todos los elementos
+        await LayoutInflater.showAllViews(page.viewRoot);
 
         await page.onStart(intent);
     }
@@ -233,11 +246,11 @@ class PageManager {
         let parentPageNode = null;
 
         let index = 0;
-        while(index < navigationList.pageNames.length){
-            if(currentPageConfig.pageName === navigationList.pageNames[index]){
-                if(index + 1 < navigationList.pageNames.length ){
+        while(index < navigationList.length){
+            if(currentPageConfig.pageName === navigationList[index]){
+                if(index + 1 < navigationList.length ){
                     // Obtenemos el nombre de la pagina siguiente
-                    let pageNameNext = navigationList.pageNames[index+1];
+                    let pageNameNext = navigationList[index+1];
                     // Verificamos si la siguiente pagina existe en arbol de navegacion
                     if(currentPageConfig.navigation[pageNameNext]){ // Existe la pagina en el arbol?
                         parentPageNode = currentPageConfig;
@@ -281,7 +294,7 @@ class PageManager {
         //                    width:document.body.clientWidth,
         //                    height:document.body.clientHeight
         //               };
-        var dim = {
+        let dim = {
             width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0,
             height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight || 0
         };

@@ -47,26 +47,26 @@ class FrameLayout extends ViewGroup {
             let gravitys = view.layoutGravity.split("|");
             let leftAligned =false;
             for (let j = 0; j < gravitys.length; j++) {
-                let gravity = gravitys[j];
-                if (gravity === LayoutInflater.TOP)
+                let layoutGravity = gravitys[j];
+                if (layoutGravity === LayoutInflater.TOP)
                     view.elemDom.style.top = (this.padding.top + view.margin.top) + 'px';
-                if (gravity === LayoutInflater.RIGHT){
+                if (layoutGravity === LayoutInflater.RIGHT){
                     leftAligned = true;
                     view.elemDom.style.left = (maxWidthElement - view.getWidth() - view.margin.right - this.padding.right) + 'px';
                 }
-                if (gravity === LayoutInflater.LEFT){
+                if (layoutGravity === LayoutInflater.LEFT){
                     leftAligned = true;
                     view.elemDom.style.left = (this.padding.left + view.margin.left) + 'px';
                 }
-                if (gravity === LayoutInflater.BOTTOM)
+                if (layoutGravity === LayoutInflater.BOTTOM)
                     view.elemDom.style.top = (maxHeightElement - view.getHeight() - view.margin.bottom - this.padding.bottom) + 'px';
-                if (gravity === LayoutInflater.CENTER_HORIZONTAL){
+                if (layoutGravity === LayoutInflater.CENTER_HORIZONTAL){
                     leftAligned = true;
                     view.elemDom.style.left = (maxWidthElement / 2 - view.getWidth() / 2) + 'px';
                 }
-                if (gravity === LayoutInflater.CENTER_VERTICAL)
+                if (layoutGravity === LayoutInflater.CENTER_VERTICAL)
                     view.elemDom.style.top = (maxHeightElement / 2 - view.getHeight() / 2) + 'px';
-                if (gravity === LayoutInflater.CENTER){
+                if (layoutGravity === LayoutInflater.CENTER){
                     leftAligned = true;
                     view.elemDom.style.left = (maxWidthElement / 2 - view.getWidth() / 2) + 'px';
                     view.elemDom.style.top = (maxHeightElement / 2 - view.getHeight() / 2) + 'px';

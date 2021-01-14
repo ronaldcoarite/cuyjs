@@ -27,6 +27,8 @@
     "src/view/background/ImageBackground.js",
     "src/view/background/NinepathBackground.js",
 
+    "src/ux/animation/SpinnerAnimation.js",
+
     "src/view/View.js",
     "src/view/TextView.js",
     "src/view/Button.js",
@@ -37,8 +39,9 @@
     "src/view/Password.js",
     "src/view/Camera.js",
     "src/view/RadioButton.js",
+    "src/view/OptionItem.js",
     "src/view/Spinner.js",
-    "src/view/Option.js",
+    "src/view/WaitingView.js",
 
     "src/view/event/TextChangeListener.js",
 
@@ -52,7 +55,6 @@
     "src/layout/Form.js",
     "src/layout/RadioGroup.js",
 
-    "src/ux/animation/SpinnerAnimation.js",
     "src/ux/Page.js",
     "src/ux/Dialog.js",
     "src/ux/PopupWindow.js",

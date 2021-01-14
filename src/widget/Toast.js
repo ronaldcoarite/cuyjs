@@ -1,6 +1,6 @@
 class Toast{
     static LENGTH_SHORT = 1000;
-    static LENGTH_LONG = 3400;
+    static LENGTH_LONG = 5000;
  
     static async makeText(context, message, length){
         let dialog = new Dialog(context);

@@ -9,18 +9,15 @@ class Password extends View{
     constructor (context) {
         super(context);
         this.margin.left = this.margin.top = this.margin.right = this.bottom = 0;
-        this.ems = 20;
-        this.text = null;
+        this.ems = Resource.getAttrOfTheme(this.constructor.name, 'ems',20);
+        this.text = Resource.getAttrOfTheme(this.constructor.name, 'text');
     }
 
     // @Override
     async parse(nodeXml) {
         await super.parse(nodeXml);
-        if (this.getAttrFromNodeXml(nodeXml,"ems") !== null) {
-            this.ems = parseInt(this.getAttrFromNodeXml(nodeXml,"ems"));
-        }
-        if (this.getAttrFromNodeXml(nodeXml,"text") !== null)
-            this.text = this.getAttrFromNodeXml(nodeXml,"text");
+        this.ems = this.getAttrFromNodeXml(nodeXml,"ems")?parseInt(this.getAttrFromNodeXml(nodeXml,"ems")): this.ems;
+        this.text = this.getAttrFromNodeXml(nodeXml,"text") || this.text;
     }
 
     // @Override

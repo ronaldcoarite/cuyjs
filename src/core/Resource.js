@@ -3,36 +3,38 @@ class Resource{
 
     static async loadTheme(urlTheme) {
         let rootXml = await this.loadLayoutSync(urlTheme);
+        let styleObject = {};
         for (let index = 0; index < rootXml.children.length; index++){
             // <style name="PageTheme" parent="Page"></style>
             let styleChildNode = rootXml.children[index];
-            let name = styleChildNode.getAttribute("name");
-            let parent = styleChildNode.getAttribute("parent");
-            let styleObject = {
-                name,parent,attributes:{}
-            };
+            let viewName = styleChildNode.getAttribute("view");
+            styleObject[viewName] = {};
+
             for (let indexJ = 0; indexJ < styleChildNode.children.length; indexJ++){
                 //<item name="textColor">#808080</item>
-                let attributeChildNode = styleChildNode.children[indexJ];
-                let name = attributeChildNode.getAttribute("name");
-                let value = attributeChildNode.textContent;
-                styleObject.attributes[name] = value;
+                let attrChildNode = styleChildNode.children[indexJ];
+                let name = attrChildNode.getAttribute("name");
+                let value = attrChildNode.textContent;
+                if(value === "true" || value === "false")
+                    styleObject[viewName][name] = value === "true";
+                else
+                    styleObject[viewName][name] = value;
             }
-            this.listThemes.push(styleObject);
         }
+        Store.set('theme', styleObject);
     }
 
-    static async loadThemeAttributes(view,nodeXml) {
-        // Buscamos si existe el componente
-        let wantedView = this.listThemes.find(styleItem => styleItem.parent===view.getTheme());
-        if(wantedView){
-            let attributes = wantedView.attributes;
-            for (let [key, value] of Object.entries(attributes)) {
-                if(nodeXml.getAttribute(key)===null)
-                    nodeXml.setAttribute(key,value);
+    static getAttrOfTheme(themeName, name, value){
+        if(value === undefined)
+            value = null;
+        let theme = Store.get('theme');
+        if(theme[themeName]){
+            if(theme[themeName][name]!== null && theme[themeName][name]!== undefined){
+                return theme[themeName][name];
             }
-            // console.log(view.constructor.name);
+            return value;
         }
+        return value;
     }
 
     static async importJs(url) {

@@ -66,11 +66,12 @@ class Page extends Context{
         // Cargando la pagina
         let newPage = await PageManager.startPageFromIntent(intent);
         // Agregamos a la URL la nueva pagina
-        resultNode.navigationList.pageNames.push(intent.pageName);
-        PageManager.setUrlBrouser(resultNode.navigationList.pageNames);
+        resultNode.navigationList.push(intent.pageName);
+
+        PageManager.setUrlBrouser(resultNode.navigationList);
         // Agregamos al arbol la pagina
         resultNode.currentPageNode.navigation[intent.pageName]= {
-            extras: {},
+            extras: intent.getExtras(),
             navigation: {},
             pageName: intent.pageName
         };
@@ -91,8 +92,8 @@ class Page extends Context{
         // Guardamos el arbol
         Store.set('TREE',resultNode.tree);
         // Actualizamos la URL del navegador
-        resultNode.navigationList.pageNames.pop();
-        PageManager.setUrlBrouser(resultNode.navigationList.pageNames, resultNode.parentNode.queryParams);
+        resultNode.navigationList.pop();
+        PageManager.setUrlBrouser(resultNode.navigationList, resultNode.parentNode.query);
     }
 
     startPageForResult(intent, requestCode) {

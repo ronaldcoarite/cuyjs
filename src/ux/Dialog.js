@@ -102,12 +102,16 @@ class Dialog{
         
                 let windowsDimension = PageManager.getWindowsDimension();
                 await this_.viewRoot.loadResources();
-                await this_.viewRoot.onMeasure(windowsDimension.width,windowsDimension.height);
+                await this_.viewRoot.onMeasure(windowsDimension.width, windowsDimension.height);
 
                 // Centramos el dialogo
                 this.setPosition(windowsDimension);
                 if(pageAnimation)
                     pageAnimation.hide();
+
+                // Mostrando todos los elementos
+                await LayoutInflater.showAllViews(this_.viewRoot);
+
                 this_.onStart();
                 this.visible = true;
             })();
@@ -127,6 +131,10 @@ class Dialog{
         if(this.resolvePromise)
             this.resolvePromise(params);
         this.visible = false;
+    }
+
+    getViewRoot(){
+        return this.viewRoot;
     }
 
     getContext(){

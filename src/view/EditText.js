@@ -9,41 +9,29 @@ class EditText extends View{
     constructor (context) {
         super(context);
         this.margin.left = this.margin.top = this.margin.right = this.bottom = 4;
-        this.ems = 20;
-        this.lines = 3,
-        this.maxEms = 80;
-        this.maxLines = 10;
+        this.ems = Resource.getAttrOfTheme(this.constructor.name, 'ems',20);
+        this.lines = Resource.getAttrOfTheme(this.constructor.name, 'lines',3);
         this.hint = null;
         this.maxLength = -1;
-        this.readonly = false;
-        this.text = null;
+        this.text = Resource.getAttrOfTheme(this.constructor.name, 'text');
         this.enabled = true;
-        this.textSize = '13px';
+        this.textSize = Resource.getAttrOfTheme(this.constructor.name, 'textSize','13px');
         this.textChangeListener = null;
+        this.singleLine = Resource.getAttrOfTheme(this.constructor.name, 'singleLine',false);
     }
 
     // @Override
     async parse(nodeXml) {
         await super.parse(nodeXml);
-        if (this.getAttrFromNodeXml(nodeXml,"ems") !== null) {
-            this.ems = parseInt(this.getAttrFromNodeXml(nodeXml,"ems"));
-        }
-        if (this.getAttrFromNodeXml(nodeXml,"lines") !== null) {
-            this.lines = parseInt(this.getAttrFromNodeXml(nodeXml,"lines"));
-        }
-        if (this.getAttrFromNodeXml(nodeXml,"maxEms") !== null)
-            this.maxEms = parseInt(this.getAttrFromNodeXml(nodeXml,"maxEms"));
-        if (this.getAttrFromNodeXml(nodeXml,"maxLines") !== null)
-            this.maxLines = parseInt(this.getAttrFromNodeXml(nodeXml,"maxLines"));
-        this.hint = this.getAttrFromNodeXml(nodeXml,"hint");
-        if (this.getAttrFromNodeXml(nodeXml,"maxlength") !== null)
-            this.maxLength = parseInt(this.getAttrFromNodeXml(nodeXml,"maxlength"));
-        if (this.getAttrFromNodeXml(nodeXml,"text") !== null)
-            this.text = this.getAttrFromNodeXml(nodeXml,"text");
-        if (this.getAttrFromNodeXml(nodeXml,"singleLine") === "true")
+        this.ems = this.getAttrFromNodeXml(nodeXml,"ems")?parseInt(this.getAttrFromNodeXml(nodeXml,"ems")): this.ems;
+        this.lines = this.getAttrFromNodeXml(nodeXml,"lines")?parseInt(this.getAttrFromNodeXml(nodeXml,"lines")): this.lines;
+        this.hint = this.getAttrFromNodeXml(nodeXml,"hint") || this.hint;
+        this.maxlength = this.getAttrFromNodeXml(nodeXml,"maxlength")?parseInt(this.getAttrFromNodeXml(nodeXml,"maxlength")): this.maxlength;
+        this.text = this.getAttrFromNodeXml(nodeXml,"text") || this.text;
+        this.singleLine = this.getAttrFromNodeXml(nodeXml,"singleLine")? (this.getAttrFromNodeXml(nodeXml,"singleLine")==="true") : this.singleLine;
+        if(this.singleLine === true)
             this.lines = 1;
-        if (this.getAttrFromNodeXml(nodeXml,"enabled") === "false")
-            this.enabled = false;
+        this.enabled = this.getAttrFromNodeXml(nodeXml,"enabled")?(this.getAttrFromNodeXml(nodeXml,"enabled")==="true") : this.enabled;
         this.textSize = this.getAttrFromNodeXml(nodeXml,"textSize")||this.textSize;
     }
 

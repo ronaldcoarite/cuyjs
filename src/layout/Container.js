@@ -65,17 +65,21 @@ class Container extends View{
     }
 
     getFirstChild(){
-        return this.viewsChilds[0];
+        if(this.viewsChilds.length>0)
+            return this.viewsChilds[0];
+        return null;
     }
 
-    setFirstChild(viewChild){
+    async setFirstChild(viewChild){
         if(this.viewsChilds.length>0){
-            this.viewsChilds[0].removeView();
+            await this.viewsChilds[0].remove();
             this.viewsChilds[0] = viewChild;
         }
         else
             this.viewsChilds.push(viewChild);
         viewChild.parentView = this;
+        await viewChild.loadResources();
         this.elemDom.appendChild(viewChild.elemDom);
+        await this.onReMeasure();
     }
 }

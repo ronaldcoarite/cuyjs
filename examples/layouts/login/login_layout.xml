@@ -6,7 +6,7 @@
     height="match_parent"
     background="casa_futuro.jpg">
     <LinearLayout
-        gravity="center"
+        layoutGravity="center"
         orientation="vertical"
         background="#88162e"
         padding="10px">
@@ -14,7 +14,7 @@
             height="80px"
             width="90px"
             src="logo.jpg"
-            gravity="center_horizontal"/>
+            layoutGravity="center_horizontal"/>
         <TextView
             marginLeft="5px"
             marginTop="5px"
@@ -38,12 +38,12 @@
             text="Ingresar"
             textColor="#FFFFFF"
             drawableLeft="home.png"
-            gravity="center_horizontal"/>
+            layoutGravity="center_horizontal"/>
     </LinearLayout>
     <TextView
         marginRight="5px"
         marginBottom="3px"
-        gravity="right|bottom"
+        layoutGravity="right|bottom"
         singleLine="true"
         text="www.domolin.com"
         textColor="#FFFFFF"/>

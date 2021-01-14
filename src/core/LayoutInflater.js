@@ -3,7 +3,7 @@ class LayoutInflater{
     static ATTR_WIDTH = "width";
     static ATTR_HEIGHT= "height";
     static ATTR_ID= "id";
-    static ATTR_GRAVITY= "gravity";
+    static ATTR_GRAVITY= "layoutGravity";
 
     static ATTR_GRAVITY_LEFT = "left";
     static ATTR_GRAVITY_RIGHT = "right";
@@ -113,5 +113,16 @@ class LayoutInflater{
     static async inflate(context,xmlRoot) {
         let view = await this.parse(context, xmlRoot);
         return view;
+    }
+
+    static async showAllViews(rootView){
+        if(rootView instanceof Container){
+            rootView.elemDom.style.visibility = "visible";
+            for( let view of rootView.viewsChilds){
+                this.showAllViews(view);
+            }
+        }else if(rootView instanceof View){
+            rootView.elemDom.style.visibility = "visible";
+        }
     }
 }

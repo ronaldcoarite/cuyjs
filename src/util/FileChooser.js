@@ -39,13 +39,12 @@ class FileChooser{
         });
     }
 
-    static async showSaveFile(fileName,urlFile){
-        console.log("Descargando archivo",urlFile);
+    static async showSaveFile(urlFile){
         let a = document.createElement("a");
         a.style = "display: none";
         document.body.appendChild(a);
         a.href = urlFile;
-        a.download = fileName;
+        // a.download = fileName;
         a.click();
         window.URL.revokeObjectURL(urlFile);
         a.remove();

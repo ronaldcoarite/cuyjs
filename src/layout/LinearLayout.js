@@ -99,8 +99,8 @@ class LinearLayout extends ViewGroup {
             // Posición horizontal
             view.layoutGravity = view.layoutGravity || LayoutInflater.LEFT;
             let gravitys = view.layoutGravity.split("|");
-            for(let gravity of gravitys){
-                switch (gravity) {
+            for(let layoutGravity of gravitys){
+                switch (layoutGravity) {
                     case LayoutInflater.LEFT:
                         view.elemDom.style.left = (this.padding.left + view.margin.left) + 'px';
                         break;
@@ -112,7 +112,7 @@ class LinearLayout extends ViewGroup {
                         break;
                     default:
                         throw new Exception(
-                            `La orientación para el LinearLayout es [${this.orientation}] y la vista [${view.constructor.name}] tiene asignado la alineación [${gravity}]. Utilice unicamente [${LayoutInflater.LEFT},${LayoutInflater.RIGHT},${LayoutInflater.CENTER_HORIZONTAL}]`);
+                            `La orientación para el LinearLayout es [${this.orientation}] y la vista [${view.constructor.name}] tiene asignado la alineación [${layoutGravity}]. Utilice unicamente [${LayoutInflater.LEFT},${LayoutInflater.RIGHT},${LayoutInflater.CENTER_HORIZONTAL}]`);
                 }
             }
 
@@ -180,8 +180,8 @@ class LinearLayout extends ViewGroup {
             // Posición vertical
             view.layoutGravity = view.layoutGravity || LayoutInflater.TOP;
             let gravitys = view.layoutGravity.split("|");
-            for(let gravity of gravitys){
-                switch (gravity) {
+            for(let layoutGravity of gravitys){
+                switch (layoutGravity) {
                     case LayoutInflater.TOP:
                         view.elemDom.style.top = (this.padding.top + view.margin.top) + 'px';
                         break;
@@ -193,7 +193,7 @@ class LinearLayout extends ViewGroup {
                         break;
                     default:
                         throw new Exception(
-                            `La orientación para el LinearLayout es [${this.orientation}] y la vista [${view.constructor.name}] tiene asignado la alineación [${gravity}]. Utilice unicamente [${LayoutInflater.TOP},${LayoutInflater.BOTTOM},${LayoutInflater.CENTER_VERTICAL}]`);
+                            `La orientación para el LinearLayout es [${this.orientation}] y la vista [${view.constructor.name}] tiene asignado la alineación [${layoutGravity}]. Utilice unicamente [${LayoutInflater.TOP},${LayoutInflater.BOTTOM},${LayoutInflater.CENTER_VERTICAL}]`);
                 }
             }
             // Posición horizontal

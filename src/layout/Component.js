@@ -9,14 +9,22 @@ class Component extends Container {
     async parse(nodeXml) {
         await super.parse(nodeXml);
         let layoutUrl = this.getAttrFromNodeXml(nodeXml,'layoutUrl')||this.layoutUrl;
-        await this.setContentView(layoutUrl);
+        if(layoutUrl === null || layoutUrl !== undefined)
+            await this.setContentView(layoutUrl);
     }
 
     async setContentView(layoutUrl){
-        this.layoutUrl = layoutUrl;
-        let rootXmlNode = await Resource.loadLayoutSync(this.layoutUrl);
-        let viewInflate =  await LayoutInflater.inflate(this,rootXmlNode);
-        this.setFirstChild(viewInflate);
+        if(layoutUrl instanceof View){
+            this.setFirstChild(layoutUrl);
+            await LayoutInflater.showAllViews(layoutUrl);
+        }else{
+            this.layoutUrl = layoutUrl;
+            let rootXmlNode = await Resource.loadLayoutSync(this.layoutUrl);
+            let viewInflate =  await LayoutInflater.inflate(this,rootXmlNode);
+            this.setFirstChild(viewInflate);
+            await LayoutInflater.showAllViews(viewInflate);
+        }
+        await LayoutInflater.showAllViews(layou);
     }
 
     setData(data){

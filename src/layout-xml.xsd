@@ -22,6 +22,7 @@
             <xs:element ref="Form" />
             <xs:element ref="RadioButton" />
             <xs:element ref="RadioGroup" />
+            <xs:element ref="WaitingView" />
         </xs:choice>
     </xs:group>
     <!-- atributos-->
@@ -62,7 +63,7 @@
             <xs:enumeration value="italic"/>
         </xs:restriction>
     </xs:simpleType>
-    <xs:attribute name="gravity">
+    <xs:attribute name="layoutGravity">
         <xs:simpleType>
             <xs:restriction base="xs:string">
                 <xs:enumeration value="left"/>
@@ -123,7 +124,7 @@
         <xs:attribute type="xs:string" name="cssClassList" use="optional"/>
         <xs:attribute type="xs:string" name="theme" use="optional"/>
         
-        <xs:attribute ref="gravity" use="optional"/>
+        <xs:attribute ref="layoutGravity" use="optional"/>
         <xs:attribute ref="tooltip" use="optional"/>
         <xs:attribute ref="visibility" use="optional"/>
         
@@ -177,6 +178,7 @@
                 <xs:attribute type="xs:integer" name="shadowRadius" use="optional"/>
                 <xs:attribute type="xs:string" name="textColor" use="optional"/>
                 <xs:attribute type="xs:string" name="textSize" use="optional"/>
+                <xs:attribute type="xs:string" name="iconSize" use="optional"/>
                 <xs:attribute type="bool" name="singleLine" use="optional"/>
                 <xs:attribute ref="ellipsize" use="optional"/>
                 <xs:attribute type="xs:string" name="drawableLeft" use="optional"/>
@@ -367,6 +369,17 @@
         <xs:complexContent mixed="false">
             <xs:extension base="View">
                 <xs:attribute type="xs:string" name="layoutUrl" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <!-- Form -->
+    <xs:element name="WaitingView" type="WaitingView" />
+    <xs:complexType name="WaitingView">
+        <xs:complexContent mixed="false">
+            <xs:extension base="View">
+                
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

@@ -1,29 +1,29 @@
 class TextView extends View {
     constructor(context){
         super(context);
-        this.text= null;
-        this.textColor= null;
-        this.textCssStyle = null;
-        this.textSize = 12;
+        this.text = Resource.getAttrOfTheme(this.constructor.name, 'text');
+        this.textColor = Resource.getAttrOfTheme(this.constructor.name, 'textColor');
+        this.textCssStyle = Resource.getAttrOfTheme(this.constructor.name, 'textCssStyle');
+        this.textSize = Resource.getAttrOfTheme(this.constructor.name, 'textSize',12);
+        this.iconSize = Resource.getAttrOfTheme(this.constructor.name, 'iconSize',12);
         this.drawableResource= null;
-        this.gravityIcon= "left";
-        this.singleLine= false;
+        this.gravityIcon = Resource.getAttrOfTheme(this.constructor.name, 'gravityIcon','left');
+        this.singleLine = Resource.getAttrOfTheme(this.constructor.name, 'singleLine',false);
         this.ellipsize= "none";
         this.imageResource = null;
 
-        this.shadowColor = null;
-        this.shadowDx = 0;
-        this.shadowDy = 0;
-        this.shadowRadius = 3;
-
+        this.shadowColor = Resource.getAttrOfTheme(this.constructor.name, 'shadowColor');
+        this.shadowDx = Resource.getAttrOfTheme(this.constructor.name, 'shadowDx',0);
+        this.shadowDy = Resource.getAttrOfTheme(this.constructor.name, 'shadowDy',0);
+        this.shadowRadius = Resource.getAttrOfTheme(this.constructor.name, 'shadowRadius',3);
     }
 
     //@Override
     async parse(nodeXml){
         await super.parse(nodeXml);
         
-        this.text = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_TEXT);
-        this.textColor = this.getAttrFromNodeXml(nodeXml,"textColor");
+        this.text = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_TEXT) || this.text;
+        this.textColor = this.getAttrFromNodeXml(nodeXml,"textColor") || this.textColor;
         if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_LEFT) !== null) {
             this.gravityIcon = LayoutInflater.LEFT;
             this.drawableResource = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_DRAWABLE_LEFT);
@@ -44,15 +44,24 @@ class TextView extends View {
             this.gravityIcon = LayoutInflater.LEFT;
             this.drawableResource = null;
         }
-        this.singleLine = this.getAttrFromNodeXml(nodeXml,"singleLine")==="true"?true:false;
-        this.textStyle = this.getAttrFromNodeXml(nodeXml,"textStyle");
+        this.singleLine = this.getAttrFromNodeXml(nodeXml,"singleLine")? (this.getAttrFromNodeXml(nodeXml,"singleLine")==="true") : this.singleLine;
+        this.textStyle = this.getAttrFromNodeXml(nodeXml,"textStyle") || this.textStyle;
 
-        this.shadowColor = this.getAttrFromNodeXml(nodeXml,"shadowColor");
-        this.shadowDx = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowDx"))||this.shadowDx;
-        this.shadowDy = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowDy"))||this.shadowDy;
+        this.shadowColor = this.getAttrFromNodeXml(nodeXml,"shadowColor") || this.shadowColor;
+        this.shadowDx = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowDx")) || this.shadowDx;
+        this.shadowDy = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowDy")) || this.shadowDy;
         this.shadowRadius = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowRadius"))||this.shadowRadius;
 
         this.textSize = this.getAttrFromNodeXml(nodeXml,"textSize")||this.textSize;
+        if(this.getAttrFromNodeXml(nodeXml,"iconSize"))
+            this.iconSize = this.getAttrFromNodeXml(nodeXml,"iconSize")||this.iconSize;
+        else
+            this.iconSize = this.textSize;
+    }
+
+    // Override
+    getAllAttrs(){
+        return Object.keys(this);
     }
 
     setSingleLine(single) {
@@ -107,16 +116,20 @@ class TextView extends View {
         if(this.drawableResource){
             this.imageResource = await Resource.loadImage(this.drawableResource);
             this.elemIcon.src = this.imageResource.src;
+            let wIcon = parseInt(this.iconSize);
+
+            this.elemIcon.width = wIcon;
+            this.elemIcon.height = wIcon;
         }
     }
 
     async onMeasure(maxWidth, maxHeight) {
-        const marginDrawable = this.elemIcon.clientWidth===0?0:4; // 4px
+        const marginDrawable = this.elemIcon.clientWidth===0?0:8; // 4px
         // Redimensionando el tamaño del icono al mismo tamaño del texto
-        if(this.drawableResource){
-            this.elemIcon.style.width = `${this.elemText.clientHeight}px`;
-            this.elemIcon.style.height = `${this.elemText.clientHeight}px`;
-        }
+        // if(this.drawableResource){
+        //     this.elemIcon.width = parseInt(this.textSize);
+        //     this.elemIcon.height = parseInt(this.textSize);
+        // }
         switch(this.gravityIcon){
             case "left":
                 this.elemIcon.style.left = (this.padding.left) + 'px';

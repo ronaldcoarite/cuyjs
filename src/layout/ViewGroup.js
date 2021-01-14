@@ -58,5 +58,6 @@ class ViewGroup extends Container{
         await viewChild.loadResources();
         this.elemDom.appendChild(viewChild.elemDom);
         await this.onReMeasure();
+        await LayoutInflater.showAllViews(viewChild);
     }
 }
