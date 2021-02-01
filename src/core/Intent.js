@@ -5,15 +5,6 @@ class Intent{
         this.extras = {};
         this.context= context;
         this.pageName = pageName;
-        this.query = {};
-    }
-
-    getQuery(){
-        return this.query;
-    }
-
-    setQuery(query){
-        this.query = query;
     }
 
     setExtras(extras){

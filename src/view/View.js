@@ -259,12 +259,6 @@ class View {
         // VISIBILITY DEL VIEW
         this.visibility = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_VISIBILITY) || this.visibility;
 
-        // PADDING DEL VIEW
-        let padding = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_PADDING);
-        if (padding !== null) {
-            let pad = parseInt(padding);
-            this.padding.top = this.padding.left = this.padding.right = this.padding.bottom = pad;
-        }
         // MARGEN DEL COMPONENTE
         if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN)!=null)
             this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN));
@@ -280,6 +274,15 @@ class View {
             this.padding.left = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingLeft"));
         if(this.getAttrFromNodeXml(nodeXml,"paddingRight"))
             this.padding.right = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingRight"));
+        if(this.getAttrFromNodeXml(nodeXml,"paddingTop"))
+            this.padding.top = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingTop"));
+        if(this.getAttrFromNodeXml(nodeXml,"paddingBottom"))
+            this.padding.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingBottom"));
+        let padding = this.getAttrFromNodeXml(nodeXml,"padding");
+        if (padding !== null) {
+            let pad = parseInt(padding);
+            this.padding.top = this.padding.left = this.padding.right = this.padding.bottom = pad;
+        }
 
         // ID DEL VIEW
         this.id = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ID) || this.id;
@@ -325,7 +328,7 @@ class View {
             } 
             else if(Resource.isImageResource(this.background) || Resource.isBase64Resource(this.background))
                 this.backgroundPainter = new ImageBackground(this,this.elemDom,this.background);
-            else if(Resource.isColorResource(this.background))
+            else if(Resource.isColorResource(this.background) || this.background.indexOf("rgba(")!==-1)
                 this.backgroundPainter = new ColorBackground(this,this.elemDom,this.background);
             else
                 throw new Exception(`No se pudo identificar el tipo de fondo [${this.background}]`);

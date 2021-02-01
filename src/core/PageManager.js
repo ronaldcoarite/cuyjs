@@ -13,7 +13,7 @@ class PageManager {
         return params;
     }
 
-    static setUrlBrouser(pageNames,queryParams){
+    static setUrlBrouser(pageNames){
         window.location.href = `#/${pageNames.join('/')}`;
     }
 
@@ -74,8 +74,7 @@ class PageManager {
                     ROOT: {
                         extras: {},
                         navigation: {},
-                        pageName: mainPageName,
-                        query: PageManager.getQueryParams()
+                        pageName: mainPageName
                     }
                 }
 
@@ -84,7 +83,6 @@ class PageManager {
 
                 // Iniciamos la actividad principal
                 let intent = new Intent(null, mainPageName);
-                intent.setQuery(treeNavigation.ROOT.query);
 
                 await PageManager.startPageFromIntent(intent);
                 return;
@@ -102,8 +100,7 @@ class PageManager {
             ROOT: {
                 extras: {},
                 navigation: {},
-                pageName: mainPageName,
-                query: {}
+                pageName: mainPageName
             }
         }
 
@@ -233,6 +230,8 @@ class PageManager {
 
     static getTreeNodeFromUrl(){
         let tree = Store.get('TREE');
+        if(tree === null)
+            return null;
         let navigationList = PageManager.getArrayNavegation();
 
         // console.log("Navigation",navigationList);

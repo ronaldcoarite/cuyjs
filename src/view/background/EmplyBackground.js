@@ -4,6 +4,7 @@ class EmplyBackground extends BaseBackground{
     }
     async load(){
         this.domElement.style.background='none';
+        this.domElement.style.backgroundColor = 'transparent'; 
     }
     async paint(){}
 }

@@ -60,24 +60,43 @@ class Page extends Context{
 
     async startPage(intent) {
         if (intent === undefined || intent === null)
-            throw new Exception("El intent es nulo o no esta definido");
+            throw new Exception("El Intent es nulo o no esta definido");
         // Obtenemos el nodo de la pagina actual
         let resultNode = PageManager.getTreeNodeFromUrl();
-        // Cargando la pagina
-        let newPage = await PageManager.startPageFromIntent(intent);
-        // Agregamos a la URL la nueva pagina
-        resultNode.navigationList.push(intent.pageName);
+        if(resultNode === null){
+            let treeNavigation = {
+                ROOT: {
+                    extras: intent.extras,
+                    navigation: {},
+                    pageName: intent.pageName
+                }
+            }
+    
+            // Guardamos el nodo raiz en el arbol de navegación
+            Store.set('TREE',treeNavigation);
 
-        PageManager.setUrlBrouser(resultNode.navigationList);
-        // Agregamos al arbol la pagina
-        resultNode.currentPageNode.navigation[intent.pageName]= {
-            extras: intent.getExtras(),
-            navigation: {},
-            pageName: intent.pageName
-        };
-
-        // Guardamos el arbol
-        Store.set('TREE',resultNode.tree);
+            window.location.href = `#/${intent.pageName}`;
+    
+            // Iniciamos la actividad principal
+            await PageManager.startPageFromIntent(intent);
+        }
+        else{
+            // Cargando la pagina
+            let newPage = await PageManager.startPageFromIntent(intent);
+            // Agregamos a la URL la nueva pagina
+            resultNode.navigationList.push(intent.pageName);
+    
+            PageManager.setUrlBrouser(resultNode.navigationList);
+            // Agregamos al arbol la pagina
+            resultNode.currentPageNode.navigation[intent.pageName]= {
+                extras: intent.getExtras(),
+                navigation: {},
+                pageName: intent.pageName
+            };
+    
+            // Guardamos el arbol
+            Store.set('TREE',resultNode.tree);
+        }
     }
 
     setTitle(title) {
@@ -87,13 +106,21 @@ class Page extends Context{
     async finish() {
         await PageManager.finishPage(this);
         let resultNode = PageManager.getTreeNodeFromUrl();
+        console.log("REUST NODE",resultNode);
         // Removemos del historial la pagina actual
-        delete resultNode.parentNode.navigation[resultNode.pageName];
-        // Guardamos el arbol
-        Store.set('TREE',resultNode.tree);
-        // Actualizamos la URL del navegador
-        resultNode.navigationList.pop();
-        PageManager.setUrlBrouser(resultNode.navigationList, resultNode.parentNode.query);
+        if(resultNode.parentNode === null){ // Es pagina raiz 
+            Store.set('TREE',null);
+            resultNode.navigationList.pop();
+            PageManager.setUrlBrouser(resultNode.navigationList);
+        }else{
+            delete resultNode.parentNode.navigation[resultNode.pageName];
+            console.log("REUST NODE 2",resultNode);
+            // Guardamos el arbol
+            Store.set('TREE',resultNode.tree);
+            // Actualizamos la URL del navegador
+            resultNode.navigationList.pop();
+            PageManager.setUrlBrouser(resultNode.navigationList);
+        }
     }
 
     startPageForResult(intent, requestCode) {

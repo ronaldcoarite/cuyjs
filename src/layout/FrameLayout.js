@@ -17,7 +17,7 @@ class FrameLayout extends ViewGroup {
     }
 
     //@Override
-    async onMeasure(maxWidth, maxHeight){        
+    async onMeasure(maxWidth, maxHeight){
         let visibles = this.getViewVisibles();
         //  Dibujamos todos los componentes
         let mayHeight = this.padding.top + this.padding.bottom;

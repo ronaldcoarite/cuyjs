@@ -11,6 +11,8 @@ class TextView extends View {
         this.singleLine = Resource.getAttrOfTheme(this.constructor.name, 'singleLine',false);
         this.ellipsize= "none";
         this.imageResource = null;
+        this.iconWidth=null;
+        this.iconHeight=null;
 
         this.shadowColor = Resource.getAttrOfTheme(this.constructor.name, 'shadowColor');
         this.shadowDx = Resource.getAttrOfTheme(this.constructor.name, 'shadowDx',0);
@@ -51,6 +53,9 @@ class TextView extends View {
         this.shadowDx = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowDx")) || this.shadowDx;
         this.shadowDy = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowDy")) || this.shadowDy;
         this.shadowRadius = parseInt(this.getAttrFromNodeXml(nodeXml,"shadowRadius"))||this.shadowRadius;
+        
+        this.iconWidth = parseInt(this.getAttrFromNodeXml(nodeXml,"iconWidth")) || this.iconWidth;
+        this.iconHeight = parseInt(this.getAttrFromNodeXml(nodeXml,"iconHeight")) || this.iconHeight;
 
         this.textSize = this.getAttrFromNodeXml(nodeXml,"textSize")||this.textSize;
         if(this.getAttrFromNodeXml(nodeXml,"iconSize"))
@@ -118,8 +123,8 @@ class TextView extends View {
             this.elemIcon.src = this.imageResource.src;
             let wIcon = parseInt(this.iconSize);
 
-            this.elemIcon.width = wIcon;
-            this.elemIcon.height = wIcon;
+            this.elemIcon.width = this.iconWidth||wIcon;
+            this.elemIcon.height = this.iconHeight||wIcon;
         }
     }
 

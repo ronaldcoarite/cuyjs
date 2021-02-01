@@ -24,7 +24,6 @@ class Component extends Container {
             this.setFirstChild(viewInflate);
             await LayoutInflater.showAllViews(viewInflate);
         }
-        await LayoutInflater.showAllViews(layou);
     }
 
     setData(data){
