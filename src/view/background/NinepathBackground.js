@@ -232,6 +232,8 @@ class NinepathBackground extends BaseBackground{
         // this.padding.right = padBottom.bottom;
 
         // Loop over each  horizontal pixel and get piece
+        if(!this.tempCtx)
+            return;
         var data = this.tempCtx.getImageData(0, 0, this.bgImage.width, 1).data;
 
         // Use the upper-left corner to get staticColor, use the upper-right corner

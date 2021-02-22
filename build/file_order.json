@@ -59,5 +59,6 @@
     "src/ux/Dialog.js",
     "src/ux/PopupWindow.js",
 
-    "src/widget/Toast.js"
+    "src/widget/Toast.js",
+    "src/widget/AlertDialog.js"
 ]

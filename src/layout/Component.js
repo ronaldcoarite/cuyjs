@@ -16,13 +16,15 @@ class Component extends Container {
     async setContentView(layoutUrl){
         if(layoutUrl instanceof View){
             this.setFirstChild(layoutUrl);
-            await LayoutInflater.showAllViews(layoutUrl);
+            if(this.elemDom.style.visibility==='visible')
+                await LayoutInflater.showAllViews(layoutUrl);
         }else{
             this.layoutUrl = layoutUrl;
             let rootXmlNode = await Resource.loadLayoutSync(this.layoutUrl);
             let viewInflate =  await LayoutInflater.inflate(this,rootXmlNode);
             this.setFirstChild(viewInflate);
-            await LayoutInflater.showAllViews(viewInflate);
+            if(this.elemDom.style.visibility==='visible')
+                await LayoutInflater.showAllViews(viewInflate);
         }
     }
 

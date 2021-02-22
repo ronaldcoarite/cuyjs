@@ -156,7 +156,7 @@ class View {
     setOnClickListener(onCLick,contextParam) {
         this.onClick = null;
         this.onClickDefinition = onCLick;
-        this.onClickContext = contextParam;
+        this.onClickContext = contextParam || this;
         if (typeof this.onClickDefinition === 'string') {
             // Buscamos el nombre de metodo en el contexto
             let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));

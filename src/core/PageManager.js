@@ -65,7 +65,6 @@ class PageManager {
                 let pageInstance = await PageManager.startPageFromIntent(intent);
                 return;
             }else{ // Se desea cargar una pagina configurada en el manifest
-                console.log("TTTTTTTT");
                 let mainPageName = navigationList[0];
                 let pageConfig = PageManager.findPageConfig(manifestConfig,mainPageName);
 
@@ -113,7 +112,7 @@ class PageManager {
     }
 
     static findRootPageName(manifestConfig){
-        let pageConfig = manifestConfig.pages.find((pageConfig)=>pageConfig.category=='ROOT');
+        let pageConfig = manifestConfig.pages.find((pageConfig)=>pageConfig.category==='ROOT');
         if(!pageConfig){
             throw new Exception(`No se encontro nin una pagina principal. Categorice la pagina agregando el atributo [category=='ROOT'] en el Manifest`);
         }
@@ -152,7 +151,8 @@ class PageManager {
                                                     -o-user-select: none;
                                                     -ms-user-select: none;
                                                     user-select: none;
-                                                }`;
+                                                }
+                                                `;
         document.body.appendChild(sheet);
         
         // MULTIDIMENSION
