@@ -114,15 +114,4 @@ class LayoutInflater{
         let view = await this.parse(context, xmlRoot);
         return view;
     }
-
-    static async showAllViews(rootView){
-        if(rootView instanceof Container){
-            rootView.elemDom.style.visibility = "visible";
-            for( let view of rootView.viewsChilds){
-                this.showAllViews(view);
-            }
-        }else if(rootView instanceof View){
-            rootView.elemDom.style.visibility = "visible";
-        }
-    }
 }

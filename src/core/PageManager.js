@@ -17,18 +17,6 @@ class PageManager {
         window.location.href = `#/${pageNames.join('/')}`;
     }
 
-    static getTreeNavigation(){
-        let tree = Store.get('TREE',{
-            ROOT: {
-                extras:{},
-                navigation: {},
-                pageName: null
-            }
-        });
-        return tree;
-    }
-
-
     // pageNames
     static getArrayNavegation(){
         let urlBrouser = PageManager.getUrlBrouser();
@@ -52,59 +40,20 @@ class PageManager {
 
         // Guardamos en sesion la configuración del objeto Manifesto
         Store.set('MANIFEST',manifestConfig);
+
         let navigationList = PageManager.getArrayNavegation();
-
-        console.log("NAVIGATION: ",navigationList);
         
-        if(navigationList.length > 0){ // Actualizar pagina establecida
-            if(navigationList.length > 1){ // Existe una navegacion previa con varias paginas
-                let resultNode = PageManager.getTreeNodeFromUrl();
-                // Iniciamos la pagina con los datos guardados en la session
-                let intent = new Intent(null, resultNode.currentPageNode.pageName);
-                intent.setExtras(resultNode.currentPageNode.extras);
-                let pageInstance = await PageManager.startPageFromIntent(intent);
-                return;
-            }else{ // Se desea cargar una pagina configurada en el manifest
-                let mainPageName = navigationList[0];
-                let pageConfig = PageManager.findPageConfig(manifestConfig,mainPageName);
+        if(navigationList.length > 0){
+            let mainPageName = navigationList[0];
+            // Iniciamos la actividad principal
+            let intent = new Intent(null, mainPageName);
 
-                // Agregamos como pagina raiz
-                let treeNavigation = {
-                    ROOT: {
-                        extras: {},
-                        navigation: {},
-                        pageName: mainPageName
-                    }
-                }
-
-                // Guardamos el nodo raiz en el arbol de navegación
-                Store.set('TREE',treeNavigation);
-
-                // Iniciamos la actividad principal
-                let intent = new Intent(null, mainPageName);
-
-                await PageManager.startPageFromIntent(intent);
-                return;
-            }
+            await PageManager.startPageFromIntent(intent);
+            return;
         }
         
         // Validando manifest
         let mainPageName = PageManager.findRootPageName(manifestConfig);
-
-        // Colocando la pagina en la URL
-        window.location.href = `#/${mainPageName}`;
-
-        // Agregamos como pagina raiz
-        let treeNavigation = {
-            ROOT: {
-                extras: {},
-                navigation: {},
-                pageName: mainPageName
-            }
-        }
-
-        // Guardamos el nodo raiz en el arbol de navegación
-        Store.set('TREE',treeNavigation);
 
         // Iniciamos la actividad principal
         let intent = new Intent(null, mainPageName);
@@ -182,25 +131,17 @@ class PageManager {
         catch (o) {
             throw new Exception("No existe la pagina [" + intent.pageName + "]");
         }
-        await PageManager.loadPage(intent.context, page, intent);
+        page.context = intent.context;
+        await PageManager.loadPage(page, intent);
         return page;
     }
 
     // proProgress:{left:?,top:?,width,height,showBackground:true}
-    static async loadPage(previusPage, page, intent) {
-        page.previusPage = previusPage;
+    static async loadPage(page, intent) {
         // LLamamos el on create de la pagina
         await page.onCreate(intent);
         let pageAnimation = new SpinnerAnimation();
         pageAnimation.show();
-
-        if (previusPage !== null) {
-            // VER QUE SE REALIZARA PARA ESTE CASO
-            
-            // if (previusPage.history === false)
-            //     this.removeContext(previusPage);
-            // previusPage.onDestroy();
-        }
         // Verificamos si tiene contenido la pagina
         if(!page.viewRoot && !page.urlView)
             throw new Exception(`La pagina [${page.constructor.name}] no tiene contenido definido. Asigne un contenido con page.setContentView`);
@@ -223,59 +164,9 @@ class PageManager {
 
         // history.pushState({}, null, newUrlIS);
         // Mostrando todos los elementos
-        await LayoutInflater.showAllViews(page.viewRoot);
+        page.viewRoot.showView();
 
-        await page.onStart(intent);
-    }
-
-    static getTreeNodeFromUrl(){
-        let tree = Store.get('TREE');
-        if(tree === null)
-            return null;
-        let navigationList = PageManager.getArrayNavegation();
-
-        // console.log("Navigation",navigationList);
-        // if(this.constructor.name !== navigationList.pageNames[0]){
-        //     alert("La pagina raiz no es la misma que la pagina actual");
-        //     return;
-        // }
-        
-        // Guardando en el historial la navegación de la nueva pagina
-        let currentPageConfig = tree.ROOT;
-        let parentPageNode = null;
-
-        let index = 0;
-        while(index < navigationList.length){
-            if(currentPageConfig.pageName === navigationList[index]){
-                if(index + 1 < navigationList.length ){
-                    // Obtenemos el nombre de la pagina siguiente
-                    let pageNameNext = navigationList[index+1];
-                    // Verificamos si la siguiente pagina existe en arbol de navegacion
-                    if(currentPageConfig.navigation[pageNameNext]){ // Existe la pagina en el arbol?
-                        parentPageNode = currentPageConfig;
-                        currentPageConfig = currentPageConfig.navigation[pageNameNext];
-                        index++;
-                        continue;
-                    }
-                    else{
-                        alert("No se pudo encontrar la pagina: "+pageNameNext);
-                        return;
-                    }
-                }
-                else // Se encontro la ultima raiz del arbol que corresponde a la pagina actual
-                    break;
-            }
-            else{
-                alert("Errorrrrrrrrrrrrrr: "+pageName+" INDEX = "+index);
-                return;
-            }
-        }
-        return {
-            parentNode: parentPageNode,
-            currentPageNode: currentPageConfig,
-            tree,
-            navigationList
-        };
+        await page.onStart();
     }
 
     static async finishPage(context) {

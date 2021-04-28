@@ -168,7 +168,6 @@ class NinepathBackground extends BaseBackground{
         var url = dCanvas.toDataURL("image/png");
         var tempIMG = new Image();
     
-        var _this = this;
         tempIMG.onload = ()=>{
             this.domElement.style.background = `url(${url}) no-repeat`;
         };
@@ -178,7 +177,8 @@ class NinepathBackground extends BaseBackground{
     // @Override
     async load(){
         // Limpiando fondo de boton
-        this.view.elemDom.style.border = "none"
+        if(this.view)
+            this.view.elemDom.style.border = "none"
 
         // Obteniendo datos de la imagen ninepath.9
         this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
@@ -207,7 +207,8 @@ class NinepathBackground extends BaseBackground{
         this.padding.left = padBottom.top;
         this.padding.right = padBottom.bottom;
 
-        this.view.padding= this.padding;
+        if(this.view)
+            this.view.padding= this.padding;
     }
     
     // @Override

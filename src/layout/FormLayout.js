@@ -1,4 +1,4 @@
-class Form extends Container {
+class FormLayout extends Container {
     constructor(context){
         super(context);
     }
@@ -52,7 +52,7 @@ class Form extends Container {
             case LayoutInflater.MATCH_PARENT: maxHeightElement = maxHeigth; break;
             case LayoutInflater.WRAP_CONTENT: maxHeightElement = this.padding.top + this.getFirstChild().getHeight() + this.padding.bottom; break;
             default: maxHeightElement = maxHeigth;
-        }
+        }w
 
         switch (this.width) {
             case LayoutInflater.MATCH_PARENT: maxWidthElement = maxWidth; break;

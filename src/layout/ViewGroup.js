@@ -47,19 +47,4 @@ class ViewGroup extends Container{
         let child = await LayoutInflater.inflate(this.context, nodeXml);
         return child;
     }
-
-    async addView(viewChild) {
-        if (viewChild === null || viewChild === undefined)
-            throw new Exception("El View que desea agregar es nulo o no esta definido");
-        if(!viewChild instanceof View)
-            throw new Exception(`El objeto [${viewChild}] a agregar no es una instancia de View`);
-        this.viewsChilds.push(viewChild);
-        viewChild.parentView = this;
-        await viewChild.loadResources();
-        this.elemDom.appendChild(viewChild.elemDom);
-        if(this.elemDom.style.visibility==='visible'){
-            await this.onReMeasure();
-            await LayoutInflater.showAllViews(viewChild);
-        }
-    }
 }

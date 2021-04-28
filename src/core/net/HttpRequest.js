@@ -6,6 +6,7 @@ class HttpRequest {
     constructor(url) {
         this.url = url;
         this.params = new Array();
+        this.headers = new Array();
         if (window.XMLHttpRequest)
             this.xmlhttp = new XMLHttpRequest();
         else
@@ -19,15 +20,22 @@ class HttpRequest {
     getMethod() {
         return null;
     }
-    // setUrl(url) {
-    //     this.url = url;
-    // }
+
     addParam(name, value) {
         this.params[name] = value;
     }
 
+    addHeader(name, value) {
+        this.headers[name] = value;
+    }
+
+    async execute(){
+        return await this.send();
+    }
+
     async send() {
-        return await new Promise((resolve, reject) => {
+        let filter = await AjaxFilters.verifUrl(this);
+        let httpResponse = await new Promise((resolve, reject) => {
             let url = this.url;
             if (this.params.length > 0) {
                 if(url.indexOf('?')===-1)
@@ -40,19 +48,24 @@ class HttpRequest {
             this.xmlhttp.open(this.getMethod(), url, true);
             this.xmlhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
             this.xmlhttp.setRequestHeader('Content-Type', 'application/json');
+            for(let elem in this.headers)
+                this.xmlhttp.setRequestHeader(elem, this.headers[elem]);
             if(this.data)
                 this.xmlhttp.send(JSON.stringify(this.data));
             else
                 this.xmlhttp.send();
             this.xmlhttp.onreadystatechange = ()=>{
+                let httpResponse = new HttpResponse(this.xmlhttp);
                 if (this.xmlhttp.readyState === XMLHttpRequest.DONE){
                     if(this.xmlhttp.status === 200 || this.xmlhttp.status === 204 ){
-                        let httpResonse = new HttpResponse(this.xmlhttp);
-                        resolve(httpResonse);
+                        resolve(httpResponse);
                     }
-                }   
+                }
             };
         });
+        if(filter)
+            await filter.onPostExecute(httpResponse);
+        return httpResponse;
     }
 
     abort() {

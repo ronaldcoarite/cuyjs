@@ -31,7 +31,7 @@ class LinearLayout extends ViewGroup {
             if (!(num > 0.0 && num <= 1.0))
                 throw new Exception(
                     `El valor del atributo [${LayoutInflater.ATTR_WEIGHT}] es [${weight}] del view [${this.constructor.name}] no esta del rango válido entre [0.0 y 1.0]`);
-            view.layoutWeight = num;
+            view.weight = num;
         }
         return view;
     }
@@ -55,7 +55,7 @@ class LinearLayout extends ViewGroup {
 
         // Establenciendo dimensión de los componentes que no tienen weight
         for(let view of visibles){
-            if (view.layoutWeight !== undefined && view.layoutWeight !== null && view.layoutWeight > 0)
+            if (view.weight !== undefined && view.weight !== null && view.weight > 0)
                 arrayWeigh.push(view);
             else{
                 await view.onMeasure(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
@@ -68,10 +68,10 @@ class LinearLayout extends ViewGroup {
 
         // Estableciendo alto de los componentes que tiene weight
         if(this.height === LayoutInflater.WRAP_CONTENT && arrayWeigh.length >0)
-            throw new Exception(`Se especifico el atributo [layoutWeight] en uno de los hijos del [LinearLayout] con orientación [${this.orientation}] pero el ancho se definio como [${LayoutInflater.WRAP_CONTENT}]. Especifique un tamaño fijo o ajustado al padre con [${LayoutInflater.MATCH_PARENT}]`);
+            throw new Exception(`Se especifico el atributo [weight] en uno de los hijos del [LinearLayout] con orientación [${this.orientation}] pero el ALTO se definio como [${LayoutInflater.WRAP_CONTENT}]. Especifique un tamaño fijo o ajustado al padre con [${LayoutInflater.MATCH_PARENT}]`);
         let altoWeigth = this.getContentHeight(maxHeight) - sumHeigthWrap;
         for(let view of arrayWeigh){
-            await view.onMeasure(this.getContentWidth(maxWidth,view) , altoWeigth*view.layoutWeight - view.margin.top - view.margin.bottom);
+            await view.onMeasure(this.getContentWidth(maxWidth,view) , altoWeigth*view.weight - view.margin.top - view.margin.bottom);
             if((this.padding.left + view.margin.left + view.getWidth() + view.margin.right + this.padding.right)>mayWidth)
                 mayWidth = (this.padding.left + view.margin.left + view.getWidth() + view.margin.right + this.padding.right);
             sumHeight+=(view.margin.top + view.getHeight() + view.margin.bottom);
@@ -133,7 +133,7 @@ class LinearLayout extends ViewGroup {
 
         // Establenciendo dimensión de los componentes que no tienen weight
         for(let view of visibles){
-            if (view.layoutWeight !== undefined && view.layoutWeight !== null && view.layoutWeight > 0){
+            if (view.weight !== undefined && view.weight !== null && view.weight > 0){
                 arrayWeigh.push(view);
             }
             else{
@@ -148,10 +148,10 @@ class LinearLayout extends ViewGroup {
 
         // Estableciendo alto de los componentes que tiene weight
         if(this.width === LayoutInflater.WRAP_CONTENT && arrayWeigh.length >0)
-            throw new Exception(`Se especifico el atributo [layoutWeight] en uno de los hijos del [LinearLayout] con orientación [${this.orientation}] pero el alto se definio como [${LayoutInflater.WRAP_CONTENT}]. Especifique un tamaño fijo o ajustado al padre con [${LayoutInflater.MATCH_PARENT}]`);
+            throw new Exception(`Se especifico el atributo [weight] en uno de los hijos del [LinearLayout] con orientación [${this.orientation}] pero el ALTO se definio como [${LayoutInflater.WRAP_CONTENT}]. Especifique un tamaño fijo o ajustado al padre con [${LayoutInflater.MATCH_PARENT}]`);
         let anchoWeigth = this.getContentWidth(maxWidth) - sumWidthWrap;
         for(let view of arrayWeigh){
-            await view.onMeasure(anchoWeigth*view.layoutWeight - view.margin.left - view.margin.right, this.getContentHeight(maxHeight,view));
+            await view.onMeasure(anchoWeigth*view.weight - view.margin.left - view.margin.right, this.getContentHeight(maxHeight,view));
             if ( (this.padding.top + view.margin.top + view.getHeight() + view.margin.bottom + this.padding.bottom) > mayHeight)
                 mayHeight = (this.padding.top + view.margin.top + view.getHeight() + view.margin.bottom + this.padding.bottom);
             sumWidth+=(view.margin.left + view.getWidth() + view.margin.right);
@@ -175,7 +175,7 @@ class LinearLayout extends ViewGroup {
         }
         
         // Dibujando las vistas
-        let posLeft = this.padding.top;
+        let posLeft = this.padding.left;
         for(let view of visibles){
             // Posición vertical
             view.layoutGravity = view.layoutGravity || LayoutInflater.TOP;

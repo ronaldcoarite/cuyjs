@@ -39,10 +39,16 @@ class EditText extends View{
     getTypeElement(){
         return 'TextArea';
     }
+
+    async setLines(lines){
+        this.lines = lines;
+    }
+    
     getText() {
         return this.elemDom.value;
     }
-    setText(txt) {
+    async setText(txt) {
+        this.text = txt;
         this.elemDom.value = txt;
     }
     setEnabled(sw) {
@@ -86,6 +92,12 @@ class EditText extends View{
         this.elemDom.style.fontSize = this.textSize;
     }
 
+    setSingleLine(sw){
+        this.singleLine = sw;
+        if(sw)
+            this.lines = 1;
+    }
+
     getWidth() {
         return super.getWidth()+6*2;
     }
@@ -93,6 +105,10 @@ class EditText extends View{
     //@Override
     getHeight() {
         return super.getHeight()+6*2;
+    }
+
+    async setEms(ems){
+        this.ems = ems;
     }
 
     setTextChangeListener(textChangeListener){

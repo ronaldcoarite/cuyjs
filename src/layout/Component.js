@@ -17,14 +17,14 @@ class Component extends Container {
         if(layoutUrl instanceof View){
             this.setFirstChild(layoutUrl);
             if(this.elemDom.style.visibility==='visible')
-                await LayoutInflater.showAllViews(layoutUrl);
+                layoutUrl.showView();
         }else{
             this.layoutUrl = layoutUrl;
             let rootXmlNode = await Resource.loadLayoutSync(this.layoutUrl);
             let viewInflate =  await LayoutInflater.inflate(this,rootXmlNode);
             this.setFirstChild(viewInflate);
             if(this.elemDom.style.visibility==='visible')
-                await LayoutInflater.showAllViews(viewInflate);
+                viewInflate.showView();
         }
     }
 

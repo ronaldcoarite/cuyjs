@@ -15,13 +15,20 @@ class Container extends View{
         return vistos;
     }
 
+    async removeAllViews(){
+        for(let view of this.viewsChilds){
+            view.elemDom.remove();
+        }
+        this.viewsChilds = new Array();
+        await this.onReMeasure();
+    }
+
     // @Override
     findViewById(idView) {
         let view = super.findViewById(idView);
         if (view)
             return view;
-        for (let i = 0; i < this.viewsChilds.length; i++) {
-            view = this.viewsChilds[i];
+        for (let view of this.viewsChilds) {
             let tempView = view.findViewById(idView);
             if(tempView)
                 return tempView;
@@ -70,19 +77,24 @@ class Container extends View{
         return null;
     }
 
-    async setFirstChild(viewChild){
-        if(this.viewsChilds.length>0){
-            await this.viewsChilds[0].remove();
-            this.viewsChilds[0] = viewChild;
-        }
-        else
-            this.viewsChilds.push(viewChild);
+    async addView(viewChild) {
+        if (viewChild === null || viewChild === undefined)
+            throw new Exception("El View que desea agregar es nulo o no esta definido");
+        if(!viewChild instanceof View)
+            throw new Exception(`El objeto [${viewChild}] a agregar no es una instancia de View`);
+        this.viewsChilds.push(viewChild);
         viewChild.parentView = this;
+
         await viewChild.loadResources();
         this.elemDom.appendChild(viewChild.elemDom);
         if(this.elemDom.style.visibility==='visible'){
             await this.onReMeasure();
-            await LayoutInflater.showAllViews(viewChild);
+            viewChild.showView();
         }
+    }
+
+    async setFirstChild(viewChild){
+        await this.removeAllViews();
+        await this.addView(viewChild);
     }
 }

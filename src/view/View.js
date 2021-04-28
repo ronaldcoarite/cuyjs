@@ -21,7 +21,6 @@ class View {
         this.onClick = null;
         this.onClickDefinition = null;
         this.tooltip = Resource.getAttrOfTheme(this.constructor.name, 'tooltip');
-        this.layoutGravity = null;
         this.audioClick = Resource.getAttrOfTheme(this.constructor.name, 'audioClick');
         this.audioAdove = Resource.getAttrOfTheme(this.constructor.name, 'audioAdove');
         this.requiredInForm = false;
@@ -137,8 +136,27 @@ class View {
         return this.background;
     }
 
-    setBackground(background) {
+    async setBackground(background) {
         this.background = background;
+        if(this.background){
+            // Se verifica que tipo de fondo
+            if(this.background instanceof BaseBackground)
+                this.backgroundPainter = this.background;
+            else if(Resource.isImageNinePathResource(this.background)){ // Imagen de fondo de nine path
+                // let imageInBase64 = Resource.loa
+                this.backgroundPainter = new NinepathBackground(this,this.elemDom,this.background);
+            } 
+            else if(Resource.isImageResource(this.background) || Resource.isBase64Resource(this.background))
+                this.backgroundPainter = new ImageBackground(this,this.elemDom,this.background);
+            else if(Resource.isColorResource(this.background) || this.background.indexOf("rgba(")!==-1)
+                this.backgroundPainter = new ColorBackground(this,this.elemDom,this.background);
+            else
+                throw new Exception(`No se pudo identificar el tipo de fondo [${this.background}]`);
+        }else{
+            this.backgroundPainter = new EmplyBackground(this,this.elemDom);
+        }
+
+        await this.backgroundPainter.load();
     }
 
     setWidth(width) {
@@ -251,6 +269,21 @@ class View {
         }
     }
 
+    showElemDom(){
+        this.elemDom.style.visibility = "visible";
+    }
+    
+    showView(){
+        if(this instanceof Container){
+            for( let view of this.viewsChilds){
+                view.showView();
+            }
+            this.showElemDom();
+        }else if(this instanceof View){
+            this.showElemDom();
+        }
+    }
+
     async parse(nodeXml) {
         // THEMA PARA LA VISTA
         if (this.getAttrFromNodeXml(nodeXml,"theme"))
@@ -318,24 +351,7 @@ class View {
     }
 
     async loadResources() {
-        if(this.background){
-            // Se verifica que tipo de fondo
-            if(this.background instanceof BaseBackground)
-                this.backgroundPainter = this.background;
-            else if(Resource.isImageNinePathResource(this.background)){ // Imagen de fondo de nine path
-                // let imageInBase64 = Resource.loa
-                this.backgroundPainter = new NinepathBackground(this,this.elemDom,this.background);
-            } 
-            else if(Resource.isImageResource(this.background) || Resource.isBase64Resource(this.background))
-                this.backgroundPainter = new ImageBackground(this,this.elemDom,this.background);
-            else if(Resource.isColorResource(this.background) || this.background.indexOf("rgba(")!==-1)
-                this.backgroundPainter = new ColorBackground(this,this.elemDom,this.background);
-            else
-                throw new Exception(`No se pudo identificar el tipo de fondo [${this.background}]`);
-        }else
-            this.backgroundPainter = new EmplyBackground(this,this.elemDom);
-
-        await this.backgroundPainter.load();
+        await this.setBackground(this.background);
 
         // Tooltip de Vista
         if(this.tooltip)
@@ -363,15 +379,13 @@ class View {
         if(this.audioAdove)
             this.audioAdoveMedia = new Audio(this.audioAdove);
         // Sobre el componente
-        if(this.audioAdoveMedia){
-            this.elemDom.onmouseenter=()=>{
+        
+        this.elemDom.onmouseenter=(event)=>{
+            if(this.audioAdoveMedia)
                 this.audioAdoveMedia.play();
-            };
-            // this.elemDom.onmouseout=()=>{
-                // this.audioAdove.pause();
-                // this.audioAdove.currentTime = 0;
-            // };
-        }
+            event.preventDefault();
+            return false;
+        };
         // cssClassList
         if(this.cssClassList.length > 0){
             this.cssClassList.split(',').forEach(classNameStyle => this.elemDom.classList.add(classNameStyle));
@@ -415,6 +429,8 @@ class View {
     }
 
     async repaint() {
+        //if(this.parentView === null)
+        //    return;
         if(this.backgroundPainter)
             await this.backgroundPainter.paint();
     }
@@ -439,7 +455,7 @@ class View {
         while(viewRootStatic !== null){
             if(viewRootStatic.isSizeStatic())
                 break;
-            if(viewRootStatic.parentView === null)
+            if(viewRootStatic.parentView === null || viewRootStatic.parentView === undefined)
                 break;
             viewRootStatic = viewRootStatic.parentView;
         }

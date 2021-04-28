@@ -8,7 +8,6 @@ class Thread {
         var this_ = this;
         (async () => {
             this_.promise = this_.runnableObject.run();
-            console.log("PROMOO",this_.promise);
         })();
     }
 

@@ -5,8 +5,26 @@ class ImageBackground extends BaseBackground{
     }
 
     async load(){
-        if(Resource.isImageResource(this.urlOrBase64Image))
+        if(Resource.isImageResource(this.urlOrBase64Image)){
             this.domElement.style.background = `url('${this.urlOrBase64Image}')`;
+            var this_ = this;
+            await new Promise(function(resolve, reject){
+                var img = new Image();
+                try {
+                    img.addEventListener('load', function() {
+                        resolve();
+                    }, false);
+                    img.addEventListener('error', function() {
+                        reject(`Error al obtener la imagen [${this.urlOrBase64Image}]`);
+                    }, false);
+                }
+                catch(error) {
+                    resolve(error);
+                }
+                img.src = this_.urlOrBase64Image;
+            });
+            this.domElement.style.backgroundSize = `${this.domElement.clientWidth}px ${this.domElement.clientHeight}px`;
+        }
         else
             this.domElement.style.background = `data:image/png;base64,${urlOrBase64Image}`;
         // auto|length|cover|contain|intial|inherit

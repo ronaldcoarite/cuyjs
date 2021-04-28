@@ -4,7 +4,6 @@ class Page extends Context{
     // urlView: null,
     // history: true,
     // fullScreem: false,
-    // previusPage: null,
     // REQUEST_OK: 121,
     // REQUEST_CANCELED: 123,
     // resultCode: this.REQUEST_CANCELED,
@@ -20,11 +19,18 @@ class Page extends Context{
         if (this.viewRoot !== null)
             if (this.viewRoot.id === idView)
                 return this.viewRoot;
-        if (this.viewRoot instanceof ViewGroup) {
+        if (this.viewRoot instanceof ViewGroup)
             return this.viewRoot.findViewById(idView);
-        }
         else
             throw new Exception(`El contenidor principal para la pagina [${this.constructor.name}] no es heredado de ViewGroup`);
+    }
+
+    getViewRoot(){
+        return this.viewRoot;
+    }
+
+    getContext(){
+        return this.context;
     }
 
     setContentView(objView) {
@@ -61,42 +67,14 @@ class Page extends Context{
     async startPage(intent) {
         if (intent === undefined || intent === null)
             throw new Exception("El Intent es nulo o no esta definido");
-        // Obtenemos el nodo de la pagina actual
-        let resultNode = PageManager.getTreeNodeFromUrl();
-        if(resultNode === null){
-            let treeNavigation = {
-                ROOT: {
-                    extras: intent.extras,
-                    navigation: {},
-                    pageName: intent.pageName
-                }
-            }
-    
-            // Guardamos el nodo raiz en el arbol de navegación
-            Store.set('TREE',treeNavigation);
+        if(!intent.context)
+            throw new Exception("No se el contexto (Page) actual para iniciar la pagina ["+intent.pageName+"]");
+        if(!(intent.context instanceof Page))
+            throw new Exception("El contexto enviado en el [Intent] no es una instancia de una pagina ["+intent.context+"]");
 
-            window.location.href = `#/${intent.pageName}`;
-    
-            // Iniciamos la actividad principal
-            await PageManager.startPageFromIntent(intent);
-        }
-        else{
-            // Cargando la pagina
-            let newPage = await PageManager.startPageFromIntent(intent);
-            // Agregamos a la URL la nueva pagina
-            resultNode.navigationList.push(intent.pageName);
-    
-            PageManager.setUrlBrouser(resultNode.navigationList);
-            // Agregamos al arbol la pagina
-            resultNode.currentPageNode.navigation[intent.pageName]= {
-                extras: intent.getExtras(),
-                navigation: {},
-                pageName: intent.pageName
-            };
-    
-            // Guardamos el arbol
-            Store.set('TREE',resultNode.tree);
-        }
+        // Iniciamos la actividad principal
+        intent.context.viewRoot.elemDom.style.display = "none";
+        await PageManager.startPageFromIntent(intent);
     }
 
     setTitle(title) {
@@ -104,28 +82,22 @@ class Page extends Context{
     }
 
     async finish() {
+        let previusPage = this.context;
+
         await PageManager.finishPage(this);
-        let resultNode = PageManager.getTreeNodeFromUrl();
-        console.log("REUST NODE",resultNode);
-        // Removemos del historial la pagina actual
-        if(resultNode.parentNode === null){ // Es pagina raiz 
-            Store.set('TREE',null);
-            resultNode.navigationList.pop();
-            PageManager.setUrlBrouser(resultNode.navigationList);
+
+        if(previusPage){
+            console.log("Volviendo a cargar la pagina anterior");
+            previusPage.viewRoot.elemDom.style.display = "block";
+            await previusPage.onResume();
         }else{
-            delete resultNode.parentNode.navigation[resultNode.pageName];
-            console.log("REUST NODE 2",resultNode);
-            // Guardamos el arbol
-            Store.set('TREE',resultNode.tree);
-            // Actualizamos la URL del navegador
-            resultNode.navigationList.pop();
-            PageManager.setUrlBrouser(resultNode.navigationList);
+            //console.log("NO hay pagina anterior registrada");
         }
     }
 
-    startPageForResult(intent, requestCode) {
+    async startPageForResult(intent, requestCode) {
         this.requestCode = requestCode;
-        this.startPage(intent);
+        await this.startPage(intent);
     }
 
     async onPageResult(requestCode, resultCode, intent) { }

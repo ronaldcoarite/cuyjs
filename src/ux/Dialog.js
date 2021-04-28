@@ -110,7 +110,7 @@ class Dialog{
                     pageAnimation.hide();
 
                 // Mostrando todos los elementos
-                await LayoutInflater.showAllViews(this_.viewRoot);
+                this_.viewRoot.showView();
 
                 this_.onStart();
                 this.visible = true;
