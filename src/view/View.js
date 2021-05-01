@@ -272,7 +272,22 @@ class View {
     showElemDom(){
         this.elemDom.style.visibility = "visible";
     }
+
+    hideElemDom(){
+        this.elemDom.style.visibility = "hidden";
+    }
     
+    hideView(){
+        if(this instanceof Container){
+            for( let view of this.viewsChilds){
+                view.hideView();
+            }
+            this.hideElemDom();
+        }else if(this instanceof View){
+            this.hideElemDom();
+        }
+    }
+
     showView(){
         if(this instanceof Container){
             for( let view of this.viewsChilds){
@@ -293,16 +308,17 @@ class View {
         this.visibility = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_VISIBILITY) || this.visibility;
 
         // MARGEN DEL COMPONENTE
-        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN)!=null)
-            this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN));
-        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_BOTTOM)!=null)
-            this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_BOTTOM));
-        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_LEFT)!=null)
-            this.margin.left = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_LEFT));
-        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_RIGHT)!=null)
-            this.margin.right = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_RIGHT));
-        if(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_TOP)!=null)
-            this.margin.top = parseInt(this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_MARGIN_TOP));
+        if(this.getAttrFromNodeXml(nodeXml,"margin")!=null)
+            this.margin.top = this.margin.left = this.margin.right = this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,"margin"));
+        if(this.getAttrFromNodeXml(nodeXml,"marginBottom")!=null)
+            this.margin.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,"marginBottom"));
+        if(this.getAttrFromNodeXml(nodeXml,"marginLeft")!=null)
+            this.margin.left = parseInt(this.getAttrFromNodeXml(nodeXml,"marginLeft"));
+        if(this.getAttrFromNodeXml(nodeXml,"marginRight")!=null)
+            this.margin.right = parseInt(this.getAttrFromNodeXml(nodeXml,"marginRight"));
+        if(this.getAttrFromNodeXml(nodeXml,"marginTop")!=null)
+            this.margin.top = parseInt(this.getAttrFromNodeXml(nodeXml,"marginTop"));
+            
         if(this.getAttrFromNodeXml(nodeXml,"paddingLeft"))
             this.padding.left = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingLeft"));
         if(this.getAttrFromNodeXml(nodeXml,"paddingRight"))

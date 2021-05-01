@@ -60,6 +60,7 @@
     "src/layout/RadioGroup.js",
     "src/layout/FlowLayout.js",
     "src/layout/TabLayout.js",
+    "src/layout/MenuLayout.js",
 
     "src/ux/Page.js",
     "src/ux/Dialog.js",

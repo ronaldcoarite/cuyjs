@@ -46,10 +46,13 @@ class FrameLayout extends ViewGroup {
         for(let view of visibles){
             let gravitys = view.layoutGravity.split("|");
             let leftAligned =false;
+            let topAligned =false;
             for (let j = 0; j < gravitys.length; j++) {
                 let layoutGravity = gravitys[j];
-                if (layoutGravity === LayoutInflater.TOP)
+                if (layoutGravity === LayoutInflater.TOP){
                     view.elemDom.style.top = (this.padding.top + view.margin.top) + 'px';
+                    topAligned=true;
+                }
                 if (layoutGravity === LayoutInflater.RIGHT){
                     leftAligned = true;
                     view.elemDom.style.left = (maxWidthElement - view.getWidth() - view.margin.right - this.padding.right) + 'px';
@@ -58,22 +61,29 @@ class FrameLayout extends ViewGroup {
                     leftAligned = true;
                     view.elemDom.style.left = (this.padding.left + view.margin.left) + 'px';
                 }
-                if (layoutGravity === LayoutInflater.BOTTOM)
+                if (layoutGravity === LayoutInflater.BOTTOM){
                     view.elemDom.style.top = (maxHeightElement - view.getHeight() - view.margin.bottom - this.padding.bottom) + 'px';
+                    topAligned=true;
+                }
                 if (layoutGravity === LayoutInflater.CENTER_HORIZONTAL){
                     leftAligned = true;
                     view.elemDom.style.left = (maxWidthElement / 2 - view.getWidth() / 2) + 'px';
                 }
-                if (layoutGravity === LayoutInflater.CENTER_VERTICAL)
+                if (layoutGravity === LayoutInflater.CENTER_VERTICAL){
                     view.elemDom.style.top = (maxHeightElement / 2 - view.getHeight() / 2) + 'px';
+                    topAligned=true;
+                }
                 if (layoutGravity === LayoutInflater.CENTER){
                     leftAligned = true;
+                    topAligned=true;
                     view.elemDom.style.left = (maxWidthElement / 2 - view.getWidth() / 2) + 'px';
                     view.elemDom.style.top = (maxHeightElement / 2 - view.getHeight() / 2) + 'px';
                 }
             }
             if(!leftAligned)
                 view.elemDom.style.left = (this.padding.left + view.margin.left) + 'px';
+            if(!topAligned)
+                view.elemDom.style.top = (this.padding.top + view.margin.top) + 'px';
         }
         this.elemDom.style.height = `${maxHeightElement}px`;
         this.elemDom.style.width = `${maxWidthElement}px`;

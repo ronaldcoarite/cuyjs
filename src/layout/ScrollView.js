@@ -62,10 +62,9 @@ class ScrollView extends View{
         view.showView();
     }
 
-    moveContent(event){
+    moveContent(dist){
         if(!this.moving)
             return;
-        let dist = parseInt(event.clientY) - this.starty;
         let alto = this.bodyScroll.clientHeight;
         if (this.lastTop + dist > 0)
             this.content.elemDom.style.top = '0px';
@@ -101,6 +100,27 @@ class ScrollView extends View{
     }
 
     async addEventScroll(){
+        // MOUSE EN BARRA
+        this.scroll.onmouseenter=(event=>{
+            this.stopMovement();
+            event.preventDefault();
+        });
+        this.scroll.onmousedown=(event=>{
+            this.startMovement(parseInt(event.clientY));
+            event.preventDefault();
+        });
+        this.scroll.onmouseup=(event=>{
+            this.stopMovement();
+            event.preventDefault();
+        });
+        this.scroll.onmousemove=(event=>{
+            if(!this.moving)
+                return;
+            let dist = parseInt(event.clientY) - this.starty;
+            this.moveContent(-dist);
+            event.preventDefault();
+        });
+
         // MOUSE
         this.bodyScroll.onmouseenter=(event=>{
             this.stopMovement();
@@ -114,15 +134,16 @@ class ScrollView extends View{
             this.stopMovement();
             event.preventDefault();
         });
-        this.bodyScroll.onmouseover=(event=>{
+        //this.bodyScroll.onmouseover=(event=>{
             //console.log("Se perdio por salir");
             //this.stopMovement();
             //event.preventDefault();
-        });
+        //});
         this.bodyScroll.onmousemove=(event=>{
             if(!this.moving)
                 return;
-            this.moveContent(event);
+            let dist = parseInt(event.clientY) - this.starty;
+            this.moveContent(dist);
             event.preventDefault();
             //event.stopPropagation();
             //return false;
@@ -150,6 +171,7 @@ class ScrollView extends View{
     }
 
     async onMeasure(maxWidth, maxHeight) {
+        this.stopMovement();
         if(!this.content){
             await super.onMeasure(maxWidth,maxHeight);
             alert("Falta completar con Scroll Vacio");

@@ -45,49 +45,57 @@ class FlowLayout extends ViewGroup {
             case LayoutInflater.WRAP_CONTENT: maxWidthElement = mayWidth; break;
             default: maxWidthElement = parseFloat(this.width);
         }
-        this.elemDom.style.width = `${maxWidthElement}px`;
 
         let posY = this.padding.top;
-        let posX = this.padding.left;
         mayHeight = 0;
-        let count=0;
         let i = 0
         let rowI=0;
         let wContent = maxWidthElement - this.padding.left - this.padding.right;
+        let acumulate = 0;
+        let mayAcumulate = 0;
 
         while(i < visibles.length){
             let view = visibles[i];
             let w = view.margin.left + view.getWidth() + view.margin.right;
             let h = view.margin.top + view.getHeight() + view.margin.bottom;
-            if(posX + w +this.padding.right> wContent){
-                let posXX = ((wContent)-posX)/2;
-                for(let j = rowI;j <i ; j++)
-                    visibles[j].elemDom.style.left  = `${visibles[j].elemDom.offsetLeft +posXX}px`;
+            if(this.padding.left + acumulate + w +this.padding.right> wContent){
+                let posStart = (wContent/2-acumulate/2);
+                // Esto es solo para centrar todos los de la fila
+                for(let j = rowI;j <i ; j++){
+                    let viewRow = visibles[j];
+                    viewRow.elemDom.style.left  = `${this.padding.left+viewRow.margin.left+posStart}px`;
+                    posStart+=(viewRow.margin.left+viewRow.elemDom.clientWidth + viewRow.margin.right);
+                }
                 posY = posY + mayHeight;
-                posX = this.padding.left;
                 mayHeight = 0;
-                view.elemDom.style.top  = `${view.margin.top + posY}px`;
-                view.elemDom.style.left  = `${view.margin.left + posX}px`;
-                if (h > mayHeight)
-                    mayHeight = h;
-                count = 0;
+                if(acumulate>mayAcumulate)
+                    mayAcumulate = acumulate;
+                acumulate = 0;
                 rowI = i;
-            }else{
-                count++;
-                view.elemDom.style.top  = `${view.margin.top + posY}px`;
-                view.elemDom.style.left  = `${view.margin.left + posX}px`;
-                if (h > mayHeight)
-                    mayHeight = h;
             }
-            posX = posX + w;
+            view.elemDom.style.top  = `${view.margin.top + posY}px`;
+            if (h > mayHeight)
+                mayHeight = h;
+            acumulate+=w;
             i++
         }
-        let posXX = ((wContent)-posX)/2;
-        for(let j = rowI;j < visibles.length; j++)
-            visibles[j].elemDom.style.left  = `${visibles[j].elemDom.offsetLeft +posXX}px`;
-        
+
+        let posStart = (wContent/2-acumulate/2);
+        // Esto es solo para centrar todos los de la fila
+        for(let j = rowI;j <i ; j++){
+            let viewRow = visibles[j];
+            viewRow.elemDom.style.left  = `${this.padding.left+viewRow.margin.left+posStart}px`;
+            posStart+=(viewRow.margin.left+viewRow.elemDom.clientWidth + viewRow.margin.right);
+        }
+        if(acumulate > mayAcumulate)
+            mayAcumulate = acumulate;
+
         if(this.height === LayoutInflater.WRAP_CONTENT)
-            this.elemDom.style.height = `${posY+mayHeight+this.padding.bottom}px`;
+            maxHeightElement = posY + mayHeight + this.padding.bottom;
+        if(this.width === LayoutInflater.WRAP_CONTENT)
+            maxWidthElement = (this.padding.left + mayAcumulate + this.padding.right)+'px';
+        this.elemDom.style.width = maxWidthElement+'px';
+        this.elemDom.style.height = maxHeightElement+'px';
         await this.repaint();
     }
 }

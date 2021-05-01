@@ -120,7 +120,6 @@ class LinearLayout extends ViewGroup {
             view.elemDom.style.top = (posTop + view.margin.top) + 'px';
             posTop = posTop + view.margin.top + view.getHeight() + view.margin.bottom;
         }
-
         this.elemDom.style.height = `${maxHeightElement}px`;
         this.elemDom.style.width = `${maxWidthElement}px`;
     }

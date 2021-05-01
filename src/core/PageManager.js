@@ -32,32 +32,44 @@ class PageManager {
     }
 
     static async startApp(manifestConfig){
-        // Cargando tema
-        await Resource.loadTheme(manifestConfig.theme);
+        window.onload=(async ()=>{
+            // Cargando tema
+            await Resource.loadTheme(manifestConfig.theme);
 
-        // Establecemos los valores correspondientes para los componentes HTML, BODY
-        await PageManager.configApp();
+            // Establecemos los valores correspondientes para los componentes HTML, BODY
+            await PageManager.configApp();
 
-        // Guardamos en sesion la configuración del objeto Manifesto
-        Store.set('MANIFEST',manifestConfig);
+            // Guardamos en sesion la configuración del objeto Manifesto
+            Store.set('MANIFEST',manifestConfig);
 
-        let navigationList = PageManager.getArrayNavegation();
-        
-        if(navigationList.length > 0){
-            let mainPageName = navigationList[0];
+            let navigationList = PageManager.getArrayNavegation();
+            
+            if(navigationList.length > 0){
+                let mainPageName = navigationList[0];
+                // Iniciamos la actividad principal
+                let intent = new Intent(null, mainPageName);
+
+                await PageManager.startPageFromIntent(intent);
+                return;
+            }
+            
+            // Validando manifest
+            let mainPageName = PageManager.findRootPageName(manifestConfig);
+
             // Iniciamos la actividad principal
             let intent = new Intent(null, mainPageName);
-
             await PageManager.startPageFromIntent(intent);
-            return;
-        }
-        
-        // Validando manifest
-        let mainPageName = PageManager.findRootPageName(manifestConfig);
-
-        // Iniciamos la actividad principal
-        let intent = new Intent(null, mainPageName);
-        await PageManager.startPageFromIntent(intent);
+        });
+        /*
+        async function loadFonts() {
+            const font = new FontFace('myfont', 'url(myfont.woff)');
+            // wait for font to be loaded
+            await font.load();
+            // add font to document
+            document.fonts.add(font);
+            // enable font with CSS class
+            document.body.classList.add('fonts-loaded');
+        }*/
     }
 
     static findRootPageName(manifestConfig){
@@ -166,6 +178,12 @@ class PageManager {
         // Mostrando todos los elementos
         page.viewRoot.showView();
 
+        // Agregamos el evento redimensionamiento
+        window.addEventListener('resize', async () => {
+            let dim = PageManager.getWindowsDimension();
+            await page.onResizeHandler(dim.width,dim.height);
+        });
+
         await page.onStart();
     }
 
@@ -174,8 +192,13 @@ class PageManager {
         let element = context.viewRoot.elemDom;
         element.parentNode.removeChild(element);
 
-        // Eliminamos del historial
+        // Removemos el listener
+        console.log("Removiendo listener");
+        window.removeEventListener('resize', async () => {
+            console.log("Listener removido");
+        });
 
+        // Eliminamos del historial
         await context.onDestroy();
     }
 

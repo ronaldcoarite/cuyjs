@@ -4,8 +4,6 @@ class ViewGroup extends Container{
     }
 
     getContentWidth(maxWidth,viewChild){
-        if(maxWidth <= 0)
-            return 0;
         switch (this.width) {
             case LayoutInflater.MATCH_PARENT:
                 return maxWidth - this.padding.left - this.padding.right - (viewChild?viewChild.margin.left:0) - (viewChild?viewChild.margin.right:0);
@@ -18,8 +16,6 @@ class ViewGroup extends Container{
     }
 
     getContentHeight(maxHeight,viewChild){
-        if(maxHeight <= 0)
-            return 0;
         switch (this.height) {
             case LayoutInflater.MATCH_PARENT:
                 return maxHeight - this.padding.top - this.padding.bottom - (viewChild?viewChild.margin.top:0) - (viewChild?viewChild.margin.bottom:0);

@@ -25,7 +25,7 @@ class Dialog{
         if (this.viewRoot !== null)
             if (this.viewRoot.id === idView)
                 return this.viewRoot;
-        if (this.viewRoot instanceof ViewGroup) {
+        if (this.viewRoot instanceof ViewGroup || this.viewRoot instanceof ScrollView) {
             return this.viewRoot.findViewById(idView);
         }
         else

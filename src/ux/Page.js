@@ -15,11 +15,18 @@ class Page extends Context{
         super();
     }
 
+    async onResizeHandler(width,height){
+        await this.viewRoot.onMeasure(width,height);
+        await this.onResize();
+    }
+
+    async onResize(){}
+
     findViewById(idView) {
         if (this.viewRoot !== null)
             if (this.viewRoot.id === idView)
                 return this.viewRoot;
-        if (this.viewRoot instanceof ViewGroup)
+        if (this.viewRoot instanceof ViewGroup || this.viewRoot instanceof ScrollView)
             return this.viewRoot.findViewById(idView);
         else
             throw new Exception(`El contenidor principal para la pagina [${this.constructor.name}] no es heredado de ViewGroup`);

@@ -36,7 +36,7 @@ class PopupWindow extends Dialog{
                     this.viewRoot.elemDom.style.top = (rectView.top - this.viewRoot.getHeight()) + 'px';
                     break;
                 case 'bottom':
-                    this.viewRoot.elemDom.style.top = (rectView.top + this.view.getHeight() - this.viewRoot.getHeight()) + 'px';
+                    this.viewRoot.elemDom.style.top = (rectView.top + this.view.getHeight()) + 'px';
                     break;
             }
         }
