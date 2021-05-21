@@ -94,7 +94,51 @@ class Container extends View{
     }
 
     async setFirstChild(viewChild){
-        await this.removeAllViews();
+        for(let view of this.viewsChilds){
+            view.elemDom.remove();
+        }
+        this.viewsChilds = new Array();
         await this.addView(viewChild);
+    }
+
+    getContentWidth(maxWidth,viewChild){
+        switch (this.width) {
+            case LayoutInflater.WRAP_CONTENT:
+            case LayoutInflater.MATCH_PARENT:
+                if(viewChild){
+                    if(viewChild.maxWidth > 0 && maxWidth > viewChild.maxWidth)
+                        maxWidth = viewChild.maxWidth;
+                    return maxWidth - this.padding.left - this.padding.right - viewChild.margin.left - viewChild.margin.right;
+                }
+                return maxWidth - this.padding.left - this.padding.right;
+            default: // Tamanio especifico 
+                let lenght = parseInt(this.width);
+                if(viewChild){
+                    if(viewChild.maxWidth > 0 && lenght > viewChild.maxWidth)
+                        lenght = viewChild.maxWidth;
+                    return lenght - this.padding.left - this.padding.right - viewChild.margin.left - viewChild.margin.right;
+                }
+                return lenght - this.padding.left - this.padding.right;
+        }
+    }
+
+    getContentHeight(maxHeight,viewChild){
+        switch (this.height) {
+            case LayoutInflater.WRAP_CONTENT:
+            case LayoutInflater.MATCH_PARENT:
+                if(viewChild){
+                    if(viewChild.maxHeight>0 && maxHeight>viewChild.maxHeight)
+                        maxHeight = viewChild.maxHeight;
+                    return maxHeight - this.padding.top - this.padding.bottom - viewChild.margin.top - viewChild.margin.bottom;
+                }
+                return maxHeight - this.padding.top - this.padding.bottom;
+            default: // Tamanio especifico 
+                let lenght = parseInt(this.height);
+                if(viewChild){
+                    if(viewChild.maxHeight > 0 && lenght > viewChild.maxHeight)
+                        lenght = viewChild.maxHeight;
+                }
+                return lenght - this.padding.top - this.padding.bottom;
+        }
     }
 }

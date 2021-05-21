@@ -196,9 +196,7 @@
             <xs:extension base="View">
                 <xs:attribute type="bool" name="enabled" use="optional"/>
                 <xs:attribute type="bool" name="singleLine" use="optional"/>
-                <xs:attribute type="xs:integer" name="ems" use="optional"/>
                 <xs:attribute type="xs:integer" name="lines" use="optional"/>
-                <xs:attribute type="xs:integer" name="maxEms" use="optional"/>
                 <xs:attribute type="xs:string" name="hint" use="optional"/>
                 <xs:attribute type="xs:string" name="text" use="optional"/>
                 <xs:attribute type="xs:integer" name="textSize" use="optional"/>
@@ -212,7 +210,6 @@
         <xs:complexContent mixed="false">
             <xs:extension base="View">
                 <xs:attribute type="bool" name="enabled" use="optional"/>
-                <xs:attribute type="xs:integer" name="ems" use="optional"/>
                 <xs:attribute type="xs:string" name="text" use="optional"/>
             </xs:extension>
         </xs:complexContent>

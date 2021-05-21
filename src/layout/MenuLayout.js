@@ -21,7 +21,7 @@ class MenuLayout extends View {
 
     async showOptionDialog(){
         if(this.dialog){
-            this.dialog.cancel();
+            this.dialog.hide();
             this.dialog = null;
             return;
         }
@@ -32,7 +32,7 @@ class MenuLayout extends View {
         }
         this.linContainer.setOrientation('vertical');
         this.linContainer.setOnClickListener((view)=>{
-            this.dialog.cancel();
+            this.dialog.hide();
             this.dialog = null;
         });
         await this.linContainer.setBackground('lib/imgs/bg_popup_bottom.9.png');
@@ -92,7 +92,7 @@ class MenuLayout extends View {
     //@Override
     async onMeasure(maxWidth, maxHeight){
         if(this.dialog){
-            this.dialog.cancel();
+            this.dialog.hide();
             await this.cancelOptionDialog();
         }
 

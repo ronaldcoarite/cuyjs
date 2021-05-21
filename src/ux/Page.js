@@ -13,14 +13,17 @@ class Page extends Context{
 
     constructor(){
         super();
+        this.modals = new Array();
     }
 
-    async onResizeHandler(width,height){
-        await this.viewRoot.onMeasure(width,height);
-        await this.onResize();
+    // @Override
+    async onResize(){
+        let navigator = PageManager.getWindowsDimension();
+        await this.viewRoot.onMeasure(navigator.width,navigator.height);
+        for(let dia of this.modals){
+            await dia.onResize();
+        }
     }
-
-    async onResize(){}
 
     findViewById(idView) {
         if (this.viewRoot !== null)

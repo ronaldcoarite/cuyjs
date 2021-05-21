@@ -1,11 +1,12 @@
 class FlowLayout extends ViewGroup {
     constructor(context) {
         super(context);
-        // this.orientation = LayoutInflater.LIN_ORIENTATION_HORIZONTAL;
+        this.alignment="center";
     }
 
     //Override
     async parse(nodeXml) {
+        this.alignment = this.getAttrFromNodeXml(nodeXml,'alignment')||this.alignment;
         await super.parse(nodeXml);
     }
 
@@ -59,7 +60,12 @@ class FlowLayout extends ViewGroup {
             let w = view.margin.left + view.getWidth() + view.margin.right;
             let h = view.margin.top + view.getHeight() + view.margin.bottom;
             if(this.padding.left + acumulate + w +this.padding.right> wContent){
-                let posStart = (wContent/2-acumulate/2);
+                let posStart;
+                if(this.alignment === 'left')
+                    posStart = 0;
+                else // center
+                    posStart = (wContent/2-acumulate/2);
+                
                 // Esto es solo para centrar todos los de la fila
                 for(let j = rowI;j <i ; j++){
                     let viewRow = visibles[j];
@@ -80,7 +86,12 @@ class FlowLayout extends ViewGroup {
             i++
         }
 
-        let posStart = (wContent/2-acumulate/2);
+        let posStart;
+        if(this.alignment === 'left')
+            posStart = 0;
+        else // center
+            posStart = (wContent/2-acumulate/2);
+
         // Esto es solo para centrar todos los de la fila
         for(let j = rowI;j <i ; j++){
             let viewRow = visibles[j];

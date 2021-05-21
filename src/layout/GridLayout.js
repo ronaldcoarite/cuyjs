@@ -51,18 +51,19 @@ class GridLayout extends ViewGroup {
             for(let j=1; j <=this.colums && index < visibles.length; j++) {
                 let view = visibles[index];
                 await view.onMeasure(maxAnchoView , maxHeigth);
-                view.elemDom.style.top  = `${y}px`;
-                view.elemDom.style.left  = `${x}px`;
+                view.elemDom.style.top  = `${y+view.margin.top}px`;
+                view.elemDom.style.left  = `${x+view.margin.left}px`;
                 x+=maxAnchoView;
-                if(view.getHeight()>mayHeight)
-                    mayHeight = view.getHeight();
+                if(view.margin.top+view.getHeight()+view.margin.bottom>mayHeight)
+                    mayHeight = view.margin.top+view.getHeight()+view.margin.bottom;
                 index++;
             }
+            //console.log("MAY HEIGHT",mayHeight);
             y=y+ mayHeight+this.verticalSpace;
         }
 
         let maxWidthElement, maxHeightElement;
-        y= y + mayHeight + this.padding.bottom;
+        //y= y + mayHeight + this.padding.bottom;
 
         switch (this.height) {
             case LayoutInflater.MATCH_PARENT: maxHeightElement = maxHeight; break;

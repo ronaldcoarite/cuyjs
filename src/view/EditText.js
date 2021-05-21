@@ -1,15 +1,12 @@
 class EditText extends View{
-    // ems: 20,
     // lines: 1,
-    // maxEms: 80,
     // maxLines: 10,
     // hint: null,
     // maxLength: -1,
     // readonly: false,
     constructor (context) {
         super(context);
-        this.margin.left = this.margin.top = this.margin.right = this.bottom = 4;
-        this.ems = Resource.getAttrOfTheme(this.constructor.name, 'ems',20);
+        this.margin.left = this.margin.top = this.margin.right = this.margin.bottom = 4;
         this.lines = Resource.getAttrOfTheme(this.constructor.name, 'lines',3);
         this.hint = null;
         this.maxLength = -1;
@@ -23,7 +20,6 @@ class EditText extends View{
     // @Override
     async parse(nodeXml) {
         await super.parse(nodeXml);
-        this.ems = this.getAttrFromNodeXml(nodeXml,"ems")?parseInt(this.getAttrFromNodeXml(nodeXml,"ems")): this.ems;
         this.lines = this.getAttrFromNodeXml(nodeXml,"lines")?parseInt(this.getAttrFromNodeXml(nodeXml,"lines")): this.lines;
         this.hint = this.getAttrFromNodeXml(nodeXml,"hint") || this.hint;
         this.maxlength = this.getAttrFromNodeXml(nodeXml,"maxlength")?parseInt(this.getAttrFromNodeXml(nodeXml,"maxlength")): this.maxlength;
@@ -35,9 +31,25 @@ class EditText extends View{
         this.textSize = this.getAttrFromNodeXml(nodeXml,"textSize")||this.textSize;
     }
 
+    /*
     // @Override
     getTypeElement(){
         return 'TextArea';
+    }*/
+
+    // @Override
+    createHtmlElement() {
+        this.elemDom = this.createHtmlElemFromType(this.getTypeElement());
+        this.elemDom.style.resize = 'none';
+        this.elemDom.style.paddingTop = '6px';
+        this.elemDom.style.paddingLeft = '6px';
+        this.elemDom.style.paddingBottom = '6px';
+        this.elemDom.style.paddingRight = '6px';
+        this.elemDom.contentEditable = true; // Temporal 
+
+        this.elemDom.style.overflowX = "hidden";
+        this.elemDom.style.overflowY = "hidden";
+        return this.elemDom;
     }
 
     async setLines(lines){
@@ -45,30 +57,29 @@ class EditText extends View{
     }
     
     getText() {
-        return this.elemDom.value;
+        return this.elemDom.textContent;
     }
     async setText(txt) {
         this.text = txt;
-        this.elemDom.value = txt;
+        this.elemDom.textContent = txt;
     }
+
     setEnabled(sw) {
         this.elemDom.disabled = !sw;
     }
+
     setError(msg) {
         this._super(msg);
         this.elemDom.focus();
     }
-
+    
     // @Override
     async loadResources() {
         await super.loadResources();
-        //cols="5" rows="1"
-        this.elemDom.cols = this.ems;
-        this.elemDom.rows = this.lines;
         // this.elemDom.style.height = (this.elemDom.rows * 22) + 'px';
         if(this.lines === 1){
             this.elemDom.style.whiteSpace = "nowrap";
-            this.elemDom.style.overflowX = "hidden";
+            
         }
         this.elemDom.onkeydown = (e)=>{
             if (this.lines===1&& e.keyCode == 13 && !e.shiftKey){
@@ -82,13 +93,8 @@ class EditText extends View{
             this.elemDom.placeholder = this.hint;
         if (this.maxLength > 0)
             this.elemDom.setAttribute("maxlength", this.maxLength);
-        this.elemDom.style.resize = 'none';
         this.elemDom.value = this.text;
         this.elemDom.disabled = !this.enabled;
-        this.elemDom.style.paddingTop = '6px';
-        this.elemDom.style.paddingLeft = '6px';
-        this.elemDom.style.paddingBottom = '6px';
-        this.elemDom.style.paddingRight = '6px';
         this.elemDom.style.fontSize = this.textSize;
     }
 
@@ -99,16 +105,12 @@ class EditText extends View{
     }
 
     getWidth() {
-        return super.getWidth()+6*2;
+        return this.elemDom.clientWidth;
     }
 
     //@Override
     getHeight() {
-        return super.getHeight()+6*2;
-    }
-
-    async setEms(ems){
-        this.ems = ems;
+        return this.elemDom.clientHeight;
     }
 
     setTextChangeListener(textChangeListener){

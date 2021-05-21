@@ -1,18 +1,21 @@
 class ImageView extends View{
     // src: null,
-    // scaleType: LayoutInflater.FIT_XY,
     constructor(context){
         super(context);
         this.src = null;
         this.image = null;
-        this.scaleType = LayoutInflater.FIT_XY;
+        this.scaleType = 'content';
+        //this.scaleType = 'scale';
+        //this.scaleType = 'original';
     }
 
     //@Override
     async createHtmlElement () {
         super.createHtmlElement();
         // Icono
-        this.elemIcon = this.createHtmlElemFromType('img');
+        this.elemIcon = this.createHtmlElemFromType('icon');
+        this.elemIcon.style.backgroundRepeat = 'no-repeat';
+        this.elemIcon.style.backgroundSize = "auto";
         this.elemDom.appendChild(this.elemIcon);
         return this.elemDom;
     }
@@ -20,17 +23,34 @@ class ImageView extends View{
     // @Override
     async parse(nodeXml) {
         await super.parse(nodeXml);
-        this.src = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_SRC);
-        this.scaleType = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_SCALE_TYPE)||LayoutInflater.FIT_CENTER_INSIDE;
+        this.src = this.getAttrFromNodeXml(nodeXml,"src");
+        this.scaleType = this.getAttrFromNodeXml(nodeXml,'scaleType')||this.scaleType;
         this.image = null;
+    }
+
+    setScaleType(scaleType){
+        this.scaleType = scaleType;
     }
 
     // @Override
     async loadResources() {
         await super.loadResources();
+        await this.loadIcon();
+    }
+
+    async loadIcon(){
         if(this.src){
-            this.image = await Resource.loadImage(this.src);
-            this.elemIcon.src = this.image.src;
+            if(Resource.isImageResource(this.src)){
+                this.image = await Resource.loadImage(this.src);
+                this.elemIcon.style.background = `url('${this.image.src}')`;;
+            }else{
+                this.image = new Image();
+                this.image.src = this.src;
+                this.elemDom.style.background = this.image.src;
+            }
+        }else{
+            this.elemIcon.style.background = '';
+            this.image = null;
         }
     }
     
@@ -38,50 +58,70 @@ class ImageView extends View{
     async onMeasure(maxWidth, maxHeight) {
         if(this.image){
             // Estableciendo dimensión de componente
-            this.elemIcon.style.top = this.padding.top + 'px';
-            this.elemIcon.style.left = this.padding.left + 'px';
-
+            let maxIconW, maxIconH;
             switch (this.width) {
                 case LayoutInflater.MATCH_PARENT:
                     this.elemDom.style.width = maxWidth +'px';
-                    this.elemIcon.style.width = (maxWidth-this.padding.left - this.padding.right)+'px';
+                    maxIconW = maxWidth - this.padding.left - this.padding.right;
                     break;
                 case LayoutInflater.WRAP_CONTENT:
-                    this.elemIcon.style.width = (this.image.clientWidth)+'px';
-                    this.elemDom.style.width = (this.padding.left + this.image.clientWidth + this.padding.right)+'px';
+                    this.elemDom.style.width = (this.padding.left + this.image.width + this.padding.right)+'px';
+                    maxIconW = this.image.width;
                     break;
                 default: // tamaño establecido por el usuario
                     let width = parseInt(this.width);
-                    this.elemIcon.style.width = (width - this.padding.left - this.padding.right)+'px';
                     this.elemDom.style.width = width+'px';
+                    maxIconW = width - this.padding.left - this.padding.right;
                     break;
             }
     
             switch (this.height) {
                 case LayoutInflater.MATCH_PARENT:
                     this.elemDom.style.height = maxHeight +'px';
-                    this.elemIcon.style.height = (maxHeight-this.padding.top - this.padding.bottom)+'px';
+                    maxIconH = maxHeight-this.padding.top - this.padding.bottom;
                     break;
                 case LayoutInflater.WRAP_CONTENT:
-                    this.elemIcon.style.height = (this.image.clientHeight)+'px';
+                    maxIconH = this.image.height;
                     this.elemDom.style.height = (this.padding.top + this.image.clientHeight + this.padding.bottom)+'px';
                     break;
                 default: // tamaño establecido por el usuario
                     let height = parseInt(this.height);
-                    this.elemIcon.style.height = (height - this.padding.top - this.padding.bottom)+'px';
+                    maxIconH = height - this.padding.left - this.padding.bottom;
                     this.elemDom.style.height = height+'px';
                     break;
             }
-    
-            // Ajustando Imagen
-            switch (this.scaleType){ //contain
-                case LayoutInflater.FIT_CENTER: this.elemIcon.style.objectFit = 'none'; break;
-                case LayoutInflater.FIT_START: this.elemIcon.style.objectFit = 'cover'; break;
-                case LayoutInflater.FIT_CENTER_CROP: this.elemIcon.style.objectFit = 'scale-down'; break;
-                case LayoutInflater.FIT_CENTER_INSIDE: this.elemIcon.style.objectFit = 'contain'; break;
-                case LayoutInflater.FIT_END: this.elemIcon.style.objectFit = 'scale-down'; break;
-                case LayoutInflater.FIT_XY: this.elemIcon.style.objectFit = 'fill'; break;
+            
+            switch(this.scaleType){
+                case 'content':
+                    this.elemIcon.style.width = maxIconW+'px';
+                    this.elemIcon.style.height = maxIconH+'px';
+                    break;
+                case 'scale':
+                case 'original':
+                    let sourceRatio = this.image.width / this.image.height;
+                    let targetRatio = maxIconW / maxIconH;
+                    if (sourceRatio > targetRatio){
+                        maxIconW = maxIconW;
+                        maxIconH = maxIconW/sourceRatio;
+                    }
+                    else{
+                        maxIconW = maxIconH*sourceRatio;
+                        maxIconH = maxIconH;
+                    }
+                    this.elemIcon.style.width = maxIconW+'px';
+                    this.elemIcon.style.height = maxIconH+'px';
+                    break;
             }
+
+            // Centramos la imagen
+            this.elemIcon.style.top = (this.elemDom.clientHeight/2-this.elemIcon.clientHeight/2)+'px';
+            if(this.offsetTop<this.padding.top)
+                this.elemIcon.style.top = this.padding.top + 'px';
+
+            this.elemIcon.style.left = (this.elemDom.clientWidth/2-this.elemIcon.clientWidth/2) + 'px';
+            if(this.offsetLeft<this.padding.left)
+                this.elemIcon.style.left = this.padding.left+'px';
+            this.elemIcon.style.backgroundSize = `${this.elemIcon.clientWidth}px ${this.elemIcon.clientHeight}px`;
         }else{ // El ImageView no tiene imagen
             switch (this.width) {
                 case LayoutInflater.MATCH_PARENT:
@@ -112,23 +152,13 @@ class ImageView extends View{
 
     async setImageResource(pathImage) {
         this.src = pathImage;
-        if(pathImage){
-            if(Resource.isBase64Resource(pathImage)){
-                this.image = null;
-                this.elemIcon.src = pathImage;
-            }
-            else{
-                this.image = await Resource.loadImage(this.src);
-                this.elemIcon.src = this.image.src;
-            }
-        }
-        else{
-            this.elemIcon.src = '';
-            this.image = null;
-        }
+        await this.loadIcon();
+        await this.onReMeasure();
     }
 
     getDomImageResource(){
-        return this.elemIcon.src;
+        if(this.image)
+            return this.image.src;
+        return null;
     }
 }

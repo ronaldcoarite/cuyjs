@@ -2,7 +2,6 @@ class LayoutInflater{
     // Atributos generales para los layouts
     static ATTR_WIDTH = "width";
     static ATTR_HEIGHT= "height";
-    static ATTR_ID= "id";
     static ATTR_GRAVITY= "layoutGravity";
 
     static ATTR_GRAVITY_LEFT = "left";
@@ -56,18 +55,6 @@ class LayoutInflater{
     static ATTR_DRAWABLE_TOP= "drawableTop";
     static ATTR_DRAWABLE_BOTTOM= "drawableBottom";
     static ATTR_DRAWABLE_RIGHT= "drawableRight";
-
-    // ImageVIew
-    static ATTR_SRC= "src";
-    static ATTR_SCALE_TYPE= "scaleType";
-
-    static FIT_XY= "fitXY";
-    static FIT_START= "fitStart";
-    static FIT_CENTER= "fitCenter";
-    static FIT_CENTER_CROP= "fitCenterCrop";
-    static FIT_CENTER_INSIDE= "fitCenterInside";
-    static FIT_END= "fitEnd";
-    //CENTER = "center"
 
     // LinearLayout
     static LIN_ORIENTATION_HORIZONTAL= "horizontal";

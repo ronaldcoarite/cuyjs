@@ -2,7 +2,9 @@ class Component extends Container {
     constructor(context){
         super(context);
         this.layoutUrl = null;
+        this.rootContext= context;
         this.context = this;
+        this.inflated=false;
     }
 
     // @Override
@@ -13,19 +15,38 @@ class Component extends Container {
             await this.setContentView(layoutUrl);
     }
 
-    async setContentView(layoutUrl){
-        if(layoutUrl instanceof View){
-            this.setFirstChild(layoutUrl);
-            if(this.elemDom.style.visibility==='visible')
-                layoutUrl.showView();
-        }else{
-            this.layoutUrl = layoutUrl;
-            let rootXmlNode = await Resource.loadLayoutSync(this.layoutUrl);
-            let viewInflate =  await LayoutInflater.inflate(this,rootXmlNode);
-            this.setFirstChild(viewInflate);
-            if(this.elemDom.style.visibility==='visible')
-                viewInflate.showView();
+    getRootContext(){
+        return this.rootContext;
+    }
+
+    // @Override
+    async loadResources(){
+        await super.loadResources();
+        if(this.layoutUrl===null || this.layoutUrl === undefined){
+            this.inflated = true;
+            return;
         }
+        if(!this.inflated){
+            if(this.layoutUrl instanceof View){
+                await this.layoutUrl.loadResources();
+                await this.setFirstChild(layoutUrl);
+                if(this.elemDom.style.visibility==='visible')
+                    this.layoutUrl.showView();
+            }else{
+                let rootXmlNode = await Resource.loadLayoutSync(this.layoutUrl);
+                let viewInflate =  await LayoutInflater.inflate(this.getContext(),rootXmlNode);
+                await viewInflate.loadResources();
+                await this.setFirstChild(viewInflate);
+                if(this.elemDom.style.visibility==='visible')
+                    viewInflate.showView();
+            }
+            this.layoutUrl = null;
+            this.inflated = true;
+        }
+    }
+
+    setContentView(layoutUrl){
+        this.layoutUrl = layoutUrl;
     }
 
     setData(data){
@@ -42,6 +63,25 @@ class Component extends Container {
             maxWidth = parseFloat(this.width);
         if(this.height !== LayoutInflater.MATCH_PARENT && this.height !== LayoutInflater.WRAP_CONTENT)
             maxHeigth = parseFloat(this.height);
+
+        if(!this.getFirstChild()){
+            let maxWidthElement, maxHeightElement;
+            switch (this.height) {
+                case LayoutInflater.MATCH_PARENT: maxHeightElement = maxHeigth; break;
+                case LayoutInflater.WRAP_CONTENT: maxHeightElement = this.padding.top + this.padding.bottom; break;
+                default: maxHeightElement = maxHeigth;
+            }
+    
+            switch (this.width) {
+                case LayoutInflater.MATCH_PARENT: maxWidthElement = maxWidth; break;
+                case LayoutInflater.WRAP_CONTENT: maxWidthElement = this.padding.left + this.padding.right; break;
+                default: maxWidthElement = maxWidth;
+            }
+    
+            this.elemDom.style.height = `${maxHeightElement}px`;
+            this.elemDom.style.width = `${maxWidthElement}px`;
+            return;
+        }
 
         await this.getFirstChild().onMeasure(
             maxWidth - this.padding.left - this.padding.right,

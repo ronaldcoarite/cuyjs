@@ -11,8 +11,8 @@ class View {
         this.margin = { top: 0, left: 0, right: 0, bottom: 0 };
         this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
         this.parentView = null;
-        this.maxWidth = Resource.getAttrOfTheme(this.constructor.name, 'maxWidth', 0);
-        this.maxHeigth = Resource.getAttrOfTheme(this.constructor.name, 'maxHeigth', 0);
+        this.maxWidth = Resource.getAttrOfTheme(this.constructor.name, 'maxWidth', -1);
+        this.maxHeigth = Resource.getAttrOfTheme(this.constructor.name, 'maxHeigth', -1);
         this.width = Resource.getAttrOfTheme(this.constructor.name, 'width', LayoutInflater.WRAP_CONTENT);
         this.height = Resource.getAttrOfTheme(this.constructor.name, 'height', LayoutInflater.WRAP_CONTENT);
         this.id = Resource.getAttrOfTheme(this.constructor.name, 'id');
@@ -28,6 +28,14 @@ class View {
 
         this.createHtmlElement();
         this.elemDom.style.visibility = "hidden";
+    }
+
+    getMaxWidth(){
+        return this.maxWidth;
+    }
+
+    getMaxHeight(){
+        return this.maxHeigth;
     }
 
     getAllAttrs(){
@@ -78,7 +86,6 @@ class View {
         htmlElement.style.position = 'absolute';
         return htmlElement;
     }
-
 
     createHtmlElement() {
         this.elemDom = this.createHtmlElemFromType(this.getTypeElement());
@@ -226,7 +233,7 @@ class View {
         popup.setContentView(message);
         popup.show();
         setTimeout(function(){
-            popup.cancel();
+            popup.hide();
         },3000);
         return popup;
     }
@@ -251,17 +258,14 @@ class View {
         let attrValue  = nodeXml.getAttribute(attrName);
         if(attrValue){
             attrValue = attrValue.replace(LayoutInflater.REGEX_VARS,(cmp,paramName)=>{
-                if(paramName.indexOf('context.')!==-1)
-                    return eval(`this.${paramName}`);
-                else
-                    return eval(paramName);
+                return eval(paramName);
             });
         }
         return attrValue;
     }
 
     async setTheme(themeName){
-        let theme = Store.get('theme');
+        let theme = Resource.THEME;
         if(theme[themeName]){
             Object.entries(theme[themeName]).forEach(([key, value]) => {
                 this[key] = value;
@@ -334,7 +338,7 @@ class View {
         }
 
         // ID DEL VIEW
-        this.id = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ID) || this.id;
+        this.id = this.getAttrFromNodeXml(nodeXml,"id") || this.id;
 
         // LAYOUT GRAVITY DEL VIEW
         this.layoutGravity = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_GRAVITY) || this.layoutGravity;
@@ -364,6 +368,12 @@ class View {
             
         this.requiredInForm = this.getAttrFromNodeXml(nodeXml,"requiredInForm") || false;
         this.requiredMessage = this.getAttrFromNodeXml(nodeXml,"requiredMessage");
+
+        // LIMITES MAXIMOS
+        if(this.getAttrFromNodeXml(nodeXml,"maxWidth")!=null)
+            this.maxWidth = parseInt(this.getAttrFromNodeXml(nodeXml,"maxWidth"));
+        if(this.getAttrFromNodeXml(nodeXml,"maxHeight")!=null)
+            this.maxHeigth = parseInt(this.getAttrFromNodeXml(nodeXml,"maxHeight"));
     }
 
     async loadResources() {
@@ -452,18 +462,19 @@ class View {
     }
 
     isSizeStatic(){
+        let r = false;
         switch (this.width) {
-            case LayoutInflater.MATCH_PARENT: break;
-            case LayoutInflater.WRAP_CONTENT: break;
-            default: return true;
+            case LayoutInflater.MATCH_PARENT: r = false;break;
+            case LayoutInflater.WRAP_CONTENT: r = false;break;
+            default: r = true;
         }
-
+        let a = false;
         switch (this.height) {
-            case LayoutInflater.MATCH_PARENT: break;
-            case LayoutInflater.WRAP_CONTENT: break;
-            default: return true;
+            case LayoutInflater.MATCH_PARENT: a= false; break;
+            case LayoutInflater.WRAP_CONTENT: a= false; break;
+            default: a = true;
         }
-        return false;
+        return r && a;
     }
 
     async onReMeasure(){
@@ -475,13 +486,19 @@ class View {
                 break;
             viewRootStatic = viewRootStatic.parentView;
         }
-        await viewRootStatic.onMeasure(viewRootStatic.getWidth(),viewRootStatic.getHeight());
+        if(viewRootStatic.parentView)
+            await viewRootStatic.onMeasure(viewRootStatic.getWidth(),viewRootStatic.getHeight());
+        else
+            await viewRootStatic.context.onResize();   
     }
     
     // this.parentView.elemDom.appendChild(this.elemDom);
     async onMeasure(maxWidth, maxHeigth) {
         if(!this.elemDom) return; // No realizada nada si no fué agregado a la vista
-
+        if(this.maxWidth>0)
+            maxWidth = this.maxWidth;
+        if(this.maxHeigth>0)
+            maxHeigth = this.maxHeigth;
 
         // ************  ANCHO DE PANTALLA  ************
         switch (this.width) {
@@ -490,6 +507,8 @@ class View {
                 break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.width = 'auto';
+                if(this.maxWidth>0 && this.elemDom.clientWidth>maxWidth)
+                    this.elemDom.style.width = maxWidth + 'px';
                 break;
             default:
                 var width = parseInt(this.width);
@@ -504,6 +523,8 @@ class View {
                 break;
             case LayoutInflater.WRAP_CONTENT:
                 this.elemDom.style.height = 'auto';
+                if(this.maxHeigth>0 && this.elemDom.clientHeight>maxHeigth)
+                    this.elemDom.style.height = maxHeigth + 'px';
                 break;
             default:
                 var height = parseInt(this.height);

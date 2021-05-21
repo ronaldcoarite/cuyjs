@@ -1,10 +1,17 @@
 class FileChooser{
     static async showSelectFile(types) {
+        /*
+        private String fileName;
+        private String fileExt;
+        private Integer size;
+        private String dataInBase64;
+        private long lastModified;*/
+
         return await new Promise(function (resolve, reject) {
             var domoInput = document.createElement("input");
-            domoInput.setAttribute("type", "file");
+            domoInput.setAttribute('type', "file");
             domoInput.style.visibility = "hidden";
-            domoInput.accept = types;
+            domoInput.setAttribute('accept',types);
 
             document.body.appendChild(domoInput);
             domoInput.click();

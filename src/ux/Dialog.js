@@ -1,5 +1,8 @@
-class Dialog{
+class Dialog extends Context{
     constructor(context){
+        super();
+        if(!(context instanceof Page))
+            throw new Exception(`El contexto para el Dialogo [${this.constructor.name}] debe ser un [Page] y se envio [${context}]`);
         this.elemBackground = null;
         this.context = context;
         this.bgVisble = true;
@@ -10,6 +13,19 @@ class Dialog{
         this.urlView = null;
 
         this.visible = false;
+    }
+
+    // @Override
+    async onResize(){
+        let windowsDimension = PageManager.getWindowsDimension();
+        let w = windowsDimension.width-(windowsDimension.width*this.viewRoot.margin.left/100)-(windowsDimension.width*this.viewRoot.margin.right/100);
+        let h = windowsDimension.height-(windowsDimension.height*this.viewRoot.margin.top/100)-(windowsDimension.height*this.viewRoot.margin.bottom/100);
+        if(this.viewRoot.maxWidth>0 && w > this.viewRoot.maxWidth)
+            w = this.viewRoot.maxWidth;
+        if(this.viewRoot.maxHeigth>0 && w > this.viewRoot.maxHeigth)
+            h = this.viewRoot.maxHeigth;
+        await this.viewRoot.onMeasure(w,h)
+        this.setPosition(windowsDimension);
     }
 
     setContentView(view) {
@@ -49,6 +65,10 @@ class Dialog{
     }
 
     async show(){
+        if(this.visible)
+            throw new Exception(`El Dialog [${this.constructor.name}] ya se encuentra visible`);
+        this.getContext().viewRoot.elemDom.style.filter = "blur(5px)";
+        this.context.modals.push(this);
         var this_ = this;
         return new Promise((resolve,reject)=>{
             this_.resolvePromise = resolve;
@@ -98,14 +118,8 @@ class Dialog{
                 }
 
                 document.body.appendChild(this_.viewRoot.elemDom);
-                // page.startLoaded(); // Iniciando carga
-        
-                let windowsDimension = PageManager.getWindowsDimension();
-                await this_.viewRoot.loadResources();
-                await this_.viewRoot.onMeasure(windowsDimension.width, windowsDimension.height);
-
-                // Centramos el dialogo
-                this.setPosition(windowsDimension);
+                await this.viewRoot.loadResources();
+                await this.onResize();
                 if(pageAnimation)
                     pageAnimation.hide();
 
@@ -124,6 +138,10 @@ class Dialog{
     }
 
     async cancel(params){
+        this.getContext().viewRoot.elemDom.style.filter = "none";
+        let pos = this.context.modals.findIndex(el => el === this);
+        if (pos >= 0)
+            this.context.modals.splice(pos, 1);
         if(this.viewRoot && this.viewRoot.elemDom)
             this.viewRoot.elemDom.remove();
         if (this.bgVisble === true)

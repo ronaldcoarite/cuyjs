@@ -23,3 +23,4 @@ fs.writeFileSync(`D:\\proyectos\\server\\source\\IotAdmin\\src\\main\\webapp\\li
 fs.writeFileSync(`D:\\proyectos\\server\\source\\DomolinWebSite\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
 fs.writeFileSync(`D:\\proyectos\\server\\source\\IotSecurity\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
 fs.writeFileSync(`D:\\proyectos\\server\\source\\cuj_js_showcase\\ShowCaseCuyJs\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
+fs.writeFileSync(`D:\\proyectos\\server\\source\\IotManager\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);

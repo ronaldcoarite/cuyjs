@@ -100,27 +100,6 @@ class ScrollView extends View{
     }
 
     async addEventScroll(){
-        // MOUSE EN BARRA
-        this.scroll.onmouseenter=(event=>{
-            this.stopMovement();
-            event.preventDefault();
-        });
-        this.scroll.onmousedown=(event=>{
-            this.startMovement(parseInt(event.clientY));
-            event.preventDefault();
-        });
-        this.scroll.onmouseup=(event=>{
-            this.stopMovement();
-            event.preventDefault();
-        });
-        this.scroll.onmousemove=(event=>{
-            if(!this.moving)
-                return;
-            let dist = parseInt(event.clientY) - this.starty;
-            this.moveContent(-dist);
-            event.preventDefault();
-        });
-
         // MOUSE
         this.bodyScroll.onmouseenter=(event=>{
             this.stopMovement();
@@ -128,17 +107,12 @@ class ScrollView extends View{
         });
         this.bodyScroll.onmousedown=(event=>{
             this.startMovement(parseInt(event.clientY));
-            event.preventDefault();
+            return true;
         });
         this.bodyScroll.onmouseup=(event=>{
             this.stopMovement();
             event.preventDefault();
         });
-        //this.bodyScroll.onmouseover=(event=>{
-            //console.log("Se perdio por salir");
-            //this.stopMovement();
-            //event.preventDefault();
-        //});
         this.bodyScroll.onmousemove=(event=>{
             if(!this.moving)
                 return;
@@ -150,22 +124,21 @@ class ScrollView extends View{
         });
 
         // TOUCHS
-        this.bodyScroll.touchstart=(evTouch=>{
-            if(!this.moving)
-                return;
+        this.bodyScroll.ontouchstart=(evTouch=>{
             let event = evTouch.touches[0];
             this.startMovement(parseInt(event.clientY));
         });
-        this.bodyScroll.touchmove=(evTouch=>{
+        this.bodyScroll.ontouchmove=(evTouch=>{
             if(!this.moving)
                 return;
             let event = evTouch.touches[0];
-            this.moveContent(event);
+            let dist = parseInt(event.clientY) - this.starty;
+            this.moveContent(dist);
         });
-        this.bodyScroll.handleEnd=(evTouch=>{
+        this.bodyScroll.ontouchend=(evTouch=>{
             this.stopMovement();
         });
-        this.bodyScroll.touchcancel=(evTouch=>{
+        this.bodyScroll.ontouchcancel=(evTouch=>{
             this.stopMovement();
         });
     }
@@ -218,7 +191,7 @@ class ScrollView extends View{
         // Operaciones despues de pintar el Scroll
         await this.content.onMeasure(this.bodyScroll.clientWidth,this.bodyScroll.clientHeight);
         this.content.elemDom.style.left = 0+'px';
-        this.content.elemDom.style.right = 0+'px';
+        this.content.elemDom.style.top = 0+'px';
         await this.backgroundPainter.paint();
 
         // Verificamos si el contenido es de menor altura que el ScrollView

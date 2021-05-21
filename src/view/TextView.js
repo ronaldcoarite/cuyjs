@@ -4,15 +4,15 @@ class TextView extends View {
         this.text = Resource.getAttrOfTheme(this.constructor.name, 'text');
         this.textColor = Resource.getAttrOfTheme(this.constructor.name, 'textColor');
         this.textCssStyle = Resource.getAttrOfTheme(this.constructor.name, 'textCssStyle');
-        this.textSize = Resource.getAttrOfTheme(this.constructor.name, 'textSize',12);
-        this.iconSize = Resource.getAttrOfTheme(this.constructor.name, 'iconSize',12);
+        this.textSize = Resource.getAttrOfTheme(this.constructor.name, 'textSize','12px');
+        let iconSize = Resource.getAttrOfTheme(this.constructor.name, 'iconSize');
         this.drawableResource= null;
         this.gravityIcon = Resource.getAttrOfTheme(this.constructor.name, 'gravityIcon','left');
         this.singleLine = Resource.getAttrOfTheme(this.constructor.name, 'singleLine',false);
         this.ellipsize= "none";
         this.imageResource = null;
-        this.iconWidth=null;
-        this.iconHeight=null;
+        this.iconWidth=iconSize;
+        this.iconHeight=iconSize;
         this.textGravity = 'left|top';
 
         this.shadowColor = Resource.getAttrOfTheme(this.constructor.name, 'shadowColor');
@@ -59,10 +59,11 @@ class TextView extends View {
         this.iconHeight = parseInt(this.getAttrFromNodeXml(nodeXml,"iconHeight")) || this.iconHeight;
 
         this.textSize = this.getAttrFromNodeXml(nodeXml,"textSize")||this.textSize;
-        if(this.getAttrFromNodeXml(nodeXml,"iconSize"))
-            this.iconSize = this.getAttrFromNodeXml(nodeXml,"iconSize")||this.iconSize;
-        else
-            this.iconSize = this.textSize;
+        if(this.getAttrFromNodeXml(nodeXml,"iconSize")){
+            let iconSize = parseInt(this.getAttrFromNodeXml(nodeXml,"iconSize"));
+            this.iconWidth = iconSize;
+            this.iconHeight = iconSize;
+        }
         this.textGravity = this.getAttrFromNodeXml(nodeXml,"textGravity")||this.textGravity;
     }
 
@@ -138,10 +139,8 @@ class TextView extends View {
         if(this.drawableResource){
             this.imageResource = await Resource.loadImage(this.drawableResource);
             this.elemIcon.src = this.imageResource.src;
-            let wIcon = parseInt(this.iconSize);
-
-            this.elemIcon.width = this.iconWidth||wIcon;
-            this.elemIcon.height = this.iconHeight||wIcon;
+            this.elemIcon.width = this.iconWidth||parseInt(this.textSize);
+            this.elemIcon.height = this.iconHeight||parseInt(this.textSize);
         }
     }
 
