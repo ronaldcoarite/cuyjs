@@ -18,6 +18,7 @@ class View {
         this.id = Resource.getAttrOfTheme(this.constructor.name, 'id');
         this.background = Resource.getAttrOfTheme(this.constructor.name, 'background');
         this.cssClassList = Resource.getAttrOfTheme(this.constructor.name, 'cssClassList',this.constructor.name);
+        this.cssStyle = Resource.getAttrOfTheme(this.constructor.name, 'cssStyle');
         this.onClick = null;
         this.onClickDefinition = null;
         this.tooltip = Resource.getAttrOfTheme(this.constructor.name, 'tooltip');
@@ -28,6 +29,10 @@ class View {
 
         this.createHtmlElement();
         this.elemDom.style.visibility = "hidden";
+    }
+
+    getElemDom(){
+        return this.elemDom;
     }
 
     getMaxWidth(){
@@ -182,32 +187,35 @@ class View {
         this.onClick = null;
         this.onClickDefinition = onCLick;
         this.onClickContext = contextParam || this;
-        if (typeof this.onClickDefinition === 'string') {
-            // Buscamos el nombre de metodo en el contexto
-            let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
-            if(propertyNames.find(property=>property===this.onClickDefinition)){
-                this.onClick = async function(){
-                    Reflect.apply(Reflect.get(this.context,this.onClickDefinition), this.context,[this]);
-                }
-            }else
-                throw new Exception(`No se pudo encontrar la funcion [${this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
-        }
-        else if (typeof this.onClickDefinition === 'function') {
-            let funName = this.onClickDefinition.name;
-            // Verificamos si la funcion se encuentra dentro de la vista
-            let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
-            if(propertyNames.find(property=>property===funName)){
-                this.onClick = async function(){
-                    Reflect.apply(this.onClickDefinition, this,[this]);
-                }
+        let onCC = true;
+        if (typeof onCLick === 'function') {
+            let propNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+            let funcName = onCLick.name;
+
+            if(propNames.includes(funcName)){ // La funcion esta dentro del contexto
+                this.onClickDefinition = funcName;
             }else{
+                //this.onClick = onCLick;
                 this.onClick = async function(){
                     Reflect.apply(this.onClickDefinition, this.onClickContext ||this.context,[this]);
-                }
+                };
+                onCC = false;
             }
         }
-        else 
-            throw new Exception(`El objeto [${onCLick}] no es valido para establecer el Listener de onClick`);
+        if(onCC){
+            if (typeof this.onClickDefinition === 'string') {
+                // Buscamos el nombre de metodo en el contexto
+                let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+                if(propertyNames.find(property=>property===this.onClickDefinition)){
+                    this.onClick = async function(){
+                         Reflect.apply(Reflect.get(this.context,this.onClickDefinition), this.context,[this]);
+                    }
+                }else
+                    throw new Exception(`No se pudo encontrar la funcion [${this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
+            }
+            else 
+                throw new Exception(`El objeto [${onCLick}] no es valido para establecer el Listener de onClick`);
+        }
 
         // OnClick
         if(this.onClick){
@@ -350,6 +358,8 @@ class View {
 
         this.tooltip = this.getAttrFromNodeXml(nodeXml,'tooltip') || this.tooltip;
 
+        this.cssStyle = this.getAttrFromNodeXml(nodeXml,'cssStyle') || this.cssStyle;
+
         // BACKGROUDN DEL VIEW
         this.background = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_BACKGROUND) || this.background;
         this.onClickDefinition = this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ON_CLICK) || this.onClickDefinition;
@@ -415,6 +425,11 @@ class View {
         // cssClassList
         if(this.cssClassList.length > 0){
             this.cssClassList.split(',').forEach(classNameStyle => this.elemDom.classList.add(classNameStyle));
+        }
+
+        // cssStyle
+        if(this.cssStyle && !this.elemDom.style.cssText.includes(this.cssStyle)){
+            this.elemDom.style.cssText = this.elemDom.style.cssText+this.cssStyle;
         }
 
         // Background

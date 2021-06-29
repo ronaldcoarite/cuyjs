@@ -19,8 +19,7 @@ for(let file of arrayClass){
 }
 let fileCompresed = arrayCode.join('\n');
 fs.writeFileSync(`${__dirname.replace('build','dist')}/cuyjs.min.js`, fileCompresed);
-fs.writeFileSync(`D:\\proyectos\\server\\source\\IotAdmin\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
-fs.writeFileSync(`D:\\proyectos\\server\\source\\DomolinWebSite\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
-fs.writeFileSync(`D:\\proyectos\\server\\source\\IotSecurity\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
-fs.writeFileSync(`D:\\proyectos\\server\\source\\cuj_js_showcase\\ShowCaseCuyJs\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
-fs.writeFileSync(`D:\\proyectos\\server\\source\\IotManager\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
+fs.writeFileSync(`D:\\proyects\\iot_server\\DomolinWebSite\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
+fs.writeFileSync(`D:\\proyects\\iot_server\\IotAdmin\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
+fs.writeFileSync(`D:\\proyects\\iot_server\\IotSecurity\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);
+fs.writeFileSync(`D:\\proyects\\iot_server\\IotManager\\src\\main\\webapp\\lib\\cuyjs.min.js`, fileCompresed);

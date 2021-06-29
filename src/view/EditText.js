@@ -31,12 +31,6 @@ class EditText extends View{
         this.textSize = this.getAttrFromNodeXml(nodeXml,"textSize")||this.textSize;
     }
 
-    /*
-    // @Override
-    getTypeElement(){
-        return 'TextArea';
-    }*/
-
     // @Override
     createHtmlElement() {
         this.elemDom = this.createHtmlElemFromType(this.getTypeElement());
@@ -45,7 +39,7 @@ class EditText extends View{
         this.elemDom.style.paddingLeft = '6px';
         this.elemDom.style.paddingBottom = '6px';
         this.elemDom.style.paddingRight = '6px';
-        this.elemDom.contentEditable = true; // Temporal 
+        this.elemDom.contentEditable = 'true';
 
         this.elemDom.style.overflowX = "hidden";
         this.elemDom.style.overflowY = "hidden";
@@ -59,18 +53,15 @@ class EditText extends View{
     getText() {
         return this.elemDom.textContent;
     }
+
     async setText(txt) {
         this.text = txt;
         this.elemDom.textContent = txt;
     }
 
     setEnabled(sw) {
-        this.elemDom.disabled = !sw;
-    }
-
-    setError(msg) {
-        this._super(msg);
-        this.elemDom.focus();
+        this.elemDom.contentEditable = sw+'';
+        this.enabled = sw;
     }
     
     // @Override
@@ -93,9 +84,9 @@ class EditText extends View{
             this.elemDom.placeholder = this.hint;
         if (this.maxLength > 0)
             this.elemDom.setAttribute("maxlength", this.maxLength);
-        this.elemDom.value = this.text;
-        this.elemDom.disabled = !this.enabled;
+        this.elemDom.textContent = this.text;
         this.elemDom.style.fontSize = this.textSize;
+        this.elemDom.contentEditable = this.enabled+"";
     }
 
     setSingleLine(sw){

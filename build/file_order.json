@@ -45,6 +45,7 @@
     "src/view/OptionItem.js",
     "src/view/Spinner.js",
     "src/view/WaitingView.js",
+    "src/view/WebView.js",
 
     "src/view/event/TextChangeListener.js",
 

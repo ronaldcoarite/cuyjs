@@ -158,12 +158,7 @@ class Resource{
             image.onload = function(){
                 resolve(image);
             }
-            if(Resource.isBase64Resource(urlOrTextBase64)){
-                image.src = urlOrTextBase64;
-            }
-            else{
-                image.src =urlOrTextBase64;
-            }
+            image.src =urlOrTextBase64;
         });
         return imageProm;
     }
@@ -177,7 +172,8 @@ class Resource{
     }
 
     static isImageResource(urlOrTextBase64){
-        return /.(png|gif|jpg)/i.test(urlOrTextBase64);
+        return /\.(jpe?g|png|gif|bmp|svg)$/i.test(urlOrTextBase64);
+        //return /.(png|gif|jpg|svg)/i.test(urlOrTextBase64);
     }
 
     static isColorResource(hexColorText){

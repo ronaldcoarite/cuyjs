@@ -32,6 +32,7 @@ class PageManager {
     }
 
     static async startApp(manifestConfig){
+        Resource.MANIFEST = manifestConfig;
         window.onload=(async ()=>{
             // Cargando tema
             await Resource.loadTheme(manifestConfig.theme);
@@ -52,7 +53,6 @@ class PageManager {
             
             // Validando manifest
             let mainPageName = PageManager.findRootPageName(manifestConfig);
-            Resource.MANIFEST = manifestConfig;
 
             // Iniciamos la actividad principal
             let intent = new Intent(null, mainPageName);

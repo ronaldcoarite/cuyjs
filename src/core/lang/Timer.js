@@ -12,6 +12,10 @@ class Timer {
         this.start();
     }
 
+    isRunning(){
+        return this.intervalId!=null;
+    }
+
     start(){
         if(this.intervalId)
             throw new Error(`El Timer ya se encuentra en ejecución.`);

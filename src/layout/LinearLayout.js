@@ -1,18 +1,17 @@
 class LinearLayout extends ViewGroup {
     constructor(context) {
         super(context);
-        // this.orientation = LayoutInflater.LIN_ORIENTATION_HORIZONTAL;
     }
 
     //Override
     async parse(nodeXml) {
-        if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ORIENTATION) === LayoutInflater.LIN_ORIENTATION_VERTICAL)
-            this.orientation = LayoutInflater.LIN_ORIENTATION_VERTICAL;
-        else if (this.getAttrFromNodeXml(nodeXml,LayoutInflater.ATTR_ORIENTATION) === LayoutInflater.LIN_ORIENTATION_HORIZONTAL)
-            this.orientation = LayoutInflater.LIN_ORIENTATION_HORIZONTAL;
+        if (this.getAttrFromNodeXml(nodeXml,'orientation') === 'vertical')
+            this.orientation = 'vertical';
+        else if (this.getAttrFromNodeXml(nodeXml,'orientation') === 'horizontal')
+            this.orientation = 'horizontal';
         else
             throw new Exception(
-                `La orientación para LinearLayout debe ser unicamente [horizontal o vertical]. Establesca el atributo [${LayoutInflater.ATTR_ORIENTATION}] para definir la orientación de la vista`);
+                `La orientación para LinearLayout debe ser unicamente [horizontal o vertical]. Establesca el atributo [orientation] para definir la orientación de la vista`);
         await super.parse(nodeXml);
     }
 
@@ -39,7 +38,7 @@ class LinearLayout extends ViewGroup {
     //@Override
     async onMeasure(maxWidth, maxHeight){
         let visibles = this.getViewVisibles();
-        if (this.orientation === LayoutInflater.LIN_ORIENTATION_VERTICAL)
+        if (this.orientation === 'vertical')
             await this.onMeasureVertical(visibles,maxWidth,maxHeight);
         else
             await this.onMeasureHorizontal(visibles,maxWidth,maxHeight);

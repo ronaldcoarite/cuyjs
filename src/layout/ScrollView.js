@@ -154,6 +154,8 @@ class ScrollView extends View{
         this.bodyScroll.style.left=this.padding.left+'px';
         this.bodyScroll.style.top=this.padding.top+'px';
 
+        let lastHeightContent = this.content.elemDom.clientHeight;
+        
         let witchBarScroll = this.bgBarScroll.padding.left + this.bgScroll.padding.left+this.bgScroll.padding.right+this.bgBarScroll.padding.right;
 
         switch (this.width) {
@@ -191,7 +193,6 @@ class ScrollView extends View{
         // Operaciones despues de pintar el Scroll
         await this.content.onMeasure(this.bodyScroll.clientWidth,this.bodyScroll.clientHeight);
         this.content.elemDom.style.left = 0+'px';
-        this.content.elemDom.style.top = 0+'px';
         await this.backgroundPainter.paint();
 
         // Verificamos si el contenido es de menor altura que el ScrollView
@@ -219,7 +220,33 @@ class ScrollView extends View{
 
         this.scroll.style.height = (thumbHeight-this.bgScroll.padding.top-this.bgScroll.padding.bottom)+'px';
         this.scroll.style.left = (this.elemDom.clientWidth-this.barScroll.clientWidth/2-this.padding.right-this.scroll.clientWidth/2)+'px';
-        this.scroll.style.top = (this.padding.top+this.bgBarScroll.padding.top)+'px';
+
+        // Verificamos si es necesari mover el Scroll
+        if(this.scroll.style.visibility === 'visible'){
+            if(lastHeightContent !== this.content.elemDom.clientHeight){
+                let posLastY = this.barScroll.clientHeight/2;
+
+                if(this.content.elemDom.offsetTop === 0){
+                    this.content.elemDom.style.top = 0+'px';
+                    this.scroll.style.top = (this.padding.top+this.bgBarScroll.padding.top)+'px';
+                }else{
+                    if(this.content.elemDom.clientHeight > lastHeightContent){
+
+                    }
+                    else{
+                        let lastScrollY = this.scroll.offsetTop;
+                        let lastContentY = this.content.elemDom.offsetTop;
+                    }
+                }
+            }
+            // (lastHeightContent === this.content.elemDom.clientHeight){
+                // No realizar nada si la altura no cambio
+        }
+        else{
+            this.content.elemDom.style.top = 0+'px';
+            this.scroll.style.top = (this.padding.top+this.bgBarScroll.padding.top)+'px';
+        }
+        
         await this.bgScroll.paint();
     }
 };

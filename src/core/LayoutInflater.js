@@ -26,7 +26,6 @@ class LayoutInflater{
 
     static ATTR_ON_CLICK= "onClick";
     static ATTR_BACKGROUND= "background";
-    static ATTR_ORIENTATION= "orientation";
     // Utilizado solo en LinearLayout
     static ATTR_WEIGHT= "weight";
 
@@ -55,10 +54,6 @@ class LayoutInflater{
     static ATTR_DRAWABLE_TOP= "drawableTop";
     static ATTR_DRAWABLE_BOTTOM= "drawableBottom";
     static ATTR_DRAWABLE_RIGHT= "drawableRight";
-
-    // LinearLayout
-    static LIN_ORIENTATION_HORIZONTAL= "horizontal";
-    static LIN_ORIENTATION_VERTICAL= "vertical";
 
     // vista
     static ATTR_VISIBILITY= "visibility";

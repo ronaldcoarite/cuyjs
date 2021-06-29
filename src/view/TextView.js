@@ -10,7 +10,7 @@ class TextView extends View {
         this.gravityIcon = Resource.getAttrOfTheme(this.constructor.name, 'gravityIcon','left');
         this.singleLine = Resource.getAttrOfTheme(this.constructor.name, 'singleLine',false);
         this.ellipsize= "none";
-        this.imageResource = null;
+        this.image = null;
         this.iconWidth=iconSize;
         this.iconHeight=iconSize;
         this.textGravity = 'left|top';
@@ -106,17 +106,77 @@ class TextView extends View {
 
         this.elemText = this.createHtmlElemFromType('span');
         this.elemText.style.wordWrap = 'break-word'; // Ajustar texto a contenido
-        this.elemIcon = this.createHtmlElemFromType('img');
+        //this.elemIcon = this.createHtmlElemFromType('img');
 
         this.container.appendChild(this.elemText);
-        this.container.appendChild(this.elemIcon);
+        //this.container.appendChild(this.elemIcon);
         this.elemDom.appendChild(this.container);
         return this.elemDom;
+    }
+
+    createDivIcon(tagName){
+        // Icono
+        this.elemIcon = this.createHtmlElemFromType(tagName||'icon');
+        this.elemIcon.style.backgroundRepeat = 'no-repeat';
+        this.elemIcon.style.backgroundOrigin="content-box";
+        this.elemIcon.style.backgroundSize = "contain";
+        this.container.appendChild(this.elemIcon);
+        this.isSvg = false;
+    }
+
+    getIconWidth(){
+        if(this.image && this.elemIcon)
+            return (this.isSvg?this.elemIcon.getBBox().width:this.image.width);
+        return 0;
+    }
+
+
+    getIconHeight(){
+        if(this.image && this.elemIcon)
+            return (this.isSvg?this.elemIcon.getBBox().height:this.image.height);
+        return 0;
+    }
+
+    async loadIcon(){
+        if(this.elemIcon){
+            this.elemIcon.remove();
+            this.image = null;
+        }
+        if(this.drawableResource){
+            if(Resource.isImageResource(this.drawableResource)){
+                if(this.drawableResource.lastIndexOf(".svg")===-1){
+                    this.createDivIcon();
+                    this.image = await Resource.loadImage(this.drawableResource);
+                    this.elemIcon.style.background = `url('${this.image.src}')`;
+                }else{
+                    this.isSvg = true;
+                    let svgResource = await Resource.loadLayoutSync(this.drawableResource);
+                    this.elemIcon = this.elemDom.appendChild(svgResource);
+                }
+            }else if(Resource.isBase64Resource(this.drawableResource)){
+                if(this.drawableResource.includes('data:image/svg;')){
+                    this.isSvg = true;
+                    let svgStr = window.atob(this.drawableResource.replace('data:image/svg;base64,',''));
+                    this.elemDom.innerHTML=svgStr;
+                    this.elemIcon = this.elemDom.firstElementChild;
+                }else{
+                    this.createDivIcon();
+                    this.image = await Resource.loadImage(this.drawableResource);
+                    this.elemIcon.style.background = `url('${this.image.src}')`;
+                }
+            }else
+                throw new Exception(`El recurso [${this.drawableResource}] no es valido como imagen.`);
+        }else{
+            this.createDivIcon();
+            this.elemIcon.style.background = '';
+            this.image = null;
+        }
     }
 
     // @Override
     async loadResources() {
         await super.loadResources();
+        await this.loadIcon();
 
         // Estableciendo valores de los atributos
         this.elemText.innerHTML = this.text;
@@ -135,17 +195,17 @@ class TextView extends View {
             this.elemText.style.textShadow=`${this.shadowDx}px ${this.shadowDy}px ${this.shadowRadius}px ${this.shadowColor}`;
         
         // Cargando la imagen o icono te texto
-        this.imageResource = null;
-        if(this.drawableResource){
-            this.imageResource = await Resource.loadImage(this.drawableResource);
-            this.elemIcon.src = this.imageResource.src;
-            this.elemIcon.width = this.iconWidth||parseInt(this.textSize);
-            this.elemIcon.height = this.iconHeight||parseInt(this.textSize);
-        }
+        // this.imageResource = null;
+        // if(this.drawableResource){
+        //     this.imageResource = await Resource.loadImage(this.drawableResource);
+        //     this.elemIcon.src = this.imageResource.src;
+        //     this.elemIcon.width = this.iconWidth||parseInt(this.textSize);
+        //     this.elemIcon.height = this.iconHeight||parseInt(this.textSize);
+        // }
     }
 
     async onMeasure(maxWidth, maxHeight) {
-        const marginDrawable = this.elemIcon.clientWidth===0?0:8; // 4px
+        const marginDrawable = this.getIconWidth()===0?0:8; // 4px
         // Redimensionando el tamaño del icono al mismo tamaño del texto
         if(this.gravityIcon === 'left'||this.gravityIcon === 'right'){
             switch (this.width) {
@@ -153,7 +213,7 @@ class TextView extends View {
                     this.elemText.style.width = (
                         maxWidth -
                         this.padding.left -
-                        this.elemIcon.clientWidth - 
+                        this.getIconWidth() - 
                         marginDrawable -
                         this.padding.right) + 'px';
                     break;
@@ -164,7 +224,7 @@ class TextView extends View {
                     this.elemText.style.width = (
                         width -
                         this.padding.left -
-                        this.elemIcon.clientWidth -
+                        this.getIconWidth() -
                         marginDrawable -
                         this.padding.right) + 'px';
                     break;
@@ -192,7 +252,7 @@ class TextView extends View {
                 case LayoutInflater.MATCH_PARENT:
                     this.elemText.style.width = (
                         maxWidth -
-                        this.elemIcon.clientWidth - 
+                        this.getIconWidth() - 
                         marginDrawable -
                         this.padding.left - this.margin.right) + 'px';
                     break;
@@ -203,7 +263,7 @@ class TextView extends View {
                     this.elemText.style.width = (
                         width -
                         this.padding.left -
-                        this.elemIcon.clientWidth -
+                        this.getIconWidth() -
                         marginDrawable -
                         this.padding.right) + 'px';
                     break;
@@ -213,7 +273,7 @@ class TextView extends View {
                     this.elemText.style.height = (
                         maxHeight -
                         this.padding.top -
-                        this.elemIcon.clientHeight - 
+                        this.getIconHeight() - 
                         marginDrawable -
                          this.padding.bottom) + 'px';
                     break;
@@ -224,7 +284,7 @@ class TextView extends View {
                     this.elemText.style.height = (
                         height -
                         this.padding.top -
-                        this.elemIcon.clientHeight -
+                        this.getIconHeight() -
                         marginDrawable -
                         this.padding.bottom) + 'px';
                     break;
@@ -234,48 +294,48 @@ class TextView extends View {
         switch(this.gravityIcon){
             case "left":
                 this.elemIcon.style.left = '0px';
-                this.elemText.style.left = (this.elemIcon.clientWidth + marginDrawable) + 'px';
-                this.elemText.style.top = (Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight)/2-this.elemText.clientHeight/2) + 'px';
-                this.elemIcon.style.top = (Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight)/2-this.elemIcon.clientHeight/2) + 'px';
+                this.elemText.style.left = (this.getIconWidth() + marginDrawable) + 'px';
+                this.elemText.style.top = (Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.elemText.clientHeight/2) + 'px';
+                this.elemIcon.style.top = (Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.getIconHeight()/2) + 'px';
 
-                this.container.style.width = (this.elemIcon.clientWidth + marginDrawable + this.elemText.clientWidth) + 'px';
-                this.container.style.height = Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight) + 'px';
+                this.container.style.width = (this.getIconWidth() + marginDrawable + this.elemText.clientWidth) + 'px';
+                this.container.style.height = Math.max(this.getIconHeight(),this.elemText.clientHeight) + 'px';
                 break;
             case "right":
                 this.elemText.style.left = '0px';
                 this.elemIcon.style.left = (this.elemText.clientWidth+marginDrawable) + 'px';
-                this.elemText.style.top = (Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight)/2-this.elemText.clientHeight/2) + 'px';
-                this.elemIcon.style.top = (Math.max(this.elemIcon.clientHeight,this.elemText.clientHeight)/2-this.elemIcon.clientHeight/2) + 'px';
+                this.elemText.style.top = (Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.elemText.clientHeight/2) + 'px';
+                this.elemIcon.style.top = (Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.getIconHeight()/2) + 'px';
 
                 // establecemos las dimensiones
-                this.container.style.width = (this.elemIcon.clientWidth+marginDrawable + this.elemText.clientWidth) + 'px';
-                this.container.style.height = Math.max(this.elemText.clientHeight, this.elemIcon.clientHeight) + 'px';
+                this.container.style.width = (this.getIconWidth()+marginDrawable + this.elemText.clientWidth) + 'px';
+                this.container.style.height = Math.max(this.elemText.clientHeight, this.getIconHeight()) + 'px';
                 break;
             case "bottom":
-                let maximoAncho = Math.max(this.elemText.clientWidth,this.elemIcon.clientWidth);
+                let maximoAncho = Math.max(this.elemText.clientWidth,this.getIconWidth());
 
                 this.elemText.style.left = (maximoAncho/2 -this.elemText.clientWidth/2) + 'px';
                 this.elemText.style.top = '0px';
 
-                this.elemIcon.style.left = (maximoAncho/2 -this.elemIcon.clientWidth/2) + 'px';
+                this.elemIcon.style.left = (maximoAncho/2 -this.getIconWidth()/2) + 'px';
                 this.elemIcon.style.top = (this.elemText.clientHeight+marginDrawable) + 'px';
 
                 // establecemos las dimensiones
                 this.container.style.width = maximoAncho + 'px';
-                this.container.style.height = (this.elemText.clientHeight + marginDrawable + this.elemIcon.clientHeight) + 'px';
+                this.container.style.height = (this.elemText.clientHeight + marginDrawable + this.getIconHeight()) + 'px';
                 break;
             case "top":
-                let maximoAnchoTop = Math.max(this.elemText.clientWidth,this.elemIcon.clientWidth);
+                let maximoAnchoTop = Math.max(this.elemText.clientWidth,this.getIconWidth());
                 
-                this.elemIcon.style.left = (maximoAnchoTop/2 -this.elemIcon.clientWidth/2) + 'px';
+                this.elemIcon.style.left = (maximoAnchoTop/2 -this.getIconWidth()/2) + 'px';
                 this.elemIcon.style.top = '0px';
 
                 this.elemText.style.left = (maximoAnchoTop/2 -this.elemText.clientWidth/2) + 'px';
-                this.elemText.style.top = (marginDrawable +this.elemIcon.clientHeight) + 'px';
+                this.elemText.style.top = (marginDrawable +this.getIconHeight()) + 'px';
 
                 // establecemos las dimensiones
                 this.container.style.width = maximoAnchoTop + 'px';
-                this.container.style.height = (this.elemText.clientHeight + marginDrawable + this.elemIcon.clientHeight) + 'px';
+                this.container.style.height = (this.elemText.clientHeight + marginDrawable + this.getIconHeight()) + 'px';
                 break;
             default:
                 throw new Exception(`Tipo de alineación [${this.gravityIcon}] no soportada`);
@@ -317,9 +377,6 @@ class TextView extends View {
             }
             if (alin === LayoutInflater.CENTER_HORIZONTAL){
                 leftAligned = true;
-                console.log("Center: "+this.getWidth());
-                console.log("Container: "+this.container.clientWidth);
-                console.log("Text: "+this.elemText.clientWidth);
                 this.container.style.left = (this.getWidth()/2 - this.container.clientWidth/2) + 'px';
             }
             if (alin === LayoutInflater.CENTER_VERTICAL){
@@ -345,8 +402,7 @@ class TextView extends View {
         this.gravityIcon = position;
         this.drawableResource = drawable;
         if(this.elemDom){
-            let image = await Resource.loadImage(drawable);
-            this.elemIcon.src = image.src;
+            await this.loadIcon();
         }
     }
 

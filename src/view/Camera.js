@@ -1,4 +1,3 @@
-
 class Camera extends View{
     constructor(context){
         super(context);
