@@ -106,10 +106,8 @@ class TextView extends View {
 
         this.elemText = this.createHtmlElemFromType('span');
         this.elemText.style.wordWrap = 'break-word'; // Ajustar texto a contenido
-        //this.elemIcon = this.createHtmlElemFromType('img');
 
         this.container.appendChild(this.elemText);
-        //this.container.appendChild(this.elemIcon);
         this.elemDom.appendChild(this.container);
         return this.elemDom;
     }
@@ -125,15 +123,18 @@ class TextView extends View {
     }
 
     getIconWidth(){
-        if(this.image && this.elemIcon)
-            return (this.isSvg?this.elemIcon.getBBox().width:this.image.width);
+        if(this.drawableResource)
+            return (this.isSvg?this.elemIcon.getBoundingClientRect().width:this.image.width);
         return 0;
     }
 
+    getElemIcon(){
+        return this.elemIcon;
+    }
 
     getIconHeight(){
-        if(this.image && this.elemIcon)
-            return (this.isSvg?this.elemIcon.getBBox().height:this.image.height);
+        if(this.drawableResource)
+            return (this.isSvg?this.elemIcon.getBoundingClientRect().height:this.image.height);
         return 0;
     }
 
@@ -151,14 +152,14 @@ class TextView extends View {
                 }else{
                     this.isSvg = true;
                     let svgResource = await Resource.loadLayoutSync(this.drawableResource);
-                    this.elemIcon = this.elemDom.appendChild(svgResource);
+                    this.elemIcon = this.container.appendChild(svgResource);
                 }
             }else if(Resource.isBase64Resource(this.drawableResource)){
                 if(this.drawableResource.includes('data:image/svg;')){
                     this.isSvg = true;
                     let svgStr = window.atob(this.drawableResource.replace('data:image/svg;base64,',''));
-                    this.elemDom.innerHTML=svgStr;
-                    this.elemIcon = this.elemDom.firstElementChild;
+                    var svgDom = new DOMParser().parseFromString(svgStr, 'application/xml');
+                    this.elemIcon = this.container.appendChild(svgDom.documentElement);
                 }else{
                     this.createDivIcon();
                     this.image = await Resource.loadImage(this.drawableResource);
@@ -195,13 +196,15 @@ class TextView extends View {
             this.elemText.style.textShadow=`${this.shadowDx}px ${this.shadowDy}px ${this.shadowRadius}px ${this.shadowColor}`;
         
         // Cargando la imagen o icono te texto
-        // this.imageResource = null;
-        // if(this.drawableResource){
-        //     this.imageResource = await Resource.loadImage(this.drawableResource);
-        //     this.elemIcon.src = this.imageResource.src;
-        //     this.elemIcon.width = this.iconWidth||parseInt(this.textSize);
-        //     this.elemIcon.height = this.iconHeight||parseInt(this.textSize);
-        // }
+        if(this.drawableResource){
+            if(this.isSvg){
+                this.elemIcon.style.width = (this.iconWidth||parseInt(this.textSize))+'px';
+                this.elemIcon.style.height = (this.iconHeight||parseInt(this.textSize))+'px';
+            }else{
+                this.elemIcon.width = this.iconWidth||parseInt(this.textSize);
+                this.elemIcon.height = this.iconHeight||parseInt(this.textSize);
+            }
+        }
     }
 
     async onMeasure(maxWidth, maxHeight) {
