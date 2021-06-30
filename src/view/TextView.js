@@ -124,7 +124,7 @@ class TextView extends View {
 
     getIconWidth(){
         if(this.drawableResource)
-            return (this.isSvg?this.elemIcon.getBoundingClientRect().width:this.image.width);
+            return (this.isSvg?this.elemIcon.getBoundingClientRect().width:this.elemIcon.clientWidth);
         return 0;
     }
 
@@ -134,7 +134,7 @@ class TextView extends View {
 
     getIconHeight(){
         if(this.drawableResource)
-            return (this.isSvg?this.elemIcon.getBoundingClientRect().height:this.image.height);
+            return (this.isSvg?this.elemIcon.getBoundingClientRect().height:this.elemIcon.clientHeight);
         return 0;
     }
 
@@ -149,6 +149,8 @@ class TextView extends View {
                     this.createDivIcon();
                     this.image = await Resource.loadImage(this.drawableResource);
                     this.elemIcon.style.background = `url('${this.image.src}')`;
+                    this.elemIcon.style.backgroundSize = "contain";
+                    this.elemIcon.style.backgroundRepeat = 'no-repeat';
                 }else{
                     this.isSvg = true;
                     let svgResource = await Resource.loadLayoutSync(this.drawableResource);
@@ -164,6 +166,8 @@ class TextView extends View {
                     this.createDivIcon();
                     this.image = await Resource.loadImage(this.drawableResource);
                     this.elemIcon.style.background = `url('${this.image.src}')`;
+                    this.elemIcon.style.backgroundSize = "contain";
+                    this.elemIcon.style.backgroundRepeat = 'no-repeat';
                 }
             }else
                 throw new Exception(`El recurso [${this.drawableResource}] no es valido como imagen.`);
@@ -197,13 +201,8 @@ class TextView extends View {
         
         // Cargando la imagen o icono te texto
         if(this.drawableResource){
-            if(this.isSvg){
-                this.elemIcon.style.width = (this.iconWidth||parseInt(this.textSize))+'px';
-                this.elemIcon.style.height = (this.iconHeight||parseInt(this.textSize))+'px';
-            }else{
-                this.elemIcon.width = this.iconWidth||parseInt(this.textSize);
-                this.elemIcon.height = this.iconHeight||parseInt(this.textSize);
-            }
+            this.elemIcon.style.width = (this.iconWidth||parseInt(this.textSize))+'px';
+            this.elemIcon.style.height = (this.iconHeight||parseInt(this.textSize))+'px';
         }
     }
 
