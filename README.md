@@ -50,7 +50,7 @@ Vea un ejemplo simple de como publicar una aplicación.
     }
 ```
 
-A continuación el layout correspondiente para la vista archivo *test.xml*
+A continuación el layout correspondiente para la vista archivo *HomeLayout.xml*
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
