@@ -39,6 +39,10 @@ class View {
         return this.maxWidth;
     }
 
+    setMaxWidth(maxW){
+        this.maxWidth = maxW;
+    }
+
     getMaxHeight(){
         return this.maxHeigth;
     }
@@ -183,19 +187,19 @@ class View {
         this.layoutGravity = layoutGravity;
     }
 
-    setOnClickListener(onCLick,contextParam) {
+    setOnClickListener(onClick,contextParam) {
         this.onClick = null;
-        this.onClickDefinition = onCLick;
-        this.onClickContext = contextParam || this;
+        this.onClickDefinition = onClick;
+        this.onClickContext = contextParam;
         let onCC = true;
-        if (typeof onCLick === 'function') {
-            let propNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
-            let funcName = onCLick.name;
+        if (typeof onClick === 'function') {
+            let propNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.onClickContext || this.context));
+            let funcName = onClick.name;
 
             if(propNames.includes(funcName)){ // La funcion esta dentro del contexto
                 this.onClickDefinition = funcName;
             }else{
-                //this.onClick = onCLick;
+                // this.onClick=()=>{};
                 this.onClick = async function(){
                     Reflect.apply(this.onClickDefinition, this.onClickContext ||this.context,[this]);
                 };
@@ -205,16 +209,16 @@ class View {
         if(onCC){
             if (typeof this.onClickDefinition === 'string') {
                 // Buscamos el nombre de metodo en el contexto
-                let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+                let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.onClickContext ||this.context));
                 if(propertyNames.find(property=>property===this.onClickDefinition)){
                     this.onClick = async function(){
-                         Reflect.apply(Reflect.get(this.context,this.onClickDefinition), this.context,[this]);
+                         Reflect.apply(Reflect.get(this.onClickContext||this.context,this.onClickDefinition), this.onClickContext ||this.context,[this]);
                     }
                 }else
                     throw new Exception(`No se pudo encontrar la funcion [${this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
             }
             else 
-                throw new Exception(`El objeto [${onCLick}] no es valido para establecer el Listener de onClick`);
+                throw new Exception(`El objeto [${onClick}] no es valido para establecer el Listener de onClick`);
         }
 
         // OnClick
@@ -222,15 +226,21 @@ class View {
             this.elemDom.onclick=()=>{
                 if(this.audioClickMedia)
                     this.audioClickMedia.play();
-                this.onClick(this);
+                this.onClick();
             };
         }
     }
 
     async setMP(dr, ic, txt, tc) {
         var popup = new PopupWindow(this.getContext());
-        let message = new TextView(popup);
-        message.setText(txt);
+        let tempCtx = {
+            async onResize(){
+                // let navigator = PageManager.getWindowsDimension();
+                // await this.viewRoot.onMeasure(navigator.width,navigator.height);
+            }
+        };
+        let message = new TextView(tempCtx);
+        await message.setText(txt);
         if (ic !== null)
             await message.setDrawableLeft(ic);
         message.setBackground(dr);
@@ -406,7 +416,7 @@ class View {
         }
 
         // Cargando OnClick
-        if(this.onClickDefinition){
+        if((this.onClick===null || this.onClick === undefined) && this.onClickDefinition){
             this.setOnClickListener(this.onClickDefinition);
         }
 
@@ -503,8 +513,9 @@ class View {
         }
         if(viewRootStatic.parentView)
             await viewRootStatic.onMeasure(viewRootStatic.getWidth(),viewRootStatic.getHeight());
-        else
-            await viewRootStatic.context.onResize();   
+        else{
+            await viewRootStatic.context.onResize();
+        }
     }
     
     // this.parentView.elemDom.appendChild(this.elemDom);

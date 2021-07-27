@@ -83,7 +83,7 @@ class LayoutInflater{
     static async parse(context, firstElement) {
         var view = null;
         try {
-            view = eval("new " + firstElement.tagName + "(context)");
+            view = eval(`new ${firstElement.tagName}(context)`);
         }
         catch (o) {
             throw new Exception("No existe la vista [" + firstElement.tagName + "]");
@@ -93,7 +93,12 @@ class LayoutInflater{
     }
 
     static async inflate(context,xmlRoot) {
-        let view = await this.parse(context, xmlRoot);
-        return view;
+        if(typeof xmlRoot === 'object' && xmlRoot instanceof Element)
+             return await this.parse(context, xmlRoot);
+        else if(typeof xmlRoot === 'string'){
+            let xml = await Resource.loadLayoutSync(xmlRoot);
+            return await this.parse(context, xml);
+        }
+        throw new Exception(`El [${xmlRoot}] no es valido`);
     }
 }

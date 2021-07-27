@@ -46,14 +46,17 @@ class FileChooser{
         });
     }
 
-    static async showSaveFile(urlFile){
+    static async showSaveFile(fileName, content){
+        let blobData = new Blob([content], {type: "text/plain"});
+        let url = window.URL.createObjectURL(blobData);
+
         let a = document.createElement("a");
         a.style = "display: none";
         document.body.appendChild(a);
-        a.href = urlFile;
-        // a.download = fileName;
+        a.href = url;
+        a.download = fileName;
         a.click();
-        window.URL.revokeObjectURL(urlFile);
+        window.URL.revokeObjectURL(url);
         a.remove();
     }
 };

@@ -58,7 +58,6 @@ class GridLayout extends ViewGroup {
                     mayHeight = view.margin.top+view.getHeight()+view.margin.bottom;
                 index++;
             }
-            //console.log("MAY HEIGHT",mayHeight);
             y=y+ mayHeight+this.verticalSpace;
         }
 

@@ -92,7 +92,8 @@ class TextView extends View {
         this.text = text;
         if(this.elemDom)
             this.elemText.innerHTML = this.text;
-        this.onReMeasure();
+        if(this.parentView !== null && this.parentView !== undefined)
+            await this.onReMeasure();
     }
 
     async setTextSize(textSize){
@@ -405,6 +406,11 @@ class TextView extends View {
         this.drawableResource = drawable;
         if(this.elemDom){
             await this.loadIcon();
+            if(this.drawableResource){
+                this.elemIcon.style.width = (this.iconWidth||parseInt(this.textSize))+'px';
+                this.elemIcon.style.height = (this.iconHeight||parseInt(this.textSize))+'px';
+            }
+            await this.onReMeasure();
         }
     }
 

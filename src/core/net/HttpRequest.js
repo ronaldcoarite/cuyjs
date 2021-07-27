@@ -6,11 +6,9 @@ class HttpRequest {
     constructor(url) {
         this.url = url;
         this.params = new Array();
-        this.headers = new Array();
-        if (window.XMLHttpRequest)
-            this.xmlhttp = new XMLHttpRequest();
-        else
-            this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        this.headers = new Headers();
+        this.controller = new AbortController();
+        this.signal = this.controller.signal;
         this.blockDomElem=null;
     }
 
@@ -26,19 +24,18 @@ class HttpRequest {
     }
 
     setEntity(d) {
+        console.log("Estableciendo POST",d);
         this.data = d;
     }
 
-    getMethod() {
-        return null;
-    }
+    getMethod() {return null;}
 
     addParam(name, value) {
         this.params[name] = value;
     }
 
     addHeader(name, value) {
-        this.headers[name] = value;
+        this.headers.append(name, value);
     }
 
     async execute(){
@@ -98,41 +95,37 @@ class HttpRequest {
 
     async send() {
         let filter = await AjaxFilters.verifUrl(this);
-        let httpResponse = await new Promise((resolve, reject) => {
-            let url = this.url;
-            if (this.params.length > 0) {
-                if(url.indexOf('?')===-1)
-                    url = url + '?';
-                for (let elem in this.params) {
-                    url = (url + (elem + '=' + this.params[elem]) + "&&");
-                }
-                url = url.substring(0, url.length - 2);
+        let url = this.url;
+        if (this.params.length > 0) {
+            if(url.indexOf('?')===-1)
+                url = url + '?';
+            for (let elem in this.params) {
+                url = (url + (elem + '=' + this.params[elem]) + "&&");
             }
-            this.xmlhttp.open(this.getMethod(), url, true);
-            this.xmlhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
-            this.xmlhttp.setRequestHeader('Content-Type', 'application/json');
-            for(let elem in this.headers)
-                this.xmlhttp.setRequestHeader(elem, this.headers[elem]);
-            if(this.data)
-                this.xmlhttp.send(JSON.stringify(this.data));
-            else
-                this.xmlhttp.send();
-            this.xmlhttp.onreadystatechange = ()=>{
-                let httpResponse = new HttpResponse(this.xmlhttp);
-                if (this.xmlhttp.readyState === XMLHttpRequest.DONE){
-                    if(this.xmlhttp.status === 200 || this.xmlhttp.status === 204 ){
-                        resolve(httpResponse);
-                    }
-                }
-            };
+            url = url.substring(0, url.length - 2);
+        }
+        if(this.data && (typeof this.data==='object'))
+            this.addHeader('Content-Type','application/json');
+
+        const response = await fetch(url, {
+            method: this.getMethod(),
+            //mode: 'no-cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            headers: this.headers,
+            credentials: 'include',
+            //redirect: 'follow', // manual, *follow, error
+            //referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            body: this.data?JSON.stringify(this.data):undefined, // body data type must match "Content-Type" header
+            signal: this.signal
         });
+
+        let httpResponse = new HttpResponse(response);
         if(filter)
             await filter.onPostExecute(httpResponse);
         return httpResponse;
     }
 
     abort() {
-        this.xmlhttp.abort();
-        this.xmlhttp = null;
+        this.controller.abort();
     }
 }

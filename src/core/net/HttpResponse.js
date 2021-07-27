@@ -1,17 +1,18 @@
 class HttpResponse {
-    constructor(xmlhttp) {
-        this.xmlhttp = xmlhttp;
+    constructor(response) {
+        this.response = response;
     }
 
-    getJson() {
-        return JSON.parse(this.xmlhttp.responseText);
+    async getJson() {
+        return await this.response.json()
     }
 
-    getRootElementXml() {
-        return this.xmlhttp.responseXML.documentElement;
+    async getRootElementXml() {
+        let text = await this.response.text();
+        return (new window.DOMParser()).parseFromString(text, "text/xml");
     }
 
-    getText() {
-        return this.xmlhttp.responseText;
+    async getText() {
+        return await this.response.text();
     }
 }
