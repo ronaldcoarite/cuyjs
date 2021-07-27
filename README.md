@@ -12,28 +12,42 @@ Vea un ejemplo simple de como publicar una aplicación.
 
 
 ```javascript
-Resource.waitToLoadAllResources().then(() => {
-    try {
-        PageManager.startAplicationSync('PruebaPage');
-    } catch (error) {
-        console.log(error);
-    }
-});
+    (async () => {
+        let manifest = {
+            theme: "lib/default_theme.xml",
+            pages: [ 
+                { name: "pages/HomePage.js", category: "ROOT", history:"false", screenOrientation: "portrait" }
+            ]
+        };
+        await PageManager.startApp(manifest);
+    })();
 
-class PruebaPage extends Page {
-    // @Override
-    onCreate(intent){
-        this.setContentView("layout/test.xml");
-    }
+    class HomePage extends Page {
+        // @Override
+        async onCreate(intent) {
+            this.setContentView("pages/home/HomeLayout.xml");
+        }
 
-    // @Override
-    onStart(){
-        
+        // @Override
+        async onStart() {
+        }
+
+        //@Override
+        async onPause(){
+        }
+
+        //@Override
+        async onDestroy(){
+        }
+
+        //@Override
+        async onResume(){
+        }
+
+        async onClickPruebaGratuita(){
+            await Toast.makeText('Texto de prueba',Toast.LENGTH_SHORT);
+        }
     }
-    onClick(){
-        Toast.makeText(this,"Este es un mensaje",Toast.LENGTH_LONG).show();
-    }
-}
 ```
 
 A continuación el layout correspondiente para la vista archivo *test.xml*
@@ -50,9 +64,9 @@ A continuación el layout correspondiente para la vista archivo *test.xml*
     orientation="vertical"
     id="linPrueba">
     <Button
-        text="Agregar Vehiculo"
+        text="Evento Click"
         singleLine="true"
-        onClick="onClickBoton"/>
+        onClick="onClickPruebaGratuita"/>
 </LinearLayout>
 ```
 
@@ -62,10 +76,12 @@ Cuyjs no tiene límites, se puede realizar desde pequeñas aplicaciones hasta te
 
 En resumen cuyjs soporta lo siguiente:
 
-- Programación orientada a objectos. [POO](https://github.com/ronaldcoarite/cuyjs/blob/master/poo.md). 
-- Diseño de interfaces basados en xml con componentes Android
+- Programación orientada a objectos. 
+- Diseño de interfaces basados en XML con componentes similares a Android
 - Soporte de NinePath9 para fondos de componentes con contenido dinámico
 - Posee todos los componentes nativos de Android desde instancia por codigo hasta los tag's en el xml.
 - Paso de parametros entre diferentes "Pages"
 - Creación de nuevos componentes
 - Manejo de ajax mediante la interfax definida de HttpClient.
+- Componentes para realizar sitios Web Responsivos
+- Puede cambiar el tema y vista de los componentes de acuerdo a su imagen institucional
