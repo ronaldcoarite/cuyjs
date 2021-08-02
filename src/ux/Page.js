@@ -84,6 +84,7 @@ class Page extends Context{
 
         // Iniciamos la actividad principal
         intent.context.viewRoot.elemDom.style.display = "none";
+        await intent.context.onPause();
         await PageManager.startPageFromIntent(intent);
     }
 
@@ -98,8 +99,8 @@ class Page extends Context{
 
         if(previusPage){
             console.log("Volviendo a cargar la pagina anterior");
-            previusPage.viewRoot.elemDom.style.display = "block";
             await previusPage.onResume();
+            previusPage.viewRoot.elemDom.style.display = "block";
         }else{
             //console.log("NO hay pagina anterior registrada");
         }

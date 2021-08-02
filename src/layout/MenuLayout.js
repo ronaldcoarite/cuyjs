@@ -13,7 +13,7 @@ class MenuLayout extends View {
         this.linContainer.parentView = this;
         this.btnMenu.parentView = this;
         this.mode = MenuLayout.MODE_SEPARATED;
-        this.btnMenu.setOnClickListener(this.showOptionDialog);
+        this.btnMenu.setOnClickListener(this.showOptionDialog,this);
         this.dialog = null;
     }
 
@@ -34,7 +34,7 @@ class MenuLayout extends View {
             view.setLayoutGravity('left');
         }
         this.linContainer.setOrientation('vertical');
-        this.linContainer.setOnClickListener(this.hidePopup);
+        this.linContainer.setOnClickListener(this.hidePopup,this);
         await this.linContainer.setBackground('lib/imgs/bg_popup_bottom.9.png');
         this.dialog = new PopupWindow(this.getContext());
         this.dialog.setView(this.btnMenu);

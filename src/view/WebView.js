@@ -31,7 +31,6 @@ class WebView extends View{
         this.elemIframe.src=this.url;
     }
 
-
     async onMeasure(maxWidth, maxHeigth) {
         let maxWidthElement, maxHeightElement;
         switch (this.height) {

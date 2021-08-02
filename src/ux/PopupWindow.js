@@ -1,9 +1,11 @@
-class PopupWindow{
+class PopupWindow extends Context{
     constructor(context) {
+        super();
         this.context = context;
         this.position = "left|top";
         this.view = null;
         this.margin = { left: 0, top: 0, right: 0, bottom: 0 };
+        this.viewRoot = null;
     }
 
     setPositionOnView(position) {
@@ -44,10 +46,8 @@ class PopupWindow{
         else
             throw new Exception(`El PopupWindow [${this_.constructor.name}] no tiene contenido definido. Asigne uno con [setContentView]`);
 
-        if(this.viewRoot === null){
-            let rootXml = await Resource.loadLayoutSync(this.urlView);
-            this.viewRoot = await LayoutInflater.inflate(this,rootXml);
-        }
+        if(this.viewRoot === null)
+            this.viewRoot = await LayoutInflater.inflate(this,this.urlView);
 
         document.body.appendChild(this.viewRoot.elemDom);
         // Dibujamos la vista
