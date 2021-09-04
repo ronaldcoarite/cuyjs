@@ -1,6 +1,6 @@
 class TextView extends View {
-    constructor(context){
-        super(context);
+    constructor(context,model){
+        super(context,model);
         this.text = Resource.getAttrOfTheme(this.constructor.name, 'text');
         this.textColor = Resource.getAttrOfTheme(this.constructor.name, 'textColor');
         this.textCssStyle = Resource.getAttrOfTheme(this.constructor.name, 'textCssStyle');

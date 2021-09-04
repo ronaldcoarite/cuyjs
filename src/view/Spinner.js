@@ -1,6 +1,6 @@
 class Spinner extends View{
-    constructor(context){
-        super(context);
+    constructor(context,model){
+        super(context,model);
         this.popup = new PopupWindow(context);
         let linViews = new LinearLayout(this.popup);
 

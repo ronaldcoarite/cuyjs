@@ -3,10 +3,11 @@ class View {
     static VISIBLE = "VISIBLE";
     static GONE = "GONE";
 
-    constructor(context) {
+    constructor(context,model) {
         if (!context)
             throw new Exception("El contexto no esta en los parametros o es nulo");
         this.context = context;
+        this.model = model||null;
         this.visibility = View.VISIBLE;
         this.margin = { top: 0, left: 0, right: 0, bottom: 0 };
         this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
@@ -26,6 +27,7 @@ class View {
         this.audioAdove = Resource.getAttrOfTheme(this.constructor.name, 'audioAdove');
         this.requiredInForm = false;
         this.requiredMessage = null;
+        this.opacity=1;
 
         this.createHtmlElement();
         this.elemDom.style.visibility = "hidden";
@@ -52,7 +54,14 @@ class View {
     }
 
     setVisibility(v) {
-        this.visibility = v;
+        switch(v){
+            case 'VISIBLE':
+                this.showView();
+                break;
+            case 'INVISIBLE':
+                this.hideView();
+                break;
+        }
     }
     
     setToolTip(text) {
@@ -276,7 +285,13 @@ class View {
         let attrValue  = nodeXml.getAttribute(attrName);
         if(attrValue){
             attrValue = attrValue.replace(LayoutInflater.REGEX_VARS,(cmp,paramName)=>{
-                return eval(paramName);
+                if(paramName.indexOf('.')!==-1 || this.model===null){
+                    return eval(paramName);
+                }
+                else{
+                    let model = this.model;
+                    return eval(`model.${paramName}`);
+                }
             });
         }
         return attrValue;
@@ -297,6 +312,11 @@ class View {
 
     hideElemDom(){
         this.elemDom.style.visibility = "hidden";
+    }
+
+    setOpacity(opacity){
+        this.elemDom.style.opacity=opacity;
+        this.opacity = opacity;
     }
     
     hideView(){
@@ -349,6 +369,8 @@ class View {
             this.padding.top = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingTop"));
         if(this.getAttrFromNodeXml(nodeXml,"paddingBottom"))
             this.padding.bottom = parseInt(this.getAttrFromNodeXml(nodeXml,"paddingBottom"));
+        if(this.getAttrFromNodeXml(nodeXml,"opacity"))
+            this.opacity = parseFloat(this.getAttrFromNodeXml(nodeXml,"opacity"));
         let padding = this.getAttrFromNodeXml(nodeXml,"padding");
         if (padding !== null) {
             let pad = parseInt(padding);
@@ -463,6 +485,8 @@ class View {
             default:
                 this.elemDom.style.height = `${parseInt(this.height)}px`;
         }
+        if(this.opacity!==1)
+            this.elemDom.style.opacity=this.opacity;
     }
 
     addCssClass(cssString){

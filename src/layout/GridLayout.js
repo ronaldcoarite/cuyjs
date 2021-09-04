@@ -1,6 +1,6 @@
 class GridLayout extends ViewGroup {
-    constructor(context) {
-        super(context);
+    constructor(context,model) {
+        super(context,model);
         this.colums =2;
         this.horizontalSpace = 0;
         this.verticalSpace = 0;

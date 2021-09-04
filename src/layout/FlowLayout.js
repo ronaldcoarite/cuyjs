@@ -1,6 +1,6 @@
 class FlowLayout extends ViewGroup {
-    constructor(context) {
-        super(context);
+    constructor(context,model) {
+        super(context,model);
         this.alignment="center";
     }
 

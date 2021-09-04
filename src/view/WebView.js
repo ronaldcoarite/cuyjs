@@ -1,6 +1,6 @@
 class WebView extends View{
-    constructor (context) {
-        super(context);
+    constructor (context,model) {
+        super(context,model);
         this.margin.left = this.margin.top = this.margin.right = this.margin.bottom = 0;
         this.src = null;
     }

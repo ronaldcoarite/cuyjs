@@ -4,8 +4,8 @@ class Password extends View{
     // hint: null,
     // maxLength: -1,
     // readonly: false,
-    constructor (context) {
-        super(context);
+    constructor (context,model) {
+        super(context,model);
         this.margin.left = this.margin.top = this.margin.right = this.margin.bottom = 0;
         this.text = Resource.getAttrOfTheme(this.constructor.name, 'text');
     }

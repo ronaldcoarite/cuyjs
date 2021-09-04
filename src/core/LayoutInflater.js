@@ -73,17 +73,17 @@ class LayoutInflater{
     static INVISIBLE= "invisible";
     static GONE= "gone";
 
-    static REGEX_VARS = /\{\{([a-z_A-Z][a-zA-z_.\d]*)\}\}+/g;
+    static REGEX_VARS = /\{\{([a-zA-Z_.\d\(\)]*)\}\}+/g;
 
     /**
      * Instancia la vista y realizar el parseo a travez del la raiz del documento XML pasado como parametro
      * @param {*} context  EL contexto de la pagina
      * @param {*} firstElement El primer elemento de tipo XML para crear la vista
      */
-    static async parse(context, firstElement) {
+    static async parse(context, firstElement,model) {
         var view = null;
         try {
-            view = eval(`new ${firstElement.tagName}(context)`);
+            view = eval(`new ${firstElement.tagName}(context,model)`);
         }
         catch (o) {
             throw new Exception("No existe la vista [" + firstElement.tagName + "]");
@@ -92,12 +92,14 @@ class LayoutInflater{
         return view;
     }
 
-    static async inflate(context,xmlRoot) {
+    static async inflate(context,xmlRoot,model) {
+        if(!context)
+            throw new Exception('No se envió el parametro [context] en el metodo [LayoutInflate.inflate]');
         if(typeof xmlRoot === 'object' && xmlRoot instanceof Element)
-             return await this.parse(context, xmlRoot);
+             return await this.parse(context, xmlRoot, model);
         else if(typeof xmlRoot === 'string'){
             let xml = await Resource.loadLayoutSync(xmlRoot);
-            return await this.parse(context, xml);
+            return await this.parse(context, xml, model);
         }
         throw new Exception(`El [${xmlRoot}] no es valido`);
     }

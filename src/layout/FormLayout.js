@@ -1,6 +1,6 @@
 class FormLayout extends Container {
-    constructor(context){
-        super(context);
+    constructor(context,model){
+        super(context,model);
     }
 
     // @Override
@@ -32,7 +32,7 @@ class FormLayout extends Container {
     }
 
     async parseViewChild(nodeXml) {
-        let child = await LayoutInflater.inflate(this.context, nodeXml);
+        let child = await LayoutInflater.inflate(this.context, nodeXml,this.model);
         return child;
     }
     

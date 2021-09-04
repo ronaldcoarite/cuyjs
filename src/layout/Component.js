@@ -1,6 +1,6 @@
 class Component extends Container {
-    constructor(context){
-        super(context);
+    constructor(context,model){
+        super(context,model);
         this.layoutUrl = null;
         this.rootContext= context;
         this.context = this;
@@ -33,8 +33,7 @@ class Component extends Container {
                 if(this.elemDom.style.visibility==='visible')
                     this.layoutUrl.showView();
             }else{
-                let rootXmlNode = await Resource.loadLayoutSync(this.layoutUrl);
-                let viewInflate =  await LayoutInflater.inflate(this.getContext(),rootXmlNode);
+                let viewInflate =  await LayoutInflater.inflate(this.getContext(),this.layoutUrl,this.model);
                 await viewInflate.loadResources();
                 await this.setFirstChild(viewInflate);
                 if(this.elemDom.style.visibility==='visible')

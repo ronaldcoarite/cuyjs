@@ -4,8 +4,8 @@ class EditText extends View{
     // hint: null,
     // maxLength: -1,
     // readonly: false,
-    constructor (context) {
-        super(context);
+    constructor (context,model) {
+        super(context,model);
         this.margin.left = this.margin.top = this.margin.right = this.margin.bottom = 4;
         this.lines = Resource.getAttrOfTheme(this.constructor.name, 'lines',3);
         this.hint = null;

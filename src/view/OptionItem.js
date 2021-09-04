@@ -1,6 +1,6 @@
 class OptionItem extends LinkButton{
-    constructor(context){
-        super(context);
+    constructor(context,model){
+        super(context,model);
         this.singleLine = true;
     }
 };

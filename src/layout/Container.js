@@ -1,6 +1,6 @@
 class Container extends View{
-    constructor(context){
-        super(context);
+    constructor(context,model){
+        super(context,model);
         this.viewsChilds = new Array();
     }
 

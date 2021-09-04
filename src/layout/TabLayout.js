@@ -1,6 +1,6 @@
 class TabLayout extends View {
-    constructor(context) {
-        super(context);
+    constructor(context,model) {
+        super(context,model);
         this.tabSelected=-1;
         this.tabs = new Array();
         this.tabContentBg = null;
@@ -47,7 +47,7 @@ class TabLayout extends View {
     }
 
     async parseViewChild(nodeXml) {
-        let view = await LayoutInflater.inflate(this.context, nodeXml);
+        let view = await LayoutInflater.inflate(this.context, nodeXml,this.model);
         view.tabName = this.getAttrFromNodeXml(nodeXml,"tabName")||this.tabName;
         view.parentView = this;
         return view;

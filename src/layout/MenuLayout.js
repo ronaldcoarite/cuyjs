@@ -2,8 +2,8 @@ class MenuLayout extends View {
     static MODE_SEPARATED='SEPARATED';
     static MODE_UNITED='UNITED';
 
-    constructor(context) {
-        super(context);
+    constructor(context,model) {
+        super(context,model);
         this.linContainer = new LinearLayout(context);
         this.linContainer.setOrientation('horizontal');
         this.btnMenu = new ImageButton(context);
@@ -85,7 +85,7 @@ class MenuLayout extends View {
 
     //Override
     async parseViewChild(nodeXml) {
-        let view = await LayoutInflater.inflate(this.context, nodeXml);
+        let view = await LayoutInflater.inflate(this.context, nodeXml,this.model);
         return view;
     }
 

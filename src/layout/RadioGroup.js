@@ -1,6 +1,6 @@
 class RadioGroup extends LinearLayout{
-    constructor(context) {
-        super(context);
+    constructor(context,model) {
+        super(context,model);
         this.groupName = Math.random().toString(36).slice(-5);
     }
 

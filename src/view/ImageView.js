@@ -1,7 +1,7 @@
 class ImageView extends View{
     // src: null,
-    constructor(context){
-        super(context);
+    constructor(context,model){
+        super(context,model);
         this.src = null;
         this.image = null;
         this.scaleType = 'content';

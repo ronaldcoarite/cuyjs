@@ -1,6 +1,6 @@
 class ScrollView extends View{
-    constructor (context) {
-        super(context);
+    constructor (context,model) {
+        super(context,model);
         this.content = null;
         this.MIN_HEIGHT_THUMB=50; // 50px
         this.MIN_HEIGHT = 300;
@@ -24,7 +24,7 @@ class ScrollView extends View{
         if(nodeXml.children.length>1)
             throw new Exception(`El layout [ScrollView] no puede tener de un hijo. El hijo [${nodeXml.children[1].tabName}] debe ser borrado.`);
         if(nodeXml.children.length === 1){
-            let view = await LayoutInflater.inflate(this.context, nodeXml.children[0]);
+            let view = await LayoutInflater.inflate(this.context, nodeXml.children[0],this.model);
             await this.setContent(view);
         }
     }

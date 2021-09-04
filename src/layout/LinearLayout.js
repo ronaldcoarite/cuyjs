@@ -1,6 +1,6 @@
 class LinearLayout extends ViewGroup {
-    constructor(context) {
-        super(context);
+    constructor(context,model) {
+        super(context,model);
     }
 
     //Override

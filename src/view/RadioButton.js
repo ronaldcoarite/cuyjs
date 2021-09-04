@@ -1,11 +1,9 @@
 class RadioButton extends View{
-    constructor (context) {
-        super(context);
+    constructor (context,model) {
+        super(context,model);
         this.text = Resource.getAttrOfTheme(this.constructor.name, 'text');
         this.onClick = Resource.getAttrOfTheme(this.constructor.name, 'onClick');
         this.radioGroup = Resource.getAttrOfTheme(this.constructor.name, 'radioGroup');
-
-        
     }
 
     // @Override

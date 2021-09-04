@@ -1,6 +1,6 @@
 class WaitingView extends View{
-    constructor (context) {
-        super(context);
+    constructor (context,model) {
+        super(context,model);
     }
 
     // @Override
