@@ -4,7 +4,7 @@
 
 **Cuyjs es un framework javascript para la capa de la vista en el lado del cliente.**
 
-Cuyjs plantena para los fanaticos de Android y la programación orientada a objectos POO. Tener un conjunto de herramientas que permitan desde realizar clases, ojectos, herencia, sobrecarga de métodos, layouts en archivos xml hasta controladores llamados "Page" para trabajar de forma facil con un modelo vista controlador.
+Cuyjs plantea para los fanaticos de Android y la programación orientada a objectos POO. Tener un conjunto de herramientas que permitan desde realizar clases, ojectos, herencia, sobrecarga de métodos, layouts en archivos xml hasta controladores llamados "Page" para trabajar de forma facil con un modelo vista controlador.
 
 Al ser un framework basado a la programacion POO, cuyjs es extendible en cualquier punto de desarrollo. Desde crear nuevo componentes, extenderlos, etc.
 
