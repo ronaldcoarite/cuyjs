@@ -13,22 +13,30 @@ class Dialog extends Context{
         this.urlView = null;
 
         this.visible = false;
+        this.dimensionListener = true;
     }
 
     // @Override
     async onResize(){
-        let windowsDimension = PageManager.getWindowsDimension();
-        let w = windowsDimension.width-(windowsDimension.width*this.viewRoot.margin.left/100)-(windowsDimension.width*this.viewRoot.margin.right/100);
-        let h = windowsDimension.height-(windowsDimension.height*this.viewRoot.margin.top/100)-(windowsDimension.height*this.viewRoot.margin.bottom/100);
-        if(this.viewRoot.maxWidth>0 && w > this.viewRoot.maxWidth)
-            w = this.viewRoot.maxWidth;
-        if(this.viewRoot.maxHeigth>0 && w > this.viewRoot.maxHeigth)
-            h = this.viewRoot.maxHeigth;
-        await this.viewRoot.onMeasure(w,h)
-        this.setPosition(windowsDimension);
+        if(this.dimensionListener){
+            let windowsDimension = PageManager.getWindowsDimension();
+            let w = windowsDimension.width-(windowsDimension.width*this.viewRoot.margin.left/100)-(windowsDimension.width*this.viewRoot.margin.right/100);
+            let h = windowsDimension.height-(windowsDimension.height*this.viewRoot.margin.top/100)-(windowsDimension.height*this.viewRoot.margin.bottom/100);
+            if(this.viewRoot.maxWidth>0 && w > this.viewRoot.maxWidth)
+                w = this.viewRoot.maxWidth;
+            if(this.viewRoot.maxHeigth>0 && w > this.viewRoot.maxHeigth)
+                h = this.viewRoot.maxHeigth;
+            await this.viewRoot.onMeasure(w,h)
+            this.setPosition(windowsDimension);
+        }
     }
 
-    setContentView(view) {
+    enableDimensionListener(enable){
+        this.dimensionListener = enable?true:false;
+    }
+
+    setContentView(view,model) {
+        this.model = model;
         if (view instanceof View)
             this.viewRoot = view;
         else if(typeof view==='string')
@@ -114,7 +122,7 @@ class Dialog extends Context{
                 }
                 if(this_.viewRoot === null){
                     let rootXml = await Resource.loadLayoutSync(this_.urlView);
-                    this_.viewRoot = await LayoutInflater.inflate(this_,rootXml);
+                    this_.viewRoot = await LayoutInflater.inflate(this_,rootXml,this.model);
                 }
 
                 document.body.appendChild(this_.viewRoot.elemDom);

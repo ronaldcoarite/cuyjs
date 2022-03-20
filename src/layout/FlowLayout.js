@@ -2,11 +2,17 @@ class FlowLayout extends ViewGroup {
     constructor(context,model) {
         super(context,model);
         this.alignment="center";
+        this.verticalSpace = 0;
+        this.horizontalSpace = 0;
     }
 
     //Override
     async parse(nodeXml) {
         this.alignment = this.getAttrFromNodeXml(nodeXml,'alignment')||this.alignment;
+        if (this.getAttrFromNodeXml(nodeXml,"verticalSpace"))
+            this.verticalSpace = parseInt(this.getAttrFromNodeXml(nodeXml,'verticalSpace'));
+        if (this.getAttrFromNodeXml(nodeXml,"horizontalSpace"))
+            this.horizontalSpace = parseInt(this.getAttrFromNodeXml(nodeXml,'horizontalSpace'));
         await super.parse(nodeXml);
     }
 
@@ -19,14 +25,14 @@ class FlowLayout extends ViewGroup {
     //@Override
     async onMeasure(maxWidth, maxHeight){
         let visibles = this.getViewVisibles();
-        let mayHeight = 0;
-        let mayWidth = 0;
+        let mayHeight = this.verticalSpace;
+        let mayWidth = this.horizontalSpace;
 
         // Establenciendo dimensión de los componentes que no tienen weight
         for(let view of visibles){
             await view.onMeasure(this.getContentWidth(maxWidth,view),this.getContentHeight(maxHeight,view));
-            let h = view.margin.top + view.getHeight() + view.margin.bottom;
-            let w = view.margin.left + view.getWidth() + view.margin.right;
+            let h = view.margin.top + view.getHeight() + view.margin.bottom + this.verticalSpace;
+            let w = view.margin.left + view.getWidth() + view.margin.right + this.horizontalSpace;
 
             if (h > mayHeight)
                 mayHeight = h;
@@ -59,7 +65,7 @@ class FlowLayout extends ViewGroup {
             let view = visibles[i];
             let w = view.margin.left + view.getWidth() + view.margin.right;
             let h = view.margin.top + view.getHeight() + view.margin.bottom;
-            if(this.padding.left + acumulate + w +this.padding.right> wContent){
+            if(this.padding.left + acumulate + w +this.horizontalSpace+this.padding.right> wContent){
                 let posStart;
                 if(this.alignment === 'left')
                     posStart = 0;
@@ -70,9 +76,9 @@ class FlowLayout extends ViewGroup {
                 for(let j = rowI;j <i ; j++){
                     let viewRow = visibles[j];
                     viewRow.elemDom.style.left  = `${this.padding.left+viewRow.margin.left+posStart}px`;
-                    posStart+=(viewRow.margin.left+viewRow.elemDom.clientWidth + viewRow.margin.right);
+                    posStart+=(viewRow.margin.left+viewRow.elemDom.clientWidth + viewRow.margin.right + this.horizontalSpace);
                 }
-                posY = posY + mayHeight;
+                posY = posY + mayHeight + this.verticalSpace;
                 mayHeight = 0;
                 if(acumulate>mayAcumulate)
                     mayAcumulate = acumulate;
@@ -96,7 +102,7 @@ class FlowLayout extends ViewGroup {
         for(let j = rowI;j <i ; j++){
             let viewRow = visibles[j];
             viewRow.elemDom.style.left  = `${this.padding.left+viewRow.margin.left+posStart}px`;
-            posStart+=(viewRow.margin.left+viewRow.elemDom.clientWidth + viewRow.margin.right);
+            posStart+=(viewRow.margin.left+viewRow.elemDom.clientWidth + viewRow.margin.right + this.horizontalSpace);
         }
         if(acumulate > mayAcumulate)
             mayAcumulate = acumulate;

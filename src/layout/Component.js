@@ -2,8 +2,6 @@ class Component extends Container {
     constructor(context,model){
         super(context,model);
         this.layoutUrl = null;
-        this.rootContext= context;
-        this.context = this;
         this.inflated=false;
     }
 
@@ -14,34 +12,35 @@ class Component extends Container {
         if(layoutUrl === null || layoutUrl !== undefined)
             await this.setContentView(layoutUrl);
     }
-
-    getRootContext(){
-        return this.rootContext;
-    }
+    
+    async onCreate(){}
 
     // @Override
     async loadResources(){
         await super.loadResources();
-        if(this.layoutUrl===null || this.layoutUrl === undefined){
-            this.inflated = true;
+        if(this.inflated){
             return;
         }
-        if(!this.inflated){
-            if(this.layoutUrl instanceof View){
-                await this.layoutUrl.loadResources();
-                await this.setFirstChild(layoutUrl);
-                if(this.elemDom.style.visibility==='visible')
-                    this.layoutUrl.showView();
-            }else{
-                let viewInflate =  await LayoutInflater.inflate(this.getContext(),this.layoutUrl,this.model);
-                await viewInflate.loadResources();
-                await this.setFirstChild(viewInflate);
-                if(this.elemDom.style.visibility==='visible')
-                    viewInflate.showView();
-            }
-            this.layoutUrl = null;
+        if(this.layoutUrl===null || this.layoutUrl === undefined){
             this.inflated = true;
+            await this.onCreate();
+            return;
         }
+        if(this.layoutUrl instanceof View){
+            await this.layoutUrl.loadResources();
+            await this.setFirstChild(layoutUrl);
+            if(this.elemDom.style.visibility==='visible')
+                this.layoutUrl.showView();
+        }else{
+            let viewInflate =  await LayoutInflater.inflate(this.getContext(),this.layoutUrl,this.model);
+            await viewInflate.loadResources();
+            await this.setFirstChild(viewInflate);
+            if(this.elemDom.style.visibility==='visible')
+                viewInflate.showView();
+        }
+        this.layoutUrl = null;
+        this.inflated = true;
+        await this.onCreate();
     }
 
     setContentView(layoutUrl){

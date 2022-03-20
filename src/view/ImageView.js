@@ -203,9 +203,7 @@ class ImageView extends View{
         await this.onReMeasure();
     }
 
-    getDomImageResource(){
-        if(this.image)
-            return this.image.src;
-        return null;
+    getImageResource(){
+        return this.src;
     }
 }

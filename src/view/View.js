@@ -281,6 +281,26 @@ class View {
         await this.setMP("lib/imgs/bg_msg_info.9.png", "lib/imgs/ic_msg_info.png", msg, "#4C95E7");
     }
 
+    async tooglefullScream(){        
+        let funCheck = ()=>{
+            if(!document.fullscreenElement){
+                this.getContext().enableDimensionListener(true);
+                this.getContext().onResize();
+                document.removeEventListener('fullscreenchange', funCheck);
+            }
+        };
+
+        document.addEventListener('fullscreenchange', funCheck);
+        if (!document.fullscreenElement) {
+            this.getContext().enableDimensionListener(false);
+            await this.getElemDom().requestFullscreen();
+            await this.onMeasure(this.getElemDom().clientWidth, this.getElemDom().clientHeight);
+        } else {
+            this.getContext().enableDimensionListener(true);
+            document.exitFullscreen();
+        }
+    }
+
     getAttrFromNodeXml(nodeXml, attrName){
         let attrValue  = nodeXml.getAttribute(attrName);
         if(attrValue){
