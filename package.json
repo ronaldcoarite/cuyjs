@@ -18,7 +18,7 @@
     "dependencies": {},
     "devDependencies": {
         "strip-comments": "^1.0.2",
-        "terser": "^4.3.8",
+        "terser": "^4.8.1",
         "uglify-js": "^3.6.1"
     }
 }
