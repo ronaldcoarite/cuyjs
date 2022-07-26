@@ -2,7 +2,7 @@ class PopupWindow extends Context{
     constructor(context) {
         super();
         this.context = context;
-        this.position = "left|top";
+        this.position = "top";
         this.view = null;
         this.margin = { left: 0, top: 0, right: 0, bottom: 0 };
         this.viewRoot = null;
@@ -27,6 +27,10 @@ class PopupWindow extends Context{
             this.urlView = view;
         else
             throw `El contenido enviado [${view}] no es valido para el [PopupWindow]. Establesca solo una url con XML para el layout o una intancia de View`;
+    }
+
+    getContentView(){
+        return this.viewRoot;
     }
 
     async onReMesasure(){
@@ -59,6 +63,7 @@ class PopupWindow extends Context{
         this.visible = true;
 
         let rectView = this.view.elemDom.getBoundingClientRect();
+
         for(let posItem of this.position.split('|')){
             switch(posItem){
                 case 'left':
@@ -68,9 +73,11 @@ class PopupWindow extends Context{
                     this.viewRoot.elemDom.style.left = ( rectView.left + this.view.getWidth() - this.viewRoot.getWidth()) + 'px';
                     break;
                 case 'top':
+                    this.viewRoot.elemDom.style.left = (rectView.left) + 'px';
                     this.viewRoot.elemDom.style.top = (rectView.top - this.viewRoot.getHeight()) + 'px';
                     break;
                 case 'bottom':
+                    this.viewRoot.elemDom.style.left = (rectView.left) + 'px';
                     this.viewRoot.elemDom.style.top = (rectView.top + this.view.getHeight()) + 'px';
                     break;
             }
@@ -81,5 +88,9 @@ class PopupWindow extends Context{
         if(this.viewRoot && this.viewRoot.elemDom)
             this.viewRoot.elemDom.remove();
         this.visible = false;
+    }
+
+    isVisible(){
+        return this.visible;
     }
 };

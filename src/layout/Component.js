@@ -62,7 +62,8 @@ class Component extends Container {
         if(this.height !== LayoutInflater.MATCH_PARENT && this.height !== LayoutInflater.WRAP_CONTENT)
             maxHeigth = parseFloat(this.height);
 
-        if(!this.getFirstChild()){
+        if(!this.getFirstChild()){ // No se asigno el contenido
+            console.log("No se asigno el contenido");
             let maxWidthElement, maxHeightElement;
             switch (this.height) {
                 case LayoutInflater.MATCH_PARENT: maxHeightElement = maxHeigth; break;
@@ -80,6 +81,10 @@ class Component extends Container {
             this.elemDom.style.width = `${maxWidthElement}px`;
             return;
         }
+
+        console.log("Calculando dimesion");
+        console.log("VIEW: ",this.getFirstChild().constructor.name);
+        console.log("Dimensiones: ",maxWidth - this.padding.left - this.padding.right,maxHeigth - this.padding.top - this.padding.bottom);
 
         await this.getFirstChild().onMeasure(
             maxWidth - this.padding.left - this.padding.right,

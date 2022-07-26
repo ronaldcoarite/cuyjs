@@ -23,9 +23,18 @@
             <xs:element ref="RadioButton" />
             <xs:element ref="RadioGroup" />
             <xs:element ref="WaitingView" />
+            <xs:element ref="Spinner" />
         </xs:choice>
     </xs:group>
     <!-- atributos-->
+    <xs:attribute name="positionSpinner">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="top"/>
+                <xs:enumeration value="bottom"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
     <xs:attribute name="scaleType">
         <xs:simpleType>
             <xs:restriction base="xs:string">
@@ -269,7 +278,7 @@
             <xs:extension base="Button"/>
         </xs:complexContent>
     </xs:complexType>
-
+    
     <!-- ViewGroup -->
     <xs:element name="ViewGroup" type="ViewGroup"/>
     <xs:complexType name="ViewGroup">
@@ -347,14 +356,13 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-
+    
     <!-- RadioButton -->
     <xs:element name="RadioButton" type="RadioButton" />
     <xs:complexType name="RadioButton">
         <xs:complexContent mixed="false">
             <xs:extension base="View">
                 <xs:attribute type="xs:string" name="text" use="optional"/>
-                <xs:attribute type="xs:string" name="onClick" use="optional"/>
                 <xs:attribute type="xs:string" name="radioGroup" use="optional"/>
             </xs:extension>
         </xs:complexContent>
@@ -370,13 +378,25 @@
         </xs:complexContent>
     </xs:complexType>
 
-
     <!-- Form -->
     <xs:element name="WaitingView" type="WaitingView" />
     <xs:complexType name="WaitingView">
         <xs:complexContent mixed="false">
             <xs:extension base="View">
                 
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <!-- Spinner -->
+    <xs:element name="Spinner" type="Spinner" />
+    <xs:complexType name="Spinner">
+        <xs:complexContent mixed="false">
+            <xs:extension base="View">
+                <xs:attribute type="xs:string" name="text" use="required"/>
+                <xs:attribute type="bool" name="replaceableValue" use="optional"/>
+                <xs:attribute ref="positionSpinner" use="optional"/>
+                <!-- <xs:group minOccurs="0" maxOccurs="unbounded" ref="any-view" /> -->
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
