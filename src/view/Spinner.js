@@ -13,18 +13,38 @@ class Spinner extends Button{
         this.popup.setContentView(linViews);
         this.popup.setView(this);
         this.popup.setPositionOnView(this.position);
-        this.onClickItemListener = null;
-        this.setOnClickListener(async ()=>{
-            if(this.popup.isVisible())
-                this.hideOptions();
-            else
-                await this.showOptions();
-        },this);
         this.selectedIndex = -1;
+        this.onClickContext = super.context;
     }
 
-    async setOnClickItemListener(onClickItemListener){
-        this.onClickItemListener = onClickItemListener;
+    setOnClickListener(onClickListener,onClickContext){
+        this.onClickItemDefinition = onClickListener;
+        if(onClickContext)
+            this.onClickContext = onClickContext;
+        else
+            this.onClickContext = arguments[1]||this.onClickContext;
+        if (typeof this.onClickItemDefinition === 'function') {
+            this.onClickListener = this.onClickItemDefinition;
+        }
+        else{
+            if (typeof this.onClickItemDefinition === 'string') {
+                // Buscamos el nombre de metodo en el contexto
+                let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+                if(propertyNames.find(property=>property===this.onClickItemDefinition)){
+                    this.onClickListener = this.context[this.onClickItemDefinition];
+                }else
+                    throw new Exception(`No se pudo encontrar la funcion [${this.onClickItemDefinition}] dentro del contexto [${this.context.constructor.name}]`);
+            }
+            else 
+                throw new Exception(`El objeto [${onClickItemListener}] no es valido para establecer el Listener de onClickItemListener`);
+        }
+        if(this.onClickListener){
+            this.elemDom.onclick=()=>{
+                if(this.audioClickMedia)
+                    this.audioClickMedia.play();
+                this.onClickToogleSpinner();
+            };
+        }
     }
 
     async onClickOptionItem(viewOption){
@@ -41,41 +61,17 @@ class Spinner extends Button{
         }else{
             if(this.replaceableValue)
                 await this.setText(viewOption.getText());
-            if(this.onClickItemListener)
-                Reflect.apply(this.onClickItemListener, this.getContext(),[viewOption]);
+            if(this.onClickListener){
+                Reflect.apply(this.onClickListener, this.onClickContext, [viewOption]);
+            }
         }
     }
-
-    // async setSelecttion(index){
-    //     if(index< 0 || index>= this.popup.getContentView().getChilds().length)
-    //         throw new Exception(`El indice para la selección al Spinner debe estar entre [${0}] y [${this.popup.getView().getChilds().length}]`);
-    //     if(this.selectedIndex===-1){
-
-    //     }
-    //     let option = this.popup.getContentView().getChildAt(index);
-    //     this.elemSelected.appendChild(option.cloneDomElem());
-    // }
-    // 
-    // setOnItemSelected(funOnItem){
-    //     for(let viewOption of this.popup.getContentView().getChilds()){
-    //         viewOption.setOnClickListener(this.onClickOptionItem,this);
-    //     }
-    //     this.onItemSelected = funOnItem;
-    // }
 
     async onClickToogleSpinner(){
         if(this.popup.isVisible())
             this.hideOptions();
         else
             await this.showOptions();
-    }
-
-    async addOptionItem(viewOption){
-        if(!(viewOption instanceof OptionItem))
-            throw `Solo es permitido agregar Views de tipo [OptionItem]. El view enviado es de tipo [${viewOption.constructor.name}]`;
-        await viewOption.setOnClickListener(this.onClickOptionItem,this);
-        await this.popup.getContentView().addView(viewOption);
-        viewOption.context = this;
     }
 
     getPopupContext(){
@@ -114,11 +110,10 @@ class Spinner extends Button{
                 this.popup.getContentView().setBackground(Resource.getAttrOfTheme(this.constructor.name, 'backgroundBottom'));
                 break;
         }
-
         for (let index = 0; index < nodeXml.children.length; index++){
             let nodeChild = nodeXml.children[index];
             let child = await LayoutInflater.inflate(this.context, nodeChild,this.model);
-            child.setOnClickListener(this.onClickOptionItem,this);
+            this.setOnClickListenerTo(child, this.onClickOptionItem);
             await this.popup.getContentView().addView(child);
         }
     }

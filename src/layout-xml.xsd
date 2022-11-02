@@ -394,6 +394,7 @@
         <xs:complexContent mixed="false">
             <xs:extension base="View">
                 <xs:attribute type="xs:string" name="text" use="required"/>
+                <xs:attribute type="xs:string" name="onClickItemListener" use="optional"/>
                 <xs:attribute type="bool" name="replaceableValue" use="optional"/>
                 <xs:attribute ref="positionSpinner" use="optional"/>
                 <!-- <xs:group minOccurs="0" maxOccurs="unbounded" ref="any-view" /> -->

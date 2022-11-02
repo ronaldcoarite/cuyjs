@@ -20,8 +20,8 @@ class View {
         this.background = Resource.getAttrOfTheme(this.constructor.name, 'background');
         this.cssClassList = Resource.getAttrOfTheme(this.constructor.name, 'cssClassList',this.constructor.name);
         this.cssStyle = Resource.getAttrOfTheme(this.constructor.name, 'cssStyle');
-        this.onClick = null;
-        this.onClickDefinition = null;
+        this.onClickListener = null;
+        this.onClickItemDefinition = null;
         this.tooltip = Resource.getAttrOfTheme(this.constructor.name, 'tooltip');
         this.audioClick = Resource.getAttrOfTheme(this.constructor.name, 'audioClick');
         this.audioAdove = Resource.getAttrOfTheme(this.constructor.name, 'audioAdove');
@@ -31,6 +31,17 @@ class View {
 
         this.createHtmlElement();
         this.elemDom.style.visibility = "hidden";
+
+        this.onClickContext = this.getContext();
+    }
+
+    setOnClickListenerTo(idView,onClickListener){
+        if(idView instanceof View)
+            idView.setOnClickListener(onClickListener, this);
+        else{
+            let view = this.findViewById(idView);
+            view.setOnClickListener(onClickListener, this);
+        }
     }
 
     getElemDom(){
@@ -196,49 +207,116 @@ class View {
         this.layoutGravity = layoutGravity;
     }
 
-    setOnClickListener(onClick,contextParam) {
-        this.onClick = null;
-        this.onClickDefinition = onClick;
-        this.onClickContext = contextParam;
-        let onCC = true;
-        if (typeof onClick === 'function') {
-            let propNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.onClickContext || this.context));
-            let funcName = onClick.name;
-
-            if(propNames.includes(funcName)){ // La funcion esta dentro del contexto
-                this.onClickDefinition = funcName;
-            }else{
-                // this.onClick=()=>{};
-                this.onClick = async function(){
-                    Reflect.apply(this.onClickDefinition, this.onClickContext ||this.context,[this]);
-                };
-                onCC = false;
-            }
+    setOnClickListener(onClickListener,onClickContext){
+        this.onClickItemDefinition = onClickListener;
+        if(onClickContext)
+            this.onClickContext = onClickContext;
+        else
+            this.onClickContext = arguments[1]||this.onClickContext;
+        if (typeof this.onClickItemDefinition === 'function') {
+            this.onClickListener = this.onClickItemDefinition;
         }
-        if(onCC){
-            if (typeof this.onClickDefinition === 'string') {
+        else{
+            if (typeof this.onClickItemDefinition === 'string') {
                 // Buscamos el nombre de metodo en el contexto
-                let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.onClickContext ||this.context));
-                if(propertyNames.find(property=>property===this.onClickDefinition)){
-                    this.onClick = async function(){
-                         Reflect.apply(Reflect.get(this.onClickContext||this.context,this.onClickDefinition), this.onClickContext ||this.context,[this]);
-                    }
+                let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+                if(propertyNames.find(property=>property===this.onClickItemDefinition)){
+                    this.onClickListener = this.context[this.onClickItemDefinition];
                 }else
-                    throw new Exception(`No se pudo encontrar la funcion [${this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
+                    throw new Exception(`No se pudo encontrar la funcion [${this.onClickItemDefinition}] dentro del contexto [${this.context.constructor.name}]`);
             }
             else 
-                throw new Exception(`El objeto [${onClick}] no es valido para establecer el Listener de onClick`);
+                throw new Exception(`El objeto [${onClickItemListener}] no es valido para establecer el Listener de onClickItemListener`);
         }
 
-        // OnClick
-        if(this.onClick){
+        if(this.onClickListener){
             this.elemDom.onclick=()=>{
                 if(this.audioClickMedia)
                     this.audioClickMedia.play();
-                this.onClick();
+                Reflect.apply(this.onClickListener, this.onClickContext, [this]);
             };
         }
     }
+
+    // setOnClickListener(onClickItemListener) {
+    //     if(!onClickItemListener)
+    //         return;
+    //     this.onClickItemDefinition = onClickItemListener;
+    //     if (typeof this.onClickItemDefinition === 'function') {
+    //         this.onClickListener = this.onClickItemDefinition;
+    //         console.log("SSSSSSSSSSSS",arguments);
+    //         console.log("THIS COPONENT",arguments[1].constructor.name);
+    //         this.onClickContext = arguments[1]||this.getContext();
+    //     }
+    //     else{
+    //         console.log("Ingresando por aca de tipo string");
+    //         if (typeof this.onClickItemDefinition === 'string') {
+    //             this.onClickContext = this.context;
+    //             // Buscamos el nombre de metodo en el contexto
+    //             let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+    //             if(propertyNames.find(property=>property===this.onClickItemDefinition)){
+    //                 this.onClickListener = this.context[this.onClickItemDefinition];
+    //             }else
+    //                 throw new Exception(`No se pudo encontrar la funcion [${this.onClickItemDefinition}] dentro del contexto [${this.context.constructor.name}]`);
+    //         }
+    //         else 
+    //             throw new Exception(`El objeto [${onClickItemListener}] no es valido para establecer el Listener de onClickItemListener`);
+    //     }
+    //     this.elemDom.onclick=()=>{
+    //         if(this.audioClickMedia)
+    //             this.audioClickMedia.play();
+    //         console.log("RONALD CAAA",this.onClickContext.constructor.name);
+    //         Reflect.apply(this.onClickListener, this.onClickContext, [this]);
+    //     };
+
+        // this.onClick = null;
+        // this.onClickDefinition = onClick;
+        // let onCC = true;
+        // if (typeof this.onClickDefinition === 'function') {
+        //     this.onClickItemListener = this.onClickItemDefinition;
+        //     this.onClickContext = arguments[1]||this.getContext();
+
+        //     console.log("ON CLICK FUNTION");
+        //     console.log("OBJETO DE LLAMADA",arguments[1]);
+        //     console.log("ARGUMENTS",arguments);
+        //     this.onClickContext = arguments[1]||this.getContext();
+        //     let propNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.onClickContext));
+        //     let funcName = onClick.name;
+
+        //     if(propNames.includes(funcName)){ // La funcion esta dentro del contexto
+        //         this.onClickDefinition = funcName;
+        //     }else{
+        //         // this.onClick=()=>{};
+        //         this.onClick = async function(){
+        //             Reflect.apply(this.onClickDefinition, this.onClickContext,[this]);
+        //         };
+        //         onCC = false;
+        //     }
+        // }
+        // if(onCC){
+        //     if (typeof this.onClickDefinition === 'string') {
+        //         // Buscamos el nombre de metodo en el contexto
+        //         let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
+        //         if(propertyNames.find(property=>property===this.onClickDefinition)){
+        //             this.onClick = async function(){
+        //                  Reflect.apply(Reflect.get(this.onClickContext||this.context,this.onClickDefinition), this.onClickContext ||this.context,[this]);
+        //             }
+        //         }else
+        //             throw new Exception(`No se pudo encontrar la funcion [${this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
+        //     }
+        //     else 
+        //         throw new Exception(`El objeto [${onClick}] no es valido para establecer el Listener de onClick`);
+        // }
+
+        // // OnClick
+        // if(this.onClick){
+        //     this.elemDom.onclick=()=>{
+        //         if(this.audioClickMedia)
+        //             this.audioClickMedia.play();
+        //         this.onClick();
+        //     };
+        // }
+    // }
 
     async setMP(dr, ic, txt, tc) {
         var popup = new PopupWindow(this.getContext());
@@ -459,7 +537,7 @@ class View {
 
         // Cargando OnClick
         if((this.onClick===null || this.onClick === undefined) && this.onClickDefinition){
-            this.setOnClickListener(this.onClickDefinition);
+            this.setOnClickListener(this.onClickDefinition, this.getContext());
         }
 
         if(this.audioClick)

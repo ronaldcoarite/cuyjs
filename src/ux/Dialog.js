@@ -159,6 +159,15 @@ class Dialog extends Context{
         this.visible = false;
     }
 
+    setOnClickListenerTo(idView,onClickListener){
+        if(idView instanceof View)
+            idView.setOnClickListener(onClickListener, this);
+        else{
+            let view = this.viewRoot.findViewById(idView);
+            view.setOnClickListener(onClickListener, this);
+        }
+    }
+
     getViewRoot(){
         return this.viewRoot;
     }

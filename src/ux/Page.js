@@ -106,6 +106,15 @@ class Page extends Context{
         }
     }
 
+    setOnClickListenerTo(idView,onClickListener){
+        if(idView instanceof View)
+            idView.setOnClickListener(onClickListener, this);
+        else{
+            let view = this.viewRoot.findViewById(idView);
+            view.setOnClickListener(onClickListener, this);
+        }
+    }
+
     async startPageForResult(intent, requestCode) {
         this.requestCode = requestCode;
         await this.startPage(intent);
