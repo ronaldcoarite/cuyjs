@@ -127,7 +127,8 @@ class ImageView extends View{
                     break;
             }
             
-
+            if(!this.elemIcon)
+                return;
             switch(this.scaleType){
                 case 'content':
                     this.elemIcon.style.width = maxIconW+'px';
