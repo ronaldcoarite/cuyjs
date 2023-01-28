@@ -57,10 +57,13 @@ class Spinner extends Button{
         }
         if(index == this.popup.getContentView().getChilds().length){
             // No se encuentra lo seleccionado
-            console.log("No se encuentra lo seleccionaod");
+            console.log("No se encuentra lo seleccionado");
         }else{
-            if(this.replaceableValue)
+            if(this.replaceableValue){
                 await this.setText(viewOption.getText());
+                // await this.onReMeasure();
+                // await this.context.onResize();
+            }
             if(this.onClickListener){
                 Reflect.apply(this.onClickListener, this.onClickContext, [viewOption]);
             }
@@ -86,6 +89,11 @@ class Spinner extends Button{
 
     hideOptions(){
         this.popup.hide();
+    }
+
+    async addOptionItem(optionItem) {
+        this.setOnClickListenerTo(optionItem, this.onClickOptionItem);
+        await this.popup.getContentView().addView(optionItem);
     }
 
     // @Override

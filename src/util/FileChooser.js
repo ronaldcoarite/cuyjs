@@ -10,7 +10,6 @@ class FileChooser{
                 let posBase = contents.indexOf(',');
                 contents = posBase === -1 ? contents : contents.substr(posBase + 1);
                 //                    var doc = parser.parseFromString(contents, "application/xml");
-                domoInput.remove(); 
                 let fileNameSelected = file.name;
                 resolve({
                     fileName: fileNameSelected,

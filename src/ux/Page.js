@@ -92,16 +92,17 @@ class Page extends Context{
         document.title = title;
     }
 
-    async finish() {
+    async finish(dataResult) {
         let previusPage = this.context;
 
         await PageManager.finishPage(this);
 
         if(previusPage){
             console.log("Volviendo a cargar la pagina anterior");
-            await previusPage.onResume();
+            await previusPage.onResume(dataResult);
             previusPage.viewRoot.elemDom.style.display = "block";
         }else{
+            // Se retorna a la pagina inicial
             //console.log("NO hay pagina anterior registrada");
         }
     }
