@@ -9,7 +9,7 @@ class Container extends View{
         let vistos = new Array();
         for (let index = 0; index < this.viewsChilds.length; index++) {
             let view = this.viewsChilds[index];
-            if (view.visibility === View.VISIBLE)
+            if (view.visibility === View.VISIBLE || view.visibility === View.INVISIBLE)
                 vistos.push(view);
         }
         return vistos;

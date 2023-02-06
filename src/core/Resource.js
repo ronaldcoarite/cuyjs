@@ -53,6 +53,7 @@ class Resource{
             var script = document.createElement('script');
             script.type = 'text/javascript';
             script.src = url;
+            script.async = true;
     
             // Then bind the event to the callback function.
             // There are several events for cross browser compatibility.
@@ -66,7 +67,10 @@ class Resource{
             }
     
             script.onerror = callbackError;
-            script.onload = callback;
+            // script.onload = callback;
+            script.addEventListener('load',()=>{
+                resolve(script);
+            },false);
             // Fire the loading
             head.appendChild(script);
         });

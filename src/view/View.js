@@ -1,14 +1,13 @@
 class View {
-    static INVISIBLE = "INVISIBLE";
-    static VISIBLE = "VISIBLE";
-    static GONE = "GONE";
+    static INVISIBLE = "invisible";
+    static VISIBLE = "visible";
+    static GONE = "gone";
 
     constructor(context,model) {
         if (!context)
             throw new Exception("El contexto no esta en los parametros o es nulo");
         this.context = context;
         this.model = model||null;
-        this.visibility = View.VISIBLE;
         this.margin = { top: 0, left: 0, right: 0, bottom: 0 };
         this.padding = { top: 0, left: 0, right: 0, bottom: 0 };
         this.parentView = null;
@@ -28,7 +27,7 @@ class View {
         this.requiredInForm = false;
         this.requiredMessage = null;
         this.opacity=1;
-
+        this.visibility = View.VISIBLE;
         this.createHtmlElement();
         this.elemDom.style.visibility = "hidden";
 
@@ -64,14 +63,23 @@ class View {
         return Object.keys(this);
     }
 
-    setVisibility(v) {
+    async setVisibility(v) {
         switch(v){
-            case 'VISIBLE':
-                this.showView();
+            case View.VISIBLE:
+                this.elemDom.style.display = "block";
+                this.elemDom.style.visibility = "visible";
                 break;
-            case 'INVISIBLE':
-                this.hideView();
+            case View.INVISIBLE:
+                this.elemDom.style.display = "block";
+                this.elemDom.style.visibility = "hidden";                
                 break;
+            case View.GONE:
+                this.elemDom.style.display = "none";
+                break;
+        }
+        this.visibility = v;
+        if(this.parentView !== null && this.parentView !== undefined){
+            await this.onReMeasure();
         }
     }
     
@@ -186,7 +194,12 @@ class View {
                 this.backgroundPainter = new ImageBackground(this,this.elemDom,this.background);
             else if(Resource.isColorResource(this.background) || this.background.indexOf("rgba(")!==-1)
                 this.backgroundPainter = new ColorBackground(this,this.elemDom,this.background);
-            else
+            else if(this.background.includes('.js')){
+                await Resource.importJs(this.background);
+                let backInsName = this.background.substring(this.background.lastIndexOf('/')+1,this.background.length-'.js'.length);
+                this.backgroundPainter = eval(`new ${backInsName}(this,this.elemDom)`);
+                // this.backgroundPainter = new LateralMenuBackgroud(this,this.elemDom);
+            }else
                 throw new Exception(`No se pudo identificar el tipo de fondo [${this.background}]`);
         }else{
             this.backgroundPainter = new EmplyBackground(this,this.elemDom);
@@ -237,86 +250,6 @@ class View {
             };
         }
     }
-
-    // setOnClickListener(onClickItemListener) {
-    //     if(!onClickItemListener)
-    //         return;
-    //     this.onClickItemDefinition = onClickItemListener;
-    //     if (typeof this.onClickItemDefinition === 'function') {
-    //         this.onClickListener = this.onClickItemDefinition;
-    //         console.log("SSSSSSSSSSSS",arguments);
-    //         console.log("THIS COPONENT",arguments[1].constructor.name);
-    //         this.onClickContext = arguments[1]||this.getContext();
-    //     }
-    //     else{
-    //         console.log("Ingresando por aca de tipo string");
-    //         if (typeof this.onClickItemDefinition === 'string') {
-    //             this.onClickContext = this.context;
-    //             // Buscamos el nombre de metodo en el contexto
-    //             let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
-    //             if(propertyNames.find(property=>property===this.onClickItemDefinition)){
-    //                 this.onClickListener = this.context[this.onClickItemDefinition];
-    //             }else
-    //                 throw new Exception(`No se pudo encontrar la funcion [${this.onClickItemDefinition}] dentro del contexto [${this.context.constructor.name}]`);
-    //         }
-    //         else 
-    //             throw new Exception(`El objeto [${onClickItemListener}] no es valido para establecer el Listener de onClickItemListener`);
-    //     }
-    //     this.elemDom.onclick=()=>{
-    //         if(this.audioClickMedia)
-    //             this.audioClickMedia.play();
-    //         console.log("RONALD CAAA",this.onClickContext.constructor.name);
-    //         Reflect.apply(this.onClickListener, this.onClickContext, [this]);
-    //     };
-
-        // this.onClick = null;
-        // this.onClickDefinition = onClick;
-        // let onCC = true;
-        // if (typeof this.onClickDefinition === 'function') {
-        //     this.onClickItemListener = this.onClickItemDefinition;
-        //     this.onClickContext = arguments[1]||this.getContext();
-
-        //     console.log("ON CLICK FUNTION");
-        //     console.log("OBJETO DE LLAMADA",arguments[1]);
-        //     console.log("ARGUMENTS",arguments);
-        //     this.onClickContext = arguments[1]||this.getContext();
-        //     let propNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.onClickContext));
-        //     let funcName = onClick.name;
-
-        //     if(propNames.includes(funcName)){ // La funcion esta dentro del contexto
-        //         this.onClickDefinition = funcName;
-        //     }else{
-        //         // this.onClick=()=>{};
-        //         this.onClick = async function(){
-        //             Reflect.apply(this.onClickDefinition, this.onClickContext,[this]);
-        //         };
-        //         onCC = false;
-        //     }
-        // }
-        // if(onCC){
-        //     if (typeof this.onClickDefinition === 'string') {
-        //         // Buscamos el nombre de metodo en el contexto
-        //         let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.context));
-        //         if(propertyNames.find(property=>property===this.onClickDefinition)){
-        //             this.onClick = async function(){
-        //                  Reflect.apply(Reflect.get(this.onClickContext||this.context,this.onClickDefinition), this.onClickContext ||this.context,[this]);
-        //             }
-        //         }else
-        //             throw new Exception(`No se pudo encontrar la funcion [${this.onClickDefinition}] dentro del contexto [${this.context.constructor.name}]`);
-        //     }
-        //     else 
-        //         throw new Exception(`El objeto [${onClick}] no es valido para establecer el Listener de onClick`);
-        // }
-
-        // // OnClick
-        // if(this.onClick){
-        //     this.elemDom.onclick=()=>{
-        //         if(this.audioClickMedia)
-        //             this.audioClickMedia.play();
-        //         this.onClick();
-        //     };
-        // }
-    // }
 
     async setMP(dr, ic, txt, tc) {
         var popup = new PopupWindow(this.getContext());
@@ -514,6 +447,23 @@ class View {
             this.maxWidth = parseInt(this.getAttrFromNodeXml(nodeXml,"maxWidth"));
         if(this.getAttrFromNodeXml(nodeXml,"maxHeight")!=null)
             this.maxHeigth = parseInt(this.getAttrFromNodeXml(nodeXml,"maxHeight"));
+
+        if(this.getAttrFromNodeXml(nodeXml,"visibility") != null){
+            switch(this.getAttrFromNodeXml(nodeXml,"visibility")){
+                case View.VISIBLE:
+                    this.visibility = View.VISIBLE;
+                    this.elemDom.style.visibility = "hidden";
+                    break;
+                case View.INVISIBLE:
+                    this.visibility = View.INVISIBLE;
+                    this.elemDom.style.visibility = "hidden";
+                    break;
+                case View.GONE:
+                    this.visibility = View.GONE;
+                    this.elemDom.style.display = "none";
+                    break;
+            }
+        }
     }
 
     async loadResources() {
@@ -522,18 +472,18 @@ class View {
         // Tooltip de Vista
         if(this.tooltip)
             this.elemDom.setAttribute("title", this.tooltip);
-        // Visibilidad
-        switch (this.visibility) {
-            case View.INVISIBLE:
-                this.elemDom.style.visibility = 'hidden';
-                break;
-            case View.GONE:
-                this.elemDom.style.visibility = 'hidden';
-                break;
-            default:
-                this.elemDom.style.visibility = 'block';
-                break;
-        }
+        // // Visibilidad
+        // switch (this.visibility) {
+        //     case View.INVISIBLE:
+        //         this.elemDom.style.visibility = 'hidden';
+        //         break;
+        //     case View.GONE:
+        //         this.elemDom.style.visibility = 'hidden';
+        //         break;
+        //     default:
+        //         this.elemDom.style.visibility = 'block';
+        //         break;
+        // }
 
         // Cargando OnClick
         if((this.onClick===null || this.onClick === undefined) && this.onClickDefinition){

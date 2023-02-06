@@ -82,10 +82,6 @@ class Component extends Container {
             return;
         }
 
-        console.log("Calculando dimesion");
-        console.log("VIEW: ",this.getFirstChild().constructor.name);
-        console.log("Dimensiones: ",maxWidth - this.padding.left - this.padding.right,maxHeigth - this.padding.top - this.padding.bottom);
-
         await this.getFirstChild().onMeasure(
             maxWidth - this.padding.left - this.padding.right,
             maxHeigth - this.padding.top - this.padding.bottom);

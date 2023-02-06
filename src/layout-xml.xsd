@@ -24,6 +24,7 @@
             <xs:element ref="RadioGroup" />
             <xs:element ref="WaitingView" />
             <xs:element ref="Spinner" />
+            <xs:element ref="WebView" />
         </xs:choice>
     </xs:group>
     <!-- atributos-->
@@ -38,10 +39,9 @@
     <xs:attribute name="scaleType">
         <xs:simpleType>
             <xs:restriction base="xs:string">
-                <xs:enumeration value="fitXY"/>
-                <xs:enumeration value="fitStart"/>
-                <xs:enumeration value="fitCenter"/>
-                <xs:enumeration value="center"/>
+                <xs:enumeration value="content"/>
+                <xs:enumeration value="scale"/>
+                <xs:enumeration value="original"/>
             </xs:restriction>
         </xs:simpleType>
     </xs:attribute>
@@ -131,6 +131,7 @@
         <xs:attribute type="xs:string" name="background" use="optional"/>
         <xs:attribute type="xs:string" name="onClick" use="optional"/>
         <xs:attribute type="xs:string" name="cssClassList" use="optional"/>
+        <xs:attribute type="xs:string" name="cssText" use="optional"/>
         <xs:attribute type="xs:string" name="theme" use="optional"/>
         
         <xs:attribute ref="layoutGravity" use="optional"/>
@@ -398,6 +399,16 @@
                 <xs:attribute type="bool" name="replaceableValue" use="optional"/>
                 <xs:attribute ref="positionSpinner" use="optional"/>
                 <!-- <xs:group minOccurs="0" maxOccurs="unbounded" ref="any-view" /> -->
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- WebView -->
+    <xs:element name="WebView" type="WebView" />
+    <xs:complexType name="WebView">
+        <xs:complexContent mixed="false">
+            <xs:extension base="View">
+                <xs:attribute type="xs:string" name="src" use="required"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

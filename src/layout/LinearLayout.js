@@ -40,8 +40,9 @@ class LinearLayout extends ViewGroup {
         let visibles = this.getViewVisibles();
         if (this.orientation === 'vertical')
             await this.onMeasureVertical(visibles,maxWidth,maxHeight);
-        else
+        else{ // horizontal
             await this.onMeasureHorizontal(visibles,maxWidth,maxHeight);
+        }
         await this.repaint();
     }
 
@@ -198,7 +199,6 @@ class LinearLayout extends ViewGroup {
             view.elemDom.style.left = (posLeft + view.margin.left) + 'px';
             posLeft = posLeft + view.margin.left + view.getWidth() + view.margin.right;
         }
-
         this.elemDom.style.height = `${maxHeightElement}px`;
         this.elemDom.style.width = `${maxWidthElement}px`;
     }
