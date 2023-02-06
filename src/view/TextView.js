@@ -119,6 +119,7 @@ class TextView extends View {
         this.elemIcon.style.backgroundRepeat = 'no-repeat';
         this.elemIcon.style.backgroundOrigin="content-box";
         this.elemIcon.style.backgroundSize = "contain";
+        this.elemIcon.style.position='absolute';
         this.container.appendChild(this.elemIcon);
         this.isSvg = false;
     }
@@ -296,19 +297,29 @@ class TextView extends View {
 
         switch(this.gravityIcon){
             case "left":
-                this.elemIcon.style.left = '0px';
                 this.elemText.style.left = (this.getIconWidth() + marginDrawable) + 'px';
                 this.elemText.style.top = (Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.elemText.clientHeight/2) + 'px';
-                this.elemIcon.style.top = (Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.getIconHeight()/2) + 'px';
+                if(this.isSvg)
+                    this.elemIcon.style.transform = `translate(0px, ${Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.getIconHeight()/2}px)`;
+                else{
+                    this.elemIcon.style.left = '0px';
+                    this.elemIcon.style.top = (Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.getIconHeight()/2) + 'px';
+                }
 
                 this.container.style.width = (this.getIconWidth() + marginDrawable + this.elemText.clientWidth) + 'px';
                 this.container.style.height = Math.max(this.getIconHeight(),this.elemText.clientHeight) + 'px';
                 break;
             case "right":
                 this.elemText.style.left = '0px';
-                this.elemIcon.style.left = (this.elemText.clientWidth+marginDrawable) + 'px';
                 this.elemText.style.top = (Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.elemText.clientHeight/2) + 'px';
-                this.elemIcon.style.top = (Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.getIconHeight()/2) + 'px';
+
+                if(this.isSvg)
+                    this.elemIcon.style.transform = `translate(${this.elemText.clientWidth+marginDrawable}px, ${Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.getIconHeight()/2}px)`;
+                else
+                {
+                    this.elemIcon.style.left = (this.elemText.clientWidth+marginDrawable) + 'px';
+                    this.elemIcon.style.top = (Math.max(this.getIconHeight(),this.elemText.clientHeight)/2-this.getIconHeight()/2) + 'px';
+                }
 
                 // establecemos las dimensiones
                 this.container.style.width = (this.getIconWidth()+marginDrawable + this.elemText.clientWidth) + 'px';
@@ -320,8 +331,13 @@ class TextView extends View {
                 this.elemText.style.left = (maximoAncho/2 -this.elemText.clientWidth/2) + 'px';
                 this.elemText.style.top = '0px';
 
-                this.elemIcon.style.left = (maximoAncho/2 -this.getIconWidth()/2) + 'px';
-                this.elemIcon.style.top = (this.elemText.clientHeight+marginDrawable) + 'px';
+                if(this.isSvg)
+                    this.elemIcon.style.transform = `translate(${maximoAncho/2 -this.getIconWidth()/2}px, ${this.elemText.clientHeight+marginDrawable}px)`;
+                else{
+                    this.elemIcon.style.left = (maximoAncho/2 -this.getIconWidth()/2) + 'px';
+                    this.elemIcon.style.top = (this.elemText.clientHeight+marginDrawable) + 'px';
+                }
+
 
                 // establecemos las dimensiones
                 this.container.style.width = maximoAncho + 'px';
@@ -329,12 +345,16 @@ class TextView extends View {
                 break;
             case "top":
                 let maximoAnchoTop = Math.max(this.elemText.clientWidth,this.getIconWidth());
-                
-                this.elemIcon.style.left = (maximoAnchoTop/2 -this.getIconWidth()/2) + 'px';
-                this.elemIcon.style.top = '0px';
-
+                                
                 this.elemText.style.left = (maximoAnchoTop/2 -this.elemText.clientWidth/2) + 'px';
                 this.elemText.style.top = (marginDrawable +this.getIconHeight()) + 'px';
+
+                if(this.isSvg)
+                    this.elemIcon.style.transform = `translate(${maximoAnchoTop/2 -this.getIconWidth()/2}px, 0px)`;
+                else{
+                    this.elemIcon.style.left = (maximoAnchoTop/2 -this.getIconWidth()/2) + 'px';
+                    this.elemIcon.style.top = '0px';
+                }
 
                 // establecemos las dimensiones
                 this.container.style.width = maximoAnchoTop + 'px';

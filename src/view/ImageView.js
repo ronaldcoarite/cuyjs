@@ -162,13 +162,23 @@ class ImageView extends View{
             }
 
             // Centramos la imagen
-            this.elemIcon.style.top = (this.elemDom.clientHeight/2-this.elemIcon.clientHeight/2)+'px';
-            if(this.offsetTop<this.padding.top)
-                this.elemIcon.style.top = this.padding.top + 'px';
-
-            this.elemIcon.style.left = (this.elemDom.clientWidth/2-this.elemIcon.clientWidth/2) + 'px';
-            if(this.offsetLeft<this.padding.left)
-                this.elemIcon.style.left = this.padding.left+'px';
+            if(this.isSvg){
+                let posY = this.elemDom.clientHeight/2-this.elemIcon.clientHeight/2;
+                if(this.offsetTop<this.padding.top)
+                    posY = this.padding.top;
+                let posX = this.elemDom.clientWidth/2-this.elemIcon.clientWidth/2;
+                if(this.offsetLeft<this.padding.left)
+                    posX = this.padding.left;
+                this.elemIcon.style.transform = `translate(${posX}px, ${posY}px)`;
+            }else{
+                this.elemIcon.style.top = (this.elemDom.clientHeight/2-this.elemIcon.clientHeight/2)+'px';
+                if(this.offsetTop<this.padding.top)
+                    this.elemIcon.style.top = this.padding.top + 'px';
+    
+                this.elemIcon.style.left = (this.elemDom.clientWidth/2-this.elemIcon.clientWidth/2) + 'px';
+                if(this.offsetLeft<this.padding.left)
+                    this.elemIcon.style.left = this.padding.left+'px';
+            }
             this.elemIcon.style.backgroundSize = `${this.elemIcon.clientWidth}px ${this.elemIcon.clientHeight}px`;
         }else{ // El ImageView no tiene imagen
             switch (this.width) {
