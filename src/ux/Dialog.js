@@ -24,7 +24,7 @@ class Dialog extends Context{
             let h = windowsDimension.height-(windowsDimension.height*this.viewRoot.margin.top/100)-(windowsDimension.height*this.viewRoot.margin.bottom/100);
             if(this.viewRoot.maxWidth>0 && w > this.viewRoot.maxWidth)
                 w = this.viewRoot.maxWidth;
-            if(this.viewRoot.maxHeigth>0 && w > this.viewRoot.maxHeigth)
+            if(this.viewRoot.maxHeigth>0 && h > this.viewRoot.maxHeigth)
                 h = this.viewRoot.maxHeigth;
             await this.viewRoot.onMeasure(w,h)
             this.setPosition(windowsDimension);
