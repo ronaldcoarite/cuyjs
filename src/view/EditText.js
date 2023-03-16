@@ -15,6 +15,7 @@ class EditText extends View{
         this.textSize = Resource.getAttrOfTheme(this.constructor.name, 'textSize','13px');
         this.textChangeListener = null;
         this.singleLine = Resource.getAttrOfTheme(this.constructor.name, 'singleLine',false);
+        this.inputMode = 'text';
     }
 
     // @Override
@@ -29,6 +30,7 @@ class EditText extends View{
             this.lines = 1;
         this.enabled = this.getAttrFromNodeXml(nodeXml,"enabled")?(this.getAttrFromNodeXml(nodeXml,"enabled")==="true") : this.enabled;
         this.textSize = this.getAttrFromNodeXml(nodeXml,"textSize")||this.textSize;
+        this.inputMode = this.getAttrFromNodeXml(nodeXml,"inputMode")||this.inputMode;
     }
 
     // @Override
@@ -70,7 +72,6 @@ class EditText extends View{
         // this.elemDom.style.height = (this.elemDom.rows * 22) + 'px';
         if(this.lines === 1){
             this.elemDom.style.whiteSpace = "nowrap";
-            
         }
         this.elemDom.onkeydown = (e)=>{
             if (this.lines===1&& e.keyCode == 13 && !e.shiftKey){
@@ -81,12 +82,13 @@ class EditText extends View{
                 return true;
         };
         if (this.hint !== null)
-            this.elemDom.placeholder = this.hint;
+            this.elemDom.setAttribute('hint',this.hint);
         if (this.maxLength > 0)
             this.elemDom.setAttribute("maxlength", this.maxLength);
         this.elemDom.textContent = this.text;
         this.elemDom.style.fontSize = this.textSize;
-        this.elemDom.contentEditable = this.enabled+"";
+        this.elemDom.contentEditable = this.enabled+'';
+        this.elemDom.setAttribute('inputmode',this.inputMode);
     }
 
     setSingleLine(sw){

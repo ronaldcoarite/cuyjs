@@ -36,6 +36,28 @@
             </xs:restriction>
         </xs:simpleType>
     </xs:attribute>
+    <xs:attribute name="buttonType">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="danger"/>
+                <xs:enumeration value="success"/>
+                <xs:enumeration value="warn"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="inputMode">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="numeric"/>
+                <xs:enumeration value="tel"/>
+                <xs:enumeration value="decimal"/>
+                <xs:enumeration value="email"/>
+                <xs:enumeration value="url"/>
+                <xs:enumeration value="search"/>
+                <xs:enumeration value="none"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
     <xs:attribute name="scaleType">
         <xs:simpleType>
             <xs:restriction base="xs:string">
@@ -278,7 +300,9 @@
     <xs:element name="Button" type="Button"/>
     <xs:complexType name="Button">
         <xs:complexContent mixed="false">
-            <xs:extension base="TextView"/>
+            <xs:extension base="TextView">
+                <xs:attribute ref="buttonType" use="optional"/>
+            </xs:extension>
         </xs:complexContent>
     </xs:complexType>
     

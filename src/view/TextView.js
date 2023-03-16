@@ -92,7 +92,7 @@ class TextView extends View {
         this.text = text;
         if(this.elemDom)
             this.elemText.innerHTML = this.text;
-        if(this.parentView !== null && this.parentView !== undefined)
+        if(this.parentView !== null && this.parentView !== undefined && this.elemDom.style.visibility==='visible')
             await this.onReMeasure();
     }
 
@@ -125,7 +125,7 @@ class TextView extends View {
     }
 
     getIconWidth(){
-        if(this.drawableResource)
+        if(this.drawableResource && this.elemIcon)
             return (this.isSvg?this.elemIcon.getBoundingClientRect().width:this.elemIcon.clientWidth);
         return 0;
     }
@@ -136,7 +136,7 @@ class TextView extends View {
 
     getIconHeight(){
         if(this.drawableResource)
-            return (this.isSvg?this.elemIcon.getBoundingClientRect().height:this.elemIcon.clientHeight);
+            return (this.isSvg && this.elemIcon?this.elemIcon.getBoundingClientRect().height:this.elemIcon.clientHeight);
         return 0;
     }
 

@@ -79,7 +79,8 @@ class View {
         }
         this.visibility = v;
         if(this.parentView !== null && this.parentView !== undefined){
-            await this.onReMeasure();
+            //if(v==View.INVISIBLE && this.visibility == View.GONE)
+                await this.onReMeasure();
         }
     }
     
