@@ -36,7 +36,7 @@
             </xs:restriction>
         </xs:simpleType>
     </xs:attribute>
-    <xs:attribute name="buttonType">
+    <xs:attribute name="type">
         <xs:simpleType>
             <xs:restriction base="xs:string">
                 <xs:enumeration value="danger"/>
@@ -301,7 +301,7 @@
     <xs:complexType name="Button">
         <xs:complexContent mixed="false">
             <xs:extension base="TextView">
-                <xs:attribute ref="buttonType" use="optional"/>
+                <xs:attribute ref="type" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -412,6 +412,18 @@
             <xs:extension base="View">
                 <xs:attribute type="xs:string" name="text" use="optional"/>
                 <xs:attribute type="xs:string" name="radioGroup" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    </xs:complexType>
+    
+    <!-- CheckBox -->
+    <xs:element name="CheckBox" type="CheckBox" />
+    <xs:complexType name="CheckBox">
+        <xs:complexContent mixed="false">
+            <xs:extension base="View">
+                <xs:attribute type="xs:string" name="text" use="optional"/>
+                <xs:attribute type="bool" name="checked" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
